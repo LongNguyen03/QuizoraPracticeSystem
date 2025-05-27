@@ -23,8 +23,8 @@ public class DBcontext implements Serializable {
         try {
             //Change the username password and url to connect your own database
             String username = "sa";
-            String password = "sa";
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=Quizora_DB_Ver1;encrypt=false";
+            String password = "123";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=Quizora_DB_Ver1;encrypt=true;trustServerCertificate=true";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException ex) {
@@ -37,9 +37,9 @@ public class DBcontext implements Serializable {
     try {
         DBcontext db = new DBcontext();
         if (db.connection != null && !db.connection.isClosed()) {
-            System.out.println("✅ Kết nối thành công đến SQL Server: " + db.connection);
+            System.out.println("Kết nối thành công đến SQL Server: " + db.connection);
         } else {
-            System.out.println("❌ Kết nối thất bại");
+            System.out.println("Kết nối thất bại");
         }
     } catch (Exception e) {
         e.printStackTrace(); // In chi tiết lỗi nếu có
