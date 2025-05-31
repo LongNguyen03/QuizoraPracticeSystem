@@ -4,35 +4,34 @@
  */
 package Model;
 
+/**
+ *
+ * @author dangd
+ */
 import java.util.Date;
 
-public class Question {
+
+public class Lesson {
     private int id;
-    private int subjectId;
-    private int lessonId;
-    private int dimensionId;
-    private String level;
+    private int packageId;
+    private String title;
     private String content;
     private String status;
     private Date createdAt;
     private Date updatedAt;
-    private String imageUrl;
 
-    public Question() {
+    public Lesson() {
     }
 
-    public Question(int id, int subjectId, int lessonId, int dimensionId, String level,
-                    String content, String status, Date createdAt, Date updatedAt, String imageUrl) {
+    public Lesson(int id, int packageId, String title, String content, String status,
+                  Date createdAt, Date updatedAt) {
         this.id = id;
-        this.subjectId = subjectId;
-        this.lessonId = lessonId;
-        this.dimensionId = dimensionId;
-        this.level = level;
+        this.packageId = packageId;
+        this.title = title;
         this.content = content;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.imageUrl = imageUrl;
     }
 
     // Getters and setters
@@ -44,36 +43,20 @@ public class Question {
         this.id = id;
     }
 
-    public int getSubjectId() {
-        return subjectId;
+    public int getPackageId() {
+        return packageId;
     }
 
-    public void setSubjectId(int subjectId) {
-        this.subjectId = subjectId;
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
     }
 
-    public int getLessonId() {
-        return lessonId;
+    public String getTitle() {
+        return title;
     }
 
-    public void setLessonId(int lessonId) {
-        this.lessonId = lessonId;
-    }
-
-    public int getDimensionId() {
-        return dimensionId;
-    }
-
-    public void setDimensionId(int dimensionId) {
-        this.dimensionId = dimensionId;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getContent() {
@@ -107,12 +90,5 @@ public class Question {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }
+
