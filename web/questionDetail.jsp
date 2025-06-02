@@ -23,16 +23,15 @@
     <head>
         <title><%= isEdit ? "Edit" : "Create" %> Question</title>
         <style>
+            /* Giữ nguyên style như cũ hoặc chỉnh tùy thích */
             body {
                 font-family: Arial;
                 background-color: #f9f9f9;
                 margin: 40px;
             }
-
             h2 {
                 color: #333;
             }
-
             table {
                 width: 800px;
                 padding: 20px;
@@ -40,18 +39,15 @@
                 border-collapse: collapse;
                 box-shadow: 0 0 10px rgba(0,0,0,0.1);
             }
-
             td {
                 padding: 10px;
             }
-
             input[type="text"], input[type="number"], select {
                 width: 100%;
                 padding: 8px;
                 border-radius: 5px;
                 border: 1px solid #ccc;
             }
-
             input[type="submit"], button {
                 padding: 10px 20px;
                 background-color: #007BFF;
@@ -60,37 +56,34 @@
                 border-radius: 5px;
                 cursor: pointer;
             }
-
             input[type="submit"]:hover, button:hover {
                 background-color: #0056b3;
             }
-
             a {
                 display: inline-block;
                 margin-top: 20px;
                 color: #007BFF;
                 text-decoration: none;
             }
-
             a:hover {
                 text-decoration: underline;
             }
-
             .answer-table {
                 width: 100%;
                 margin-top: 10px;
                 border: 1px solid #ddd;
             }
-
             .answer-table th, .answer-table td {
                 border: 1px solid #ddd;
                 padding: 8px;
             }
-
             .remove-btn {
                 background-color: red;
+                color: white;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
             }
-
             .remove-btn:hover {
                 background-color: darkred;
             }
@@ -99,13 +92,12 @@
         <script>
             function addAnswerRow() {
                 const table = document.getElementById("answersBody");
-                const rowCount = table.rows.length;
 
                 const row = table.insertRow();
                 row.innerHTML = `
                     <td><input type="text" name="answerContent" required /></td>
-                    <td style="text-align: center"><input type="checkbox" name="isCorrect" /></td>
-                    <td><input type="number" name="answerOrder" min="1" required /></td>
+                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" /></td>
+                    <td><input type="number" name="answerOrder" min="1" value="${table.rows.length}" required /></td>
                     <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
                 `;
             }
@@ -113,37 +105,14 @@
             function removeRow(button) {
                 const row = button.parentNode.parentNode;
                 row.parentNode.removeChild(row);
+                // Optional: update answerOrder values after removal
+                updateAnswerOrders();
             }
 
-            function prepareFormData() {
-                const form = document.getElementById("questionForm");
-                const answerContents = document.getElementsByName("answerContent");
-                const isCorrects = document.getElementsByName("isCorrect");
-                const answerOrders = document.getElementsByName("answerOrder");
-
-                for (let i = 0; i < answerContents.length; i++) {
-                    const content = answerContents[i].value;
-                    const isCorrect = isCorrects[i].checked;
-                    const order = answerOrders[i].value;
-
-                    const hiddenContent = document.createElement("input");
-                    hiddenContent.type = "hidden";
-                    hiddenContent.name = "answers[" + i + "].content";
-                    hiddenContent.value = content;
-
-                    const hiddenCorrect = document.createElement("input");
-                    hiddenCorrect.type = "hidden";
-                    hiddenCorrect.name = "answers[" + i + "].isCorrect";
-                    hiddenCorrect.value = isCorrect;
-
-                    const hiddenOrder = document.createElement("input");
-                    hiddenOrder.type = "hidden";
-                    hiddenOrder.name = "answers[" + i + "].answerOrder";
-                    hiddenOrder.value = order;
-
-                    form.appendChild(hiddenContent);
-                    form.appendChild(hiddenCorrect);
-                    form.appendChild(hiddenOrder);
+            function updateAnswerOrders() {
+                const orders = document.getElementsByName("answerOrder");
+                for (let i = 0; i < orders.length; i++) {
+                    orders[i].value = i + 1;
                 }
             }
         </script>
@@ -152,7 +121,8 @@
     <body>
         <h2><%= isEdit ? "Edit" : "Create" %> Question</h2>
 
-        <form id="questionForm" action="QuestionController" method="post" onsubmit="prepareFormData()">
+        <!-- enctype="multipart/form-data" nếu bạn xử lý upload file sau -->
+        <form id="questionForm" action="QuestionController" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<%= isEdit ? q.getId() : "" %>"/>
             <table>
                 <tr>
@@ -166,14 +136,13 @@
                 <tr>
                     <td>Image:</td>
                     <td>
-                        <input type="file" name="media" accept="image/*"/>
-                        <% if (isEdit && q.getImageUrl() != null && !q.getImageUrl().isEmpty()) { %>
+                        <input type="file" name="imageFile" accept="image/jpeg,image/png,image/jpg" />
+                        <% if (q != null && q.getImageUrl() != null) { %>
                         <br/>
-                        <img src="<%= q.getImageUrl() %>" alt="Current Image" style="max-height: 100px;"/>
+                        <img src="imageUrl?id=<%= q.getId() %>" style="max-width: 300px; height: auto;" />
                         <% } %>
                     </td>
                 </tr>
-
                 <tr>
                     <td>Subject:</td>
                     <td>
@@ -232,7 +201,7 @@
                             <thead>
                                 <tr>
                                     <th>Content</th>
-                                    <th>Is Correct</th>
+                                    <th style="text-align:center;">Is Correct</th>
                                     <th>Order</th>
                                     <th>Action</th>
                                 </tr>
@@ -242,11 +211,20 @@
                         for (QuestionAnswer a : answers) { %>
                                 <tr>
                                     <td><input type="text" name="answerContent" value="<%= a.getContent() %>" required /></td>
-                                    <td style="text-align: center"><input type="checkbox" name="isCorrect" <%= a.isCorrect() ? "checked" : "" %> /></td>
+                                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" <%= a.isCorrect() ? "checked" : "" %> /></td>
                                     <td><input type="number" name="answerOrder" value="<%= a.getAnswerOrder() %>" min="1" required /></td>
                                     <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
                                 </tr>
-                                <%  } } %>
+                                <% }
+                    } else { %>
+                                <!-- Nếu tạo mới, thêm 1 dòng mặc định -->
+                                <tr>
+                                    <td><input type="text" name="answerContent" required /></td>
+                                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" /></td>
+                                    <td><input type="number" name="answerOrder" value="1" min="1" required /></td>
+                                    <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
+                                </tr>
+                                <% } %>
                             </tbody>
                         </table>
                         <button type="button" onclick="addAnswerRow()">+ Add Answer</button>
@@ -254,7 +232,9 @@
                 </tr>
 
                 <tr>
-                    <td colspan="2" style="text-align: center;"><input type="submit" value="Save"/></td>
+                    <td colspan="2" style="text-align: center;">
+                        <input type="submit" value="Save"/>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -263,3 +243,4 @@
 
     </body>
 </html>
+

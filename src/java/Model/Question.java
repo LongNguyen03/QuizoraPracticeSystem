@@ -17,16 +17,16 @@ public class Question {
     private String status;
     private Date createdAt;
     private Date updatedAt;
-    private String imageUrl;
+    private byte[] imageUrl; // Sửa thành byte[] để lưu ảnh nhị phân
 
-    private List<QuestionAnswer> answerOptions; // NEW: Danh sách đáp án
+    private List<QuestionAnswer> answerOptions; // Danh sách đáp án
 
     public Question() {
     }
 
     public Question(int id, int subjectId, int lessonId, int dimensionId, String level,
                     String content, String status, Date createdAt, Date updatedAt,
-                    String imageUrl, List<QuestionAnswer> answerOptions) {
+                    byte[] imageUrl, List<QuestionAnswer> answerOptions) {
         this.id = id;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
@@ -40,7 +40,7 @@ public class Question {
         this.answerOptions = answerOptions;
     }
 
-    // Getters and setters
+    // Getters và setters
     public int getId() {
         return id;
     }
@@ -113,11 +113,11 @@ public class Question {
         this.updatedAt = updatedAt;
     }
 
-    public String getImageUrl() {
+    public byte[] getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(byte[] imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -128,6 +128,5 @@ public class Question {
     public void setAnswerOptions(List<QuestionAnswer> answerOptions) {
         this.answerOptions = answerOptions;
     }
-    
-    
 }
+

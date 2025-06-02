@@ -21,7 +21,7 @@ public class QuestionDAO extends DBcontext {
                 q.setLevel(rs.getString("Level"));
                 q.setContent(rs.getString("Content"));
                 q.setStatus(rs.getString("Status"));
-                q.setImageUrl(rs.getString("ImageUrl"));  // Đổi lại tên cột đúng
+                q.setImageUrl(rs.getBytes("ImageUrl"));  // sửa lấy dữ liệu dạng byte[]
                 q.setCreatedAt(rs.getTimestamp("CreatedAt"));
                 q.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
                 list.add(q);
@@ -46,7 +46,7 @@ public class QuestionDAO extends DBcontext {
                     q.setLevel(rs.getString("Level"));
                     q.setContent(rs.getString("Content"));
                     q.setStatus(rs.getString("Status"));
-                    q.setImageUrl(rs.getString("ImageUrl")); // Tên đúng
+                    q.setImageUrl(rs.getBytes("ImageUrl"));  // sửa lấy dữ liệu dạng byte[]
                     q.setCreatedAt(rs.getTimestamp("CreatedAt"));
                     q.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
                     return q;
@@ -70,8 +70,8 @@ public class QuestionDAO extends DBcontext {
             ps.setInt(3, q.getDimensionId());
             ps.setString(4, q.getLevel());
             ps.setString(5, q.getContent());
-            ps.setString(6, q.getImageUrl());
-            ps.setString(7, q.getStatus());
+            ps.setBytes(6, q.getImageUrl());  // nếu đây là ảnh byte[]
+            ps.setString(7, "Active");        // set status là "Active"
             ps.setTimestamp(8, now);
             ps.setTimestamp(9, now);
 
@@ -96,7 +96,7 @@ public class QuestionDAO extends DBcontext {
             ps.setInt(3, q.getDimensionId());
             ps.setString(4, q.getLevel());
             ps.setString(5, q.getContent());
-            ps.setString(6, q.getImageUrl());
+            ps.setBytes(6, q.getImageUrl());  // sửa set dữ liệu byte[]
             ps.setTimestamp(7, new Timestamp(new Date().getTime()));
             ps.setInt(8, q.getId());
 
@@ -146,12 +146,8 @@ public class QuestionDAO extends DBcontext {
         }
 
         if (status != null && !status.isEmpty()) {
-            // Nếu trường Status là boolean, bạn nên lưu boolean vào DB
-            // hoặc nếu là String thì nên lưu đúng chuỗi
             sql += " AND Status = ?";
             params.add(status);
-//                        params.add(status.equalsIgnoreCase("active"));
-
         }
 
         if (search != null && !search.isEmpty()) {
@@ -168,14 +164,16 @@ public class QuestionDAO extends DBcontext {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Question q = new Question();
-                q.setId(rs.getInt("Id"));             // chú ý tên cột PascalCase
+                q.setId(rs.getInt("Id"));
                 q.setContent(rs.getString("Content"));
                 q.setSubjectId(rs.getInt("SubjectId"));
                 q.setLessonId(rs.getInt("LessonId"));
                 q.setDimensionId(rs.getInt("DimensionId"));
                 q.setLevel(rs.getString("Level"));
-                q.setStatus(rs.getString("Status"));  // hoặc rs.getBoolean("Status") nếu đúng kiểu
-                // thêm các trường khác nếu cần
+                q.setStatus(rs.getString("Status"));
+                q.setImageUrl(rs.getBytes("ImageUrl"));  // sửa lấy dữ liệu byte[]
+                q.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                q.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
                 list.add(q);
             }
         } catch (Exception e) {

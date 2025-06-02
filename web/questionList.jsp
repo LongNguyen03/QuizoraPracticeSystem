@@ -14,6 +14,13 @@
     List<Subject> subjects = (List<Subject>) request.getAttribute("subjects");
     List<Lesson> lessons = (List<Lesson>) request.getAttribute("lessons");
     List<SubjectDimension> dimensions = (List<SubjectDimension>) request.getAttribute("dimensions");
+
+    String subjectId = request.getParameter("subjectId");
+    String lessonId = request.getParameter("lessonId");
+    String dimensionId = request.getParameter("dimensionId");
+    String level = request.getParameter("level");
+    String status = request.getParameter("status");
+    String search = request.getParameter("search");
 %>
 
 <%! 
@@ -38,6 +45,7 @@
         return "";
     }
 %>
+
 <html>
     <head>
         <title>Question List</title>
@@ -128,45 +136,51 @@
 
             <label>Subject:</label>
             <select name="subjectId">
-                <option value="">All</option>
+                <option value="" <%= (subjectId == null || subjectId.isEmpty()) ? "selected" : "" %>>All</option>
                 <% for (Subject s : subjects) { %>
-                <option value="<%= s.getId() %>"><%= s.getTitle() %></option>
+                <option value="<%= s.getId() %>" <%= (subjectId != null && subjectId.equals(String.valueOf(s.getId()))) ? "selected" : "" %>>
+                    <%= s.getTitle() %>
+                </option>
                 <% } %>
             </select>
 
             <label>Lesson:</label>
             <select name="lessonId">
-                <option value="">All</option>
+                <option value="" <%= (lessonId == null || lessonId.isEmpty()) ? "selected" : "" %>>All</option>
                 <% for (Lesson l : lessons) { %>
-                <option value="<%= l.getId() %>"><%= l.getTitle() %></option>
+                <option value="<%= l.getId() %>" <%= (lessonId != null && lessonId.equals(String.valueOf(l.getId()))) ? "selected" : "" %>>
+                    <%= l.getTitle() %>
+                </option>
                 <% } %>
             </select>
 
             <label>Dimension:</label>
             <select name="dimensionId">
-                <option value="">All</option>
+                <option value="" <%= (dimensionId == null || dimensionId.isEmpty()) ? "selected" : "" %>>All</option>
                 <% for (SubjectDimension d : dimensions) { %>
-                <option value="<%= d.getId() %>"><%= d.getName() %></option>
+                <option value="<%= d.getId() %>" <%= (dimensionId != null && dimensionId.equals(String.valueOf(d.getId()))) ? "selected" : "" %>>
+                    <%= d.getName() %>
+                </option>
                 <% } %>
             </select>
 
             <label>Level:</label>
             <select name="level">
-                <option value="">All</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
+                <option value="" <%= (level == null || level.isEmpty()) ? "selected" : "" %>>All</option>
+                <option value="Easy" <%= "Easy".equals(level) ? "selected" : "" %>>Easy</option>
+                <option value="Medium" <%= "Medium".equals(level) ? "selected" : "" %>>Medium</option>
+                <option value="Hard" <%= "Hard".equals(level) ? "selected" : "" %>>Hard</option>
             </select>
 
             <label>Status:</label>
             <select name="status">
-                <option value="">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="" <%= (status == null || status.isEmpty()) ? "selected" : "" %>>All</option>
+                <option value="active" <%= "active".equalsIgnoreCase(status) ? "selected" : "" %>>Active</option>
+                <option value="inactive" <%= "inactive".equalsIgnoreCase(status) ? "selected" : "" %>>Inactive</option>
             </select>
 
             <label>Search:</label>
-            <input type="text" name="search" placeholder="Search by content..."/>
+            <input type="text" name="search" placeholder="Search by content..." value="<%= (search != null) ? search : "" %>"/>
 
             <input type="submit" value="Filter"/>
         </form>
@@ -190,10 +204,13 @@
                 <td><%= getLessonName(q.getLessonId(), lessons) %></td>
                 <td><%= getDimensionName(q.getDimensionId(), dimensions) %></td>
                 <td><%= q.getLevel() %></td>
-                <td><%= "active".equalsIgnoreCase(q.getStatus()) ? "Active" : "Inactive" %></td>
+                <td style="color: <%= "active".equalsIgnoreCase(q.getStatus()) ? "green" : "red" %>;">
+                    <%= "active".equalsIgnoreCase(q.getStatus()) ? "Active" : "Inactive" %>
+                </td>
                 <td>
                     <a href="QuestionController?action=edit&id=<%= q.getId() %>">✏️ Edit</a>
-                    <a href="QuestionController?action=delete&id=<%= q.getId() %>">🗑️ Delete</a>
+                    <a href="QuestionController?action=delete&id=<%= q.getId() %>" 
+                       onclick="return confirm('Are you sure you want to delete this question?');">🗑️ Delete</a>
                 </td>
             </tr>
             <% } %>
@@ -208,4 +225,3 @@
 
     </body>
 </html>
-

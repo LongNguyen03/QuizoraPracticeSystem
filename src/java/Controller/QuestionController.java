@@ -16,14 +16,15 @@ import Model.Lesson;
 import Model.SubjectDimension;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
-
 @WebServlet(name = "QuestionController", urlPatterns = {"/QuestionController"})
+@MultipartConfig(maxFileSize = 1024 * 1024 * 5) // Giới hạn 5MB, tùy chỉnh được
 public class QuestionController extends HttpServlet {
 
     private QuestionDAO questionDAO = new QuestionDAO();
@@ -39,6 +40,7 @@ public class QuestionController extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null || action.equals("list")) {
             listQuestions(request, response);
+            return;
         }
 
         switch (action) {
@@ -89,8 +91,25 @@ public class QuestionController extends HttpServlet {
         q.setDimensionId(Integer.parseInt(request.getParameter("dimensionId")));
         q.setLevel(request.getParameter("level"));
         q.setContent(request.getParameter("content"));
-        q.setImageUrl(request.getParameter("imageUrl"));
         q.setStatus(request.getParameter("status"));
+
+        // Xử lý upload ảnh
+        Part imagePart = request.getPart("imageFile");
+        byte[] imageBytes = null;
+
+        if (imagePart != null && imagePart.getSize() > 0) {
+            imageBytes = imagePart.getInputStream().readAllBytes();
+        } else if (id != 0) {
+            // Giữ ảnh cũ nếu không chọn ảnh mới
+            Question existing = questionDAO.getQuestionById(id);
+            if (existing != null) {
+                imageBytes = existing.getImageUrl();
+            }
+        }
+
+// Lưu imageBytes vào đối tượng Question trước khi save/update
+        q.setImageUrl(imageBytes);
+
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         if (isEdit) {
@@ -131,11 +150,10 @@ public class QuestionController extends HttpServlet {
         request.setAttribute("lessons", lessons);
         request.setAttribute("dimensions", dimensions);
     }
-    
+
     private void listQuestions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get filters from request (if any)
         String subjectIdStr = request.getParameter("subjectId");
         String lessonIdStr = request.getParameter("lessonId");
         String dimensionIdStr = request.getParameter("dimensionId");
@@ -143,19 +161,11 @@ public class QuestionController extends HttpServlet {
         String status = request.getParameter("status");
         String search = request.getParameter("search");
 
-        // Get data
-        QuestionDAO questionDAO = new QuestionDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        LessonDAO lessonDAO = new LessonDAO();
-        SubjectDimensionDAO dimensionDAO = new SubjectDimensionDAO();
-
         List<Question> questions = questionDAO.getFilteredQuestions(subjectIdStr, lessonIdStr, dimensionIdStr, level, status, search);
-
         List<Subject> subjects = subjectDAO.getAll();
         List<Lesson> lessons = lessonDAO.getAll();
         List<SubjectDimension> dimensions = dimensionDAO.getAll();
 
-        // Set attributes
         request.setAttribute("questions", questions);
         request.setAttribute("subjects", subjects);
         request.setAttribute("lessons", lessons);
@@ -163,6 +173,5 @@ public class QuestionController extends HttpServlet {
 
         request.getRequestDispatcher("questionList.jsp").forward(request, response);
     }
-    
-}
 
+}
