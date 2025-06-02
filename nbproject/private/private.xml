@@ -3,12 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
             <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/QuestionController.java</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/DAO/QuestionDAO.java</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/question_detail.jsp</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Model/Question.java</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/question_list.jsp</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/index.html</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/META-INF/context.xml</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/questionDetail.jsp</file>
         </group>
     </open-files>
 </project-private>

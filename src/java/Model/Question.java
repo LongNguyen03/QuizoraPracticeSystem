@@ -5,6 +5,7 @@
 package Model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Question {
     private int id;
@@ -18,11 +19,14 @@ public class Question {
     private Date updatedAt;
     private String imageUrl;
 
+    private List<QuestionAnswer> answerOptions; // NEW: Danh sách đáp án
+
     public Question() {
     }
 
     public Question(int id, int subjectId, int lessonId, int dimensionId, String level,
-                    String content, String status, Date createdAt, Date updatedAt, String imageUrl) {
+                    String content, String status, Date createdAt, Date updatedAt,
+                    String imageUrl, List<QuestionAnswer> answerOptions) {
         this.id = id;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
@@ -33,6 +37,7 @@ public class Question {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.imageUrl = imageUrl;
+        this.answerOptions = answerOptions;
     }
 
     // Getters and setters
@@ -115,4 +120,14 @@ public class Question {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public List<QuestionAnswer> getAnswerOptions() {
+        return answerOptions;
+    }
+
+    public void setAnswerOptions(List<QuestionAnswer> answerOptions) {
+        this.answerOptions = answerOptions;
+    }
+    
+    
 }
