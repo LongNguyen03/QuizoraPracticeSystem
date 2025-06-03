@@ -31,6 +31,6 @@ public class QuizController extends HttpServlet {
 
         List<Quiz> quizzes = quizDAO.getQuizzesBySubjectId(subjectId);
         request.setAttribute("quizzes", quizzes);
-        request.getRequestDispatcher("/view/quizList.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/quizList.jsp").forward(request, response);
     }
 }

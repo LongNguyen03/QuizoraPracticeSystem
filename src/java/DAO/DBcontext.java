@@ -32,17 +32,16 @@ public class DBcontext implements Serializable {
         }
     }
 
-   
-       public static void main(String[] args) {
-    try {
-        DBcontext db = new DBcontext();
-        if (db.connection != null && !db.connection.isClosed()) {
-            System.out.println("Kết nối thành công đến SQL Server: " + db.connection);
-        } else {
-            System.out.println("Kết nối thất bại");
+    public static void main(String[] args) {
+        try {
+            DBcontext db = new DBcontext();
+            if (db.connection != null && !db.connection.isClosed()) {
+                System.out.println("Kết nối thành công đến SQL Server: " + db.connection);
+            } else {
+                System.out.println("Kết nối thất bại");
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // In chi tiết lỗi nếu có
         }
-    } catch (Exception e) {
-        e.printStackTrace(); // In chi tiết lỗi nếu có
     }
-}
 }
