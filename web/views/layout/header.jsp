@@ -24,9 +24,9 @@
             .dropdown-menu.categories-dropdown {
                 min-width: 300px;
                 padding: 0.5rem 1rem;
-                display: block; /* ?? dropdown ho?t ??ng ?úng v?i Bootstrap */
+
                 white-space: normal; /* cho phép xu?ng dòng */
-                display: flex !important; /* override thành flex ?? các item x?p ngang */
+
                 flex-wrap: wrap;
                 gap: 10px 15px;
             }

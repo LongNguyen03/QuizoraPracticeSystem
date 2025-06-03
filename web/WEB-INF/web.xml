@@ -20,6 +20,10 @@
         <servlet-name>QuizController</servlet-name>
         <servlet-class>Controller.QuizController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SubjectListController</servlet-name>
+        <servlet-class>Controller.SubjectListController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -35,5 +39,9 @@
     <servlet-mapping>
         <servlet-name>QuizController</servlet-name>
         <url-pattern>/quiz</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectListController</servlet-name>
+        <url-pattern>/all-subjects</url-pattern>
     </servlet-mapping>
 </web-app>
