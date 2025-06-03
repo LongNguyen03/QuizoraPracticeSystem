@@ -11,6 +11,7 @@ package Model;
 import java.util.Date;
 
 public class Subject {
+
     private int id;
     private String title;
     private String tagline;
@@ -21,7 +22,7 @@ public class Subject {
     private Date createdAt;
     private Date updatedAt;
     private String thumbnailUrl;
-    
+    private String categoryName;
 
     public Subject() {
     }
@@ -117,5 +118,13 @@ public class Subject {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
