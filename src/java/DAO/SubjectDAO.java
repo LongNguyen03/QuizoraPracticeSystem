@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import Model.Subject;
 
-
 public class SubjectDAO {
 
     private final DBcontext db;
@@ -90,25 +89,25 @@ public class SubjectDAO {
 
         return null; // không tìm thấy subject
     }
-     public List<Subject> getAll() {
+
+    public List<Subject> getAll() {
         List<Subject> subjects = new ArrayList<>();
         String sql = "SELECT * FROM Subjects";
 
-        try (PreparedStatement ps = db.connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = db.connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Subject s = new Subject(
-                    rs.getInt("Id"),
-                    rs.getString("Title"),
-                    rs.getString("Tagline"),
-                    rs.getInt("CategoryId"),
-                    rs.getInt("OwnerId"),
-                    rs.getString("Status"),
-                    rs.getString("Description"),
-                    rs.getTimestamp("CreatedAt"),
-                    rs.getTimestamp("UpdatedAt"),
-                    rs.getString("ThumbnailUrl")
+                        rs.getInt("Id"),
+                        rs.getString("Title"),
+                        rs.getString("Tagline"),
+                        rs.getInt("CategoryId"),
+                        rs.getInt("OwnerId"),
+                        rs.getString("Status"),
+                        rs.getString("Description"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getTimestamp("UpdatedAt"),
+                        rs.getString("ThumbnailUrl")
                 );
                 subjects.add(s);
             }
@@ -118,6 +117,66 @@ public class SubjectDAO {
         }
 
         return subjects;
+    }
+// Lấy danh sách subject có phân trang và tìm kiếm
+
+    public List<Subject> getSubjectsPaging(int offset, int limit, String search) {
+        List<Subject> list = new ArrayList<>();
+        String sql = "SELECT s.*, sc.Name AS categoryName FROM Subjects s JOIN SubjectCategories sc ON s.CategoryId = sc.Id WHERE s.Status = 'Active'";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND (s.Title LIKE ? OR s.Tagline LIKE ?)";
+        }
+        sql += " ORDER BY s.CreatedAt DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = db.connection.prepareStatement(sql)) {
+            int idx = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(idx++, "%" + search + "%");
+                ps.setString(idx++, "%" + search + "%");
+            }
+            ps.setInt(idx++, offset);
+            ps.setInt(idx, limit);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Subject s = new Subject();
+                s.setId(rs.getInt("Id"));
+                s.setTitle(rs.getString("Title"));
+                s.setTagline(rs.getString("Tagline"));
+                s.setCategoryId(rs.getInt("CategoryId"));
+                s.setOwnerId(rs.getInt("OwnerId"));
+                s.setStatus(rs.getString("Status"));
+                s.setDescription(rs.getString("Description"));
+                s.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                s.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
+                s.setThumbnailUrl(rs.getString("ThumbnailUrl"));
+                s.setCategoryName(rs.getString("categoryName"));
+                list.add(s);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+// Đếm tổng số subject (có search)
+    public int countSubjects(String search) {
+        String sql = "SELECT COUNT(*) FROM Subjects s WHERE s.Status = 'Active'";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += " AND (s.Title LIKE ? OR s.Tagline LIKE ?)";
+        }
+        try (PreparedStatement ps = db.connection.prepareStatement(sql)) {
+            int idx = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(idx++, "%" + search + "%");
+                ps.setString(idx++, "%" + search + "%");
+            }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 }
