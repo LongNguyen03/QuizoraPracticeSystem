@@ -11,27 +11,23 @@ package Model;
 import java.util.Date;
 
 public class Subject {
-
     private int id;
     private String title;
     private String tagline;
-    private int categoryId;
     private int ownerId;
     private String status;
     private String description;
     private Date createdAt;
     private Date updatedAt;
     private String thumbnailUrl;
-    private String categoryName;
 
     public Subject() {
     }
 
-    public Subject(int id, String title, String tagline, int categoryId, int ownerId, String status, String description, Date createdAt, Date updatedAt, String thumbnailUrl) {
+    public Subject(int id, String title, String tagline, int ownerId, String status, String description, Date createdAt, Date updatedAt, String thumbnailUrl) {
         this.id = id;
         this.title = title;
         this.tagline = tagline;
-        this.categoryId = categoryId;
         this.ownerId = ownerId;
         this.status = status;
         this.description = description;
@@ -62,14 +58,6 @@ public class Subject {
 
     public void setTagline(String tagline) {
         this.tagline = tagline;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
     }
 
     public int getOwnerId() {
@@ -118,13 +106,5 @@ public class Subject {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 }

@@ -8,31 +8,39 @@ package Model;
  *
  * @author dangd
  */
-public class QuestionAnswer {
-    private int id;  
+public class QuizUserAnswer {
+
+    private int id;
+    private int quizResultId;
     private int questionId;
-    private String content;
+    private Integer answerId; // nullable
     private boolean isCorrect;
-    private int answerOrder;
 
-    public QuestionAnswer() {
+    public QuizUserAnswer() {
     }
 
-    public QuestionAnswer(int id, int questionId, String content, boolean isCorrect, int answerOrder) {
+    public QuizUserAnswer(int id, int quizResultId, int questionId, Integer answerId, boolean isCorrect) {
         this.id = id;
+        this.quizResultId = quizResultId;
         this.questionId = questionId;
-        this.content = content;
+        this.answerId = answerId;
         this.isCorrect = isCorrect;
-        this.answerOrder = answerOrder;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getQuizResultId() {
+        return quizResultId;
+    }
+
+    public void setQuizResultId(int quizResultId) {
+        this.quizResultId = quizResultId;
     }
 
     public int getQuestionId() {
@@ -43,27 +51,19 @@ public class QuestionAnswer {
         this.questionId = questionId;
     }
 
-    public String getContent() {
-        return content;
+    public Integer getAnswerId() {
+        return answerId;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setAnswerId(Integer answerId) {
+        this.answerId = answerId;
     }
 
     public boolean isCorrect() {
         return isCorrect;
     }
 
-    public void setCorrect(boolean correct) {
-        isCorrect = correct;
-    }
-
-    public int getAnswerOrder() {
-        return answerOrder;
-    }
-
-    public void setAnswerOrder(int answerOrder) {
-        this.answerOrder = answerOrder;
+    public void setCorrect(boolean isCorrect) {
+        this.isCorrect = isCorrect;
     }
 }
