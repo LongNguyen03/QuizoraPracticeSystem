@@ -15,12 +15,11 @@ public class Account {
     private String email;
     private String passwordHash;
     private int roleId;
-    private boolean status;
+    private String status;
 
-    public Account() {
-    }
+    public Account() {}
 
-    public Account(int id, String email, String passwordHash, int roleId, boolean status) {
+    public Account(int id, String email, String passwordHash, int roleId, String status) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -60,11 +59,12 @@ public class Account {
         this.roleId = roleId;
     }
 
-    public boolean isStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }
+

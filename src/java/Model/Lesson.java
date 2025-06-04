@@ -13,9 +13,10 @@ import java.util.Date;
 
 public class Lesson {
     private int id;
-    private int packageId;
+    private int subjectId;
     private String title;
     private String content;
+    private String dimension;
     private String status;
     private Date createdAt;
     private Date updatedAt;
@@ -23,18 +24,17 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(int id, int packageId, String title, String content, String status,
-                  Date createdAt, Date updatedAt) {
+    public Lesson(int id, int subjectId, String title, String content, String dimension, String status, Date createdAt, Date updatedAt) {
         this.id = id;
-        this.packageId = packageId;
+        this.subjectId = subjectId;
         this.title = title;
         this.content = content;
+        this.dimension = dimension;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }
@@ -43,12 +43,12 @@ public class Lesson {
         this.id = id;
     }
 
-    public int getPackageId() {
-        return packageId;
+    public int getSubjectId() {
+        return subjectId;
     }
 
-    public void setPackageId(int packageId) {
-        this.packageId = packageId;
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
     }
 
     public String getTitle() {
@@ -65,6 +65,14 @@ public class Lesson {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(String dimension) {
+        this.dimension = dimension;
     }
 
     public String getStatus() {
@@ -91,4 +99,3 @@ public class Lesson {
         this.updatedAt = updatedAt;
     }
 }
-

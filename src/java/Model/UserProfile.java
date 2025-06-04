@@ -11,21 +11,21 @@ package Model;
 import java.util.Date;
 
 public class UserProfile {
-
     private int accountId;
     private String firstName;
+    private String middleName;
     private String lastName;
     private String gender;
     private String mobile;
     private Date dateOfBirth;
     private String avatarUrl;
 
-    public UserProfile() {
-    }
+    public UserProfile() {}
 
-    public UserProfile(int accountId, String firstName, String lastName, String gender, String mobile, Date dateOfBirth, String avatarUrl) {
+    public UserProfile(int accountId, String firstName, String middleName, String lastName, String gender, String mobile, Date dateOfBirth, String avatarUrl) {
         this.accountId = accountId;
         this.firstName = firstName;
+        this.middleName = middleName;
         this.lastName = lastName;
         this.gender = gender;
         this.mobile = mobile;
@@ -47,6 +47,14 @@ public class UserProfile {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public String getLastName() {
