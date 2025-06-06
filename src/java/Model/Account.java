@@ -1,14 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
-
-/**
- *
- * @author dangd
- */
-import java.util.Date;
 
 public class Account {
     private int id;
@@ -16,6 +6,9 @@ public class Account {
     private String passwordHash;
     private int roleId;
     private String status;
+
+    // Thêm thuộc tính phụ: tên vai trò (không có trong DB, dùng khi JOIN)
+    private String roleName;
 
     public Account() {}
 
@@ -27,6 +20,12 @@ public class Account {
         this.status = status;
     }
 
+    public Account(int id, String email, String passwordHash, int roleId, String status, String roleName) {
+        this(id, email, passwordHash, roleId, status);
+        this.roleName = roleName;
+    }
+
+    // Getters & Setters
     public int getId() {
         return id;
     }
@@ -66,5 +65,24 @@ public class Account {
     public void setStatus(String status) {
         this.status = status;
     }
-}
 
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    // Optional: override toString() for debugging
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", roleId=" + roleId +
+                ", status='" + status + '\'' +
+                ", roleName='" + roleName + '\'' +
+                '}';
+    }
+}
