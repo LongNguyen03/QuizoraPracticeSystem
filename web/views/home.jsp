@@ -1,243 +1,192 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="Model.Subject" %>
-<%@ page import="Model.SubjectCategory" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home - Quizora</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizora - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Hero Banner */
-        :root {
-            --hero-bg: #eafdff;
-            --hero-title: #222;
-            --hero-highlight: #222;
-            --hero-desc: #888;
-            --hero-btn-practice: #17a2b8;
-            --hero-btn-test: #6c757d;
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            margin-top: 56px; /* Add margin for fixed navbar */
         }
-        .hero-banner {
-            background: var(--hero-bg);
-            padding: 60px 0 40px 0;
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
         }
-        .hero-banner__row {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 32px;
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
         }
-        .hero-banner__content {
-            flex: 1 1 350px;
-            min-width: 280px;
+        .btn-hero {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
-        .hero-banner__image {
-            flex: 1 1 320px;
-            min-width: 220px;
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .features-section {
+            padding: 80px 0;
+        }
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .about-section {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
         }
-        .hero-banner__image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        .contact-section {
+            padding: 80px 0;
         }
-        .hero-banner__title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--hero-title);
-            margin-bottom: 0.5rem;
+        .contact-info {
+            text-align: center;
+            margin-bottom: 40px;
         }
-        .hero-banner__subtitle {
-            font-size: 1.1rem;
-            color: #444;
-            margin-bottom: 0.25rem;
+        .contact-info i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
         }
-        .hero-banner__highlight {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--hero-highlight);
-            margin-bottom: 1rem;
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
         }
-        .hero-banner__desc {
-            color: var(--hero-desc);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
+        .testimonials-section {
+            background: #f8f9fa;
+            padding: 80px 0;
         }
-        .hero-banner__actions {
-            display: flex;
-            gap: 18px;
-            margin-bottom: 1rem;
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
-        .hero-banner__btn {
-            border-radius: 20px;
-            font-weight: 600;
-            padding: 0.7rem 2.2rem;
-            font-size: 1.05rem;
-            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 8px rgba(23,162,184,0.07);
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 15px;
         }
-        .hero-banner__btn--practice {
-            background: var(--hero-btn-practice);
-            color: #fff;
-            border: none;
-        }
-        .hero-banner__btn--practice:hover {
-            background: #138496;
-            color: #fff;
-        }
-        .hero-banner__btn--test {
-            background: var(--hero-btn-test);
-            color: #fff;
-            border: none;
-        }
-        .hero-banner__btn--test:hover {
-            background: #495057;
-            color: #fff;
-        }
-        @media (max-width: 991.98px) {
-            .hero-banner__row { flex-direction: column; gap: 24px;}
-            .hero-banner__content, .hero-banner__image { min-width: 0;}
-            .hero-banner__title { font-size: 2rem;}
-            .hero-banner__highlight { font-size: 1.2rem;}
-        }
-        /* Card hiệu ứng */
-        .category-card, .subject-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .category-card:hover, .subject-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .category-icon {
-            font-size: 2.5rem;
-            color: #17a2b8;
-        }
-        .card-img-top {
-            border-radius: 12px 12px 0 0;
-            object-fit: cover;
-            height: 180px;
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <jsp:include page="layout/header.jsp" />
 
-    <!-- Header (Navbar) -->
-    <jsp:include page="/views/layout/header.jsp"/>
-
-    <!-- Hero / Banner -->
-    <section class="hero-banner mb-5">
+    <!-- Hero Section -->
+    <section class="hero-section">
         <div class="container">
-            <div class="hero-banner__row">
-                <div class="hero-banner__content">
-                    <h2 class="hero-banner__title">Welcome to Quizora</h2>
-                    <div class="hero-banner__subtitle">One destination for</div>
-                    <div class="hero-banner__highlight">Practice and study</div>
-                    <div class="hero-banner__desc">Learn • Practice • Improve • Take Exam • Succeed</div>
-                    <div class="hero-banner__actions">
-                        <a href="${pageContext.request.contextPath}/practice" class="hero-banner__btn hero-banner__btn--practice">Practice</a>
-                        <a href="${pageContext.request.contextPath}/quizzes" class="hero-banner__btn hero-banner__btn--test">Test</a>
-                    </div>
-                </div>
-                <div class="hero-banner__image">
-                    <img src="https://pplx-res.cloudinary.com/image/private/user_uploads/33222200/9706de0d-c372-4de7-989c-aef0aa39a14f/image.jpg"
-                         alt="Quizora illustration">
-                </div>
-            </div>
-            <!-- Search form -->
-            <form action="${pageContext.request.contextPath}/search" method="get" class="d-flex justify-content-center mt-4">
-                <input type="text" name="q" class="form-control w-50" placeholder="Search subjects, quizzes..." />
-                <button class="btn btn-primary ms-2" type="submit"><i class="bi bi-search"></i> Search</button>
-            </form>
+            <h1>Welcome to Quizora</h1>
+            <p>Your ultimate platform for learning and teaching through interactive quizzes</p>
+            <a href="${pageContext.request.contextPath}/views/register.jsp" class="btn btn-hero">Get Started</a>
         </div>
     </section>
 
-    <div class="container">
-
-        <!-- Browse by Category (4 mục đầu, nút View All) -->
-        <section class="browse-categories mb-5">
-            <h3 class="mb-4">Browse by Category</h3>
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2 class="text-center mb-5">Why Choose Quizora?</h2>
             <div class="row">
-                <c:forEach var="cat" items="${categories}" varStatus="loop">
-                    <c:if test="${loop.index < 4}">
-                        <div class="col-md-3 col-sm-6 mb-4">
-                            <div class="card category-card text-center shadow-sm p-3 h-100">
-                                <div class="category-icon mb-2"><i class="bi bi-bookmark-fill"></i></div>
-                                <h5 class="card-title mt-2">
-                                    <a href="${pageContext.request.contextPath}/subjects?cat=${cat.id}" 
-                                       class="text-decoration-none text-dark">
-                                        ${cat.name}
-                                    </a>
-                                </h5>
-                            </div>
-                        </div>
-                    </c:if>
-                </c:forEach>
-            </div>
-            <div class="text-center">
-                <a href="${pageContext.request.contextPath}/categories" class="btn btn-outline-primary">
-                    View All Categories
-                </a>
-            </div>
-        </section>
-
-        <!-- Latest Subjects (3 subject mới nhất, nút View All) -->
-        <section class="latest-subjects mb-5">
-            <h3 class="mb-4">Latest Subjects</h3>
-            <div class="row">
-                <%
-                    List<Subject> subjects = (List<Subject>) request.getAttribute("latestSubjects");
-                    int count = 0;
-                    if (subjects != null) {
-                        for (Subject s : subjects) {
-                            if (count >= 3) break;
-                %>
-                <div class="col-md-4 col-sm-6 mb-4">
-                    <div class="card subject-card h-100 shadow-sm">
-                        <%
-                            String thumb = s.getThumbnailUrl();
-                            if (thumb == null || thumb.isEmpty()) {
-                                thumb = "https://via.placeholder.com/350x150?text=No+Image";
-                            }
-                        %>
-                        <img src="<%= thumb %>" class="card-img-top" alt="Thumbnail for <%= s.getTitle() %>" />
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><%= s.getTitle() %></h5>
-                            <p class="text-muted small mb-2">Category: <%= s.getCategoryName() %></p>
-                            <p class="card-text mb-4"><%= s.getTagline() %></p>
-                            <a href="<%= request.getContextPath() %>/subject-detail?id=<%= s.getId() %>" 
-                               class="btn btn-primary mt-auto">View Details</a>
-                        </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap feature-icon"></i>
+                        <h3>For Students</h3>
+                        <p>Practice with interactive quizzes, track your progress, and improve your knowledge</p>
                     </div>
                 </div>
-                <%
-                            count++;
-                        }
-                    } else {
-                %>
-                <div class="col-12">
-                    <p class="text-muted">No subjects found.</p>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-chalkboard-teacher feature-icon"></i>
+                        <h3>For Teachers</h3>
+                        <p>Create engaging quizzes, monitor student performance, and provide instant feedback</p>
+                    </div>
                 </div>
-                <%
-                    }
-                %>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <h3>Analytics</h3>
+                        <p>Get detailed insights into learning progress and quiz performance</p>
+                    </div>
+                </div>
             </div>
-            <div class="text-center">
-                <a href="${pageContext.request.contextPath}/all-subjects" class="btn btn-outline-primary">
-                    View All Subjects
-                </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="mb-4">About Quizora</h2>
+                <p class="lead mb-4">
+                    Quizora is a comprehensive learning platform designed to make education more interactive and engaging. 
+                    Our mission is to help students learn better and teachers teach more effectively through the power of 
+                    interactive quizzes and real-time feedback.
+                </p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4>Our Mission</h4>
+                        <p>To revolutionize education through interactive learning</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Our Vision</h4>
+                        <p>To be the leading platform for interactive learning</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Our Values</h4>
+                        <p>Innovation, Quality, and User Experience</p>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- (Có thể thêm các phần khác như Featured Packages, Recent Quizzes, Testimonials nếu cần) -->
 
-    </div> <!-- end .container -->
 
-    <!-- Footer (nếu có) -->
-    <%-- <jsp:include page="/views/layout/footer.jsp"/> --%>
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="mb-4">Ready to Start Learning?</h2>
+            <p class="lead mb-4">Join thousands of students and teachers who are already using Quizora</p>
+            <a href="${pageContext.request.contextPath}/views/register.jsp" class="btn btn-hero">Get Started Now</a>
+        </div>
+    </section>
+
+    <jsp:include page="layout/footer.jsp" />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -3,32 +3,31 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/SubjectListController.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/LoginServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Subject.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Quiz.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AdminAuthorizationFilter.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/SubjectCategoryDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/home.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/subject/detail.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/LessonDAO.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/admin/dashboard.jsp</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/UserProfileDAO.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AuthenticationFilter.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/teacher/home.jsp</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/student/home.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/DBcontext.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/SubjectCategory.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/SubjectDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Account.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/HomeController.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/QuizQuestion.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/layout/header.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/QuizController.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/TeacherAuthorizationFilter.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/quizList.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/QuestionController.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/index.html</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ImageUrlServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/StudentAuthorizationFilter.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/RoleDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/UsersController.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/QuestionDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/QuizDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/subject/subject-list.jsp</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/AccountDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/Dashboard%20Marketing.jsp</file>
         </group>
     </open-files>
 </project-private>
