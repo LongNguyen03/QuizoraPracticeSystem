@@ -134,10 +134,11 @@
             </div>
         <% } %>
         
-        <% if (request.getAttribute("success") != null) { %>
+        <% if (session.getAttribute("success") != null) { %>
             <div class="alert alert-success" role="alert">
-                <%= request.getAttribute("success") %>
+                <%= session.getAttribute("success") %>
             </div>
+            <% session.removeAttribute("success"); %>
         <% } %>
 
         <form action="${pageContext.request.contextPath}/login" method="POST" id="loginForm">

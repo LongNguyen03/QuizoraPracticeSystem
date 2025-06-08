@@ -127,8 +127,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
         // Thành công, chuyển hướng sang login với thông báo thành công
-        request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
-        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+        request.getSession().setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 
     private boolean isPasswordStrong(String password) {
