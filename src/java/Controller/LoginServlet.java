@@ -2,12 +2,10 @@ package Controller;
 
 import DAO.AccountDAO;
 import Model.Account;
-import org.json.JSONObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
@@ -32,29 +30,22 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         // Nếu chưa đăng nhập, forward tới login.jsp
-        request.getRequestDispatcher(request.getContextPath() + "/views/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Thiết lập response JSON
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        JSONObject jsonResponse = new JSONObject();
-
         try {
-            // Lấy email & password từ form (hoặc AJAX)
+            // Lấy email & password từ form
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
             // Validate cơ bản
             if (email == null || email.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Email và mật khẩu không được để trống.");
-                out.print(jsonResponse.toString());
+                request.setAttribute("error", "Email và mật khẩu không được để trống.");
+                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
                 return;
             }
 
@@ -70,35 +61,25 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("Login successful for user: " + acc.getEmail());
                 System.out.println("Role from database: " + acc.getRoleName());
 
-                // Trả JSON success kèm role và redirect URL
-                jsonResponse.put("success", true);
-                jsonResponse.put("role", acc.getRoleName());
-                
-                // Thêm redirect URL dựa vào role
-                String redirectUrl;
+                // Chuyển hướng dựa vào role
                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
-                    redirectUrl = request.getContextPath() + "/admin/dashboard.jsp";
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
                 } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
-                    redirectUrl = request.getContextPath() + "/teacher/home.jsp";
+                    response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
                 } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
-                    redirectUrl = request.getContextPath() + "/student/home.jsp";
+                    response.sendRedirect(request.getContextPath() + "/student/home.jsp");
                 } else {
-                    redirectUrl = request.getContextPath() + "/views/home.jsp";
+                    response.sendRedirect(request.getContextPath() + "/views/home.jsp");
                 }
-                System.out.println("Redirect URL: " + redirectUrl);
-                jsonResponse.put("redirectUrl", redirectUrl);
             } else {
                 // Đăng nhập thất bại
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Email hoặc mật khẩu không đúng.");
+                request.setAttribute("error", "Email hoặc mật khẩu không đúng.");
+                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            jsonResponse.put("success", false);
-            jsonResponse.put("message", "Lỗi hệ thống: " + e.getMessage());
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
-
-        out.print(jsonResponse.toString());
-        out.flush();
     }
 }

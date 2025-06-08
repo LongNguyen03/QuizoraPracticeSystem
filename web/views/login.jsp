@@ -133,6 +133,13 @@
                 <%= request.getAttribute("error") %>
             </div>
         <% } %>
+        
+        <% if (session.getAttribute("success") != null) { %>
+            <div class="alert alert-success" role="alert">
+                <%= session.getAttribute("success") %>
+            </div>
+            <% session.removeAttribute("success"); %>
+        <% } %>
 
         <form action="${pageContext.request.contextPath}/login" method="POST" id="loginForm">
             <div class="form-group">
@@ -171,49 +178,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            fetch('${pageContext.request.contextPath}/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'email=' + encodeURIComponent(email) + 
-                      '&password=' + encodeURIComponent(password)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success';
-                    alertDiv.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
-                    document.querySelector('.login-container').insertBefore(
-                        alertDiv, 
-                        document.getElementById('loginForm')
-                    );
-                    // Chuyển hướng sau 1 giây
-                    setTimeout(() => {
-                        window.location.href = data.redirectUrl;
-                    }, 1000);
-                } else {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger';
-                    alertDiv.textContent = data.message;
-                    document.querySelector('.login-container').insertBefore(
-                        alertDiv, 
-                        document.getElementById('loginForm')
-                    );
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
 </body>
 </html>

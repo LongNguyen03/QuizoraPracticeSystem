@@ -9,6 +9,7 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AdminAuthorizationFilter.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/register.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/admin/dashboard.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/UserProfileDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AuthenticationFilter.java</file>
@@ -20,7 +21,6 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/layout/header.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/QuizController.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/TeacherAuthorizationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/quizList.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/index.html</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/StudentAuthorizationFilter.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/RoleDAO.java</file>

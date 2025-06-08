@@ -6,12 +6,12 @@ import Model.UserProfile;
 import DAO.AccountDAO;
 import DAO.RoleDAO;
 import DAO.UserProfileDAO;
-import org.json.JSONObject;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -26,146 +26,145 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Lấy thông tin từ form
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
+        String roleName = request.getParameter("role");
+        String firstName = request.getParameter("firstName");
+        String middleName = request.getParameter("middleName");
+        String lastName = request.getParameter("lastName");
+        String gender = request.getParameter("gender");
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        JSONObject jsonResponse = new JSONObject();
+        // Kiểm tra dữ liệu đầu vào
+        if (email == null || email.trim().isEmpty()) {
+            request.setAttribute("error", "Email không được để trống.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            request.setAttribute("error", "Email không đúng định dạng.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (password == null || password.trim().isEmpty()) {
+            request.setAttribute("error", "Mật khẩu không được để trống.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng xác nhận mật khẩu.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (!password.equals(confirmPassword)) {
+            request.setAttribute("error", "Mật khẩu xác nhận không khớp.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (!isPasswordStrong(password)) {
+            request.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (roleName == null || roleName.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng chọn vai trò.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (firstName == null || firstName.trim().isEmpty()) {
+            request.setAttribute("error", "Họ không được để trống.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (lastName == null || lastName.trim().isEmpty()) {
+            request.setAttribute("error", "Tên không được để trống.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (gender == null || gender.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng chọn giới tính.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        if (accountDAO.isEmailExists(email)) {
+            request.setAttribute("error", "Email đã tồn tại. Vui lòng chọn email khác.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        String formattedRoleName = roleName.equals("student") ? "Student" : "Teacher";
+        Role role = roleDAO.getRoleByName(formattedRoleName);
+        if (role == null) {
+            request.setAttribute("error", "Role không hợp lệ. Vui lòng chọn Student hoặc Teacher.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        // Tạo Account mới
+        Account acc = new Account();
+        acc.setEmail(email);
+        acc.setPasswordHash(password); // Sẽ hash trong DAO
+        acc.setRoleId(role.getId());
+        acc.setStatus("active");
+        if (!accountDAO.register(acc)) {
+            request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại sau.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        // Tạo UserProfile
+        UserProfile profile = new UserProfile();
+        profile.setAccountId(acc.getId());
+        profile.setFirstName(firstName);
+        profile.setMiddleName(middleName);
+        profile.setLastName(lastName);
+        profile.setGender(gender);
+        profile.setMobile(null);
+        profile.setDateOfBirth(null);
+        profile.setAvatarUrl("default-avatar.png");
+        if (!userProfileDAO.insertUserProfile(profile)) {
+            accountDAO.deleteAccount(acc.getId());
+            request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại sau.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
+        // Thành công, chuyển hướng sang login với thông báo thành công
+        request.getSession().setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+        response.sendRedirect(request.getContextPath() + "/login");
+    }
 
-        try {
-            // Lấy thông tin từ form
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
-            String roleName = request.getParameter("role");
-            String firstName = request.getParameter("firstName");
-            String middleName = request.getParameter("middleName");
-            String lastName = request.getParameter("lastName");
-            String gender = request.getParameter("gender");
-            String mobile = request.getParameter("mobile");
-            String dateOfBirthStr = request.getParameter("dateOfBirth");
-
-            // Debug log
-            System.out.println("Received parameters:");
-            System.out.println("Email: " + email);
-            System.out.println("Password: " + password);
-            System.out.println("Role: " + roleName);
-            System.out.println("First Name: " + firstName);
-            System.out.println("Middle Name: " + middleName);
-            System.out.println("Last Name: " + lastName);
-            System.out.println("Gender: " + gender);
-
-            // Kiểm tra dữ liệu đầu vào
-            if (email == null || email.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Email không được để trống.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-            if (password == null || password.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Mật khẩu không được để trống.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-            if (roleName == null || roleName.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Vui lòng chọn vai trò.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-            if (firstName == null || firstName.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Họ không được để trống.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-            if (lastName == null || lastName.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Tên không được để trống.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-            if (gender == null || gender.trim().isEmpty()) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Vui lòng chọn giới tính.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-
-            // Kiểm tra email đã tồn tại chưa
-            if (accountDAO.isEmailExists(email)) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Email đã tồn tại. Vui lòng chọn email khác.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-
-            // Lấy role từ tên
-            String formattedRoleName = roleName.equals("student") ? "Student" : "Teacher";
-            System.out.println("Formatted role name: " + formattedRoleName);
-            Role role = roleDAO.getRoleByName(formattedRoleName);
-            System.out.println("Found role: " + (role != null ? role.getName() : "null"));
-            if (role == null) {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Role không hợp lệ. Vui lòng chọn Student hoặc Teacher.");
-                out.print(jsonResponse.toString());
-                return;
-            }
-
-            // 3. Tạo Account mới
-            Account acc = new Account();
-            acc.setEmail(email);
-            acc.setPasswordHash(password);
-            acc.setRoleId(role.getId());
-            acc.setStatus("active");
-            System.out.println("Creating new account with email: " + email + ", roleId: " + role.getId());
-            
-            if (!accountDAO.register(acc)) {
-                System.out.println("Failed to register account");
-                request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại.");
-                request.getRequestDispatcher("views/register.jsp").forward(request, response);
-                return;
-            }
-            System.out.println("Account registered successfully with ID: " + acc.getId());
-
-            // 4. Tạo UserProfile
-            UserProfile profile = new UserProfile();
-            profile.setAccountId(acc.getId());
-            profile.setFirstName(firstName);
-            profile.setMiddleName(middleName);
-            profile.setLastName(lastName);
-            profile.setGender(gender);
-            profile.setMobile(null);
-            profile.setDateOfBirth(null);
-            profile.setAvatarUrl("default-avatar.png");
-            System.out.println("Creating user profile for accountId: " + acc.getId());
-            
-            if (!userProfileDAO.insertUserProfile(profile)) {
-                System.out.println("Failed to create user profile");
-                request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại.");
-                request.getRequestDispatcher("views/register.jsp").forward(request, response);
-                return;
-            }
-            System.out.println("User profile created successfully");
-
-            jsonResponse.put("success", true);
-            jsonResponse.put("message", "Đăng ký thành công.");
-            jsonResponse.put("redirectUrl", request.getContextPath() + "/views/login.jsp");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            jsonResponse.put("success", false);
-            jsonResponse.put("message", "Lỗi hệ thống: " + e.getMessage());
+    private boolean isPasswordStrong(String password) {
+        // Kiểm tra độ dài tối thiểu
+        if (password.length() < 8) {
+            return false;
         }
 
-        out.print(jsonResponse.toString());
-        out.flush();
+        // Kiểm tra có chữ hoa
+        boolean hasUpperCase = false;
+        // Kiểm tra có chữ thường
+        boolean hasLowerCase = false;
+        // Kiểm tra có số
+        boolean hasNumber = false;
+        // Kiểm tra có ký tự đặc biệt
+        boolean hasSpecialChar = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpperCase = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLowerCase = true;
+            } else if (Character.isDigit(c)) {
+                hasNumber = true;
+            } else if ("!@#$%^&*(),.?\":{}|<>".indexOf(c) != -1) {
+                hasSpecialChar = true;
+            }
+        }
+
+        return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Chuyển hướng về trang đăng ký
-        request.getRequestDispatcher(request.getContextPath() + "/views/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/register.jsp").forward(request, response);
     }
 }

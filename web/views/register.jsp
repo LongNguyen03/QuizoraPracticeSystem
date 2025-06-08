@@ -267,135 +267,116 @@
             });
         });
 
-        // Hàm hiển thị alert-danger chung
-        function showError(message) {
-            const existingError = document.querySelector('.alert-danger');
-            if (existingError) {
-                existingError.remove();
-            }
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'alert alert-danger alert-dismissible fade show';
-            errorMessage.innerHTML = `
-                <i class="fas fa-exclamation-circle me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            const formElement = document.getElementById('registerForm');
-            formElement.parentNode.insertBefore(errorMessage, formElement);
-        }
-
-        // Xử lý submit form
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const form = this;
-
-            // 1. Kiểm tra validity toàn bộ form (required, type, v.v.)
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            // 2. Lấy giá trị để kiểm tra bổ sung (custom)
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-
-            // Kiểm tra định dạng email
+        // Validation real-time cho email
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value.trim();
             if (!emailRegex.test(email)) {
-                emailInput.setCustomValidity('Email không đúng định dạng. Vui lòng nhập email hợp lệ.');
-                emailInput.reportValidity();
-                return;
-            } else {
-                emailInput.setCustomValidity('');
-            }
-
-            // Kiểm tra confirm password
-            if (password !== confirmPassword) {
-                confirmPasswordInput.setCustomValidity('Mật khẩu xác nhận không khớp.');
-                confirmPasswordInput.reportValidity();
-                return;
-            } else {
-                confirmPasswordInput.setCustomValidity('');
-            }
-
-            // 3. Nếu qua hết validation, submit bằng fetch
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => data[key] = value);
-
-            fetch('${pageContext.request.contextPath}/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(resData => {
-                if (resData.success) {
-                    // Reset form và thông báo thành công
-                    form.reset();
-                    // Reset role selection về student
-                    document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('selected'));
-                    document.querySelector('.role-option[data-role="student"]').classList.add('selected');
-                    document.getElementById('selectedRole').value = 'student';
-
-                    const successMessage = document.createElement('div');
-                    successMessage.className = 'alert alert-success alert-dismissible fade show';
-                    successMessage.innerHTML = `
-                        <i class="fas fa-check-circle me-2"></i>
-                        ${resData.message || 'Đăng ký thành công!'}
-                        <div class="mt-2">
-                            Chuyển hướng đến trang đăng nhập sau <span id="countdown">2</span> giây...
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
-                    form.parentNode.insertBefore(successMessage, form);
-
-                    // Countdown 2 giây rồi chuyển hướng
-                    let count = 2;
-                    const countdownElement = document.getElementById('countdown');
-                    const interval = setInterval(() => {
-                        count--;
-                        countdownElement.textContent = count;
-                        if (count <= 0) {
-                            clearInterval(interval);
-                            window.location.href = resData.redirectUrl || '${pageContext.request.contextPath}/login';
-                        }
-                    }, 1000);
-                } else {
-                    showError(resData.message || 'Đăng ký thất bại. Vui lòng thử lại.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Có lỗi xảy ra. Vui lòng thử lại sau.');
-            });
-        });
-
-        // Validation real-time cho password
-        document.getElementById('password').addEventListener('input', function () {
-            const pwd = this.value;
-            const hasUpperCase = /[A-Z]/.test(pwd);
-            const hasLowerCase = /[a-z]/.test(pwd);
-            const hasNumber = /\d/.test(pwd);
-            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
-            const isLongEnough = pwd.length >= 8;
-
-            if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar || !isLongEnough) {
-                this.setCustomValidity('Mật khẩu phải ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.');
+                this.setCustomValidity('Vui lòng nhập email hợp lệ (ví dụ: example@domain.com)');
             } else {
                 this.setCustomValidity('');
             }
+        });
+
+        // Validation real-time cho tên
+        document.getElementById('firstName').addEventListener('input', function() {
+            const name = this.value.trim();
+            if (name.length < 2) {
+                this.setCustomValidity('Tên phải có ít nhất 2 ký tự');
+            } else if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(name)) {
+                this.setCustomValidity('Tên chỉ được chứa chữ cái và khoảng trắng');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('lastName').addEventListener('input', function() {
+            const name = this.value.trim();
+            if (name.length < 2) {
+                this.setCustomValidity('Họ phải có ít nhất 2 ký tự');
+            } else if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(name)) {
+                this.setCustomValidity('Họ chỉ được chứa chữ cái và khoảng trắng');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Lấy các giá trị
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Kiểm tra độ mạnh của mật khẩu
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const isLongEnough = password.length >= 8;
+            
+            // Kiểm tra và hiển thị lỗi
+            let errorMessage = '';
+            if (!isLongEnough) {
+                errorMessage += 'Mật khẩu phải có ít nhất 8 ký tự.\n';
+            }
+            if (!hasUpperCase) {
+                errorMessage += 'Mật khẩu phải có ít nhất 1 chữ hoa.\n';
+            }
+            if (!hasLowerCase) {
+                errorMessage += 'Mật khẩu phải có ít nhất 1 chữ thường.\n';
+            }
+            if (!hasNumber) {
+                errorMessage += 'Mật khẩu phải có ít nhất 1 số.\n';
+            }
+            if (!hasSpecialChar) {
+                errorMessage += 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt.\n';
+            }
+            
+            // Kiểm tra xác nhận mật khẩu
+            if (password !== confirmPassword) {
+                errorMessage += 'Mật khẩu xác nhận không khớp.\n';
+            }
+            
+            // Nếu có lỗi, hiển thị và dừng submit
+            if (errorMessage) {
+                alert(errorMessage);
+                return;
+            }
+            
+            // Nếu không có lỗi, submit form
+            this.submit();
+        });
+        
+        // Thêm sự kiện để hiển thị/ẩn yêu cầu mật khẩu khi focus/blur
+        const passwordInput = document.getElementById('password');
+        const requirements = document.querySelector('.password-requirements');
+        
+        passwordInput.addEventListener('focus', function() {
+            requirements.style.display = 'block';
+        });
+        
+        passwordInput.addEventListener('blur', function() {
+            requirements.style.display = 'none';
+        });
+        
+        // Thêm sự kiện để kiểm tra mật khẩu realtime
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const isLongEnough = password.length >= 8;
+            
+            // Cập nhật màu sắc của các yêu cầu
+            const requirements = document.querySelector('.password-requirements');
+            requirements.innerHTML = `
+                <div style="color: ${isLongEnough ? 'green' : 'red'}">• Độ dài tối thiểu 8 ký tự</div>
+                <div style="color: ${hasUpperCase ? 'green' : 'red'}">• Ít nhất 1 chữ hoa</div>
+                <div style="color: ${hasLowerCase ? 'green' : 'red'}">• Ít nhất 1 chữ thường</div>
+                <div style="color: ${hasNumber ? 'green' : 'red'}">• Ít nhất 1 số</div>
+                <div style="color: ${hasSpecialChar ? 'green' : 'red'}">• Ít nhất 1 ký tự đặc biệt</div>
+            `;
         });
     </script>
 </body>
