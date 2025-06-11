@@ -157,94 +157,110 @@
                        name="email"
                        placeholder="Email address"
                        required>
+                <button type="button" class="btn btn-outline-primary mt-2" id="sendOTP">Gửi mã xác thực</button>
+                <div id="otpStatus" class="text-muted mt-1" style="display: none;"></div>
             </div>
             
-            <div class="form-group">
+            <div class="form-group" id="otpGroup" style="display: none;">
                 <input type="text"
                        class="form-control"
-                       id="firstName"
-                       name="firstName"
-                       placeholder="First Name"
+                       id="otp"
+                       name="otp"
+                       placeholder="Nhập mã xác thực"
                        required>
+                <div class="text-muted mt-1">Mã xác thực sẽ hết hạn sau 5 phút</div>
+                <button type="button" class="btn btn-link p-0 mt-1" id="resendOTP" style="display: none;">Gửi lại mã</button>
+                <button type="button" class="btn btn-primary mt-2" id="verifyOTP">Xác thực</button>
             </div>
             
-            <div class="form-group">
-                <input type="text"
-                       class="form-control"
-                       id="middleName"
-                       name="middleName"
-                       placeholder="Middle Name">
-            </div>
-            
-            <div class="form-group">
-                <input type="text"
-                       class="form-control"
-                       id="lastName"
-                       name="lastName"
-                       placeholder="Last Name"
-                       required>
-            </div>
-            
-            <div class="form-group">
-                <select class="form-control"
-                        id="gender"
-                        name="gender"
-                        required>
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <input type="password"
-                       class="form-control"
-                       id="password"
-                       name="password"
-                       placeholder="Password"
-                       required>
-                <div class="password-requirements">
-                    Password must be at least 8 characters long and include uppercase, lowercase, number and special character
+            <div id="registrationFields" style="display: none;">
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           id="firstName"
+                           name="firstName"
+                           placeholder="First Name"
+                           required>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <input type="password"
-                       class="form-control"
-                       id="confirmPassword"
-                       name="confirmPassword"
-                       placeholder="Confirm password"
-                       required>
-            </div>
-
-            <div class="role-select">
-                <label>I want to join as:</label>
-                <div class="role-options">
-                    <div class="role-option selected" data-role="student">
-                        <i class="fas fa-user-graduate"></i>
-                        <p>Student</p>
-                    </div>
-                    <div class="role-option" data-role="teacher">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <p>Teacher</p>
+                
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           id="middleName"
+                           name="middleName"
+                           placeholder="Middle Name">
+                </div>
+                
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           id="lastName"
+                           name="lastName"
+                           placeholder="Last Name"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <select class="form-control"
+                            id="gender"
+                            name="gender"
+                            required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder="Password"
+                           required>
+                    <div class="password-requirements">
+                        Password must be at least 8 characters long and include uppercase, lowercase, number and special character
                     </div>
                 </div>
-                <input type="hidden" name="role" id="selectedRole" value="student">
-            </div>
+                
+                <div class="form-group">
+                    <input type="password"
+                           class="form-control"
+                           id="confirmPassword"
+                           name="confirmPassword"
+                           placeholder="Confirm password"
+                           required>
+                </div>
 
-            <div class="form-group form-check">
-                <input type="checkbox"
-                       class="form-check-input"
-                       id="terms"
-                       name="terms"
-                       required>
-                <label class="form-check-label" for="terms">
-                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-                </label>
-            </div>
+                <div class="role-select">
+                    <label>I want to join as:</label>
+                    <div class="role-options">
+                        <div class="role-option selected" data-role="student">
+                            <i class="fas fa-user-graduate"></i>
+                            <p>Student</p>
+                        </div>
+                        <div class="role-option" data-role="teacher">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <p>Teacher</p>
+                        </div>
+                    </div>
+                    <input type="hidden" name="role" id="selectedRole" value="student">
+                </div>
 
-            <button type="submit" class="btn btn-register">Create Account</button>
+                <div class="form-group form-check">
+                    <input type="checkbox"
+                           class="form-check-input"
+                           id="terms"
+                           name="terms"
+                           required>
+                    <label class="form-check-label" for="terms">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-register">Create Account</button>
+            </div>
         </form>
 
         <div class="login-link">
@@ -303,7 +319,14 @@
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Lấy các giá trị
+            // Kiểm tra OTP
+            const otpInput = document.getElementById('otp');
+            if (otpInput.style.display !== 'none' && !otpInput.value) {
+                alert('Vui lòng nhập mã xác thực');
+                return;
+            }
+            
+            // Kiểm tra mật khẩu
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
@@ -377,6 +400,113 @@
                 <div style="color: ${hasNumber ? 'green' : 'red'}">• Ít nhất 1 số</div>
                 <div style="color: ${hasSpecialChar ? 'green' : 'red'}">• Ít nhất 1 ký tự đặc biệt</div>
             `;
+        });
+
+        // Xử lý gửi OTP
+        document.getElementById('sendOTP').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            if (!email || !emailRegex.test(email)) {
+                alert('Vui lòng nhập email hợp lệ');
+                return;
+            }
+            
+            // Disable nút gửi OTP
+            this.disabled = true;
+            this.textContent = 'Đang gửi...';
+            
+            // Gửi request để lấy OTP
+            fetch('${pageContext.request.contextPath}/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'email=' + encodeURIComponent(email)
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    document.getElementById('otpGroup').style.display = 'block';
+                    document.getElementById('otpStatus').textContent = 'OTP đã được gửi đến email của bạn';
+                    document.getElementById('otpStatus').style.display = 'block';
+                    document.getElementById('otpStatus').className = 'text-success mt-1';
+                    
+                    // Đếm ngược 5 phút
+                    let timeLeft = 300;
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            document.getElementById('sendOTP').disabled = false;
+                            document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                            document.getElementById('otpGroup').style.display = 'none';
+                            document.getElementById('otpStatus').style.display = 'none';
+                            document.getElementById('resendOTP').style.display = 'block';
+                        } else {
+                            const minutes = Math.floor(timeLeft / 60);
+                            const seconds = timeLeft % 60;
+                            document.getElementById('otpStatus').textContent = 
+                                `Mã xác thực còn hiệu lực trong ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        }
+                    }, 1000);
+                } else {
+                    document.getElementById('otpStatus').textContent = data;
+                    document.getElementById('otpStatus').style.display = 'block';
+                    document.getElementById('otpStatus').className = 'text-danger mt-1';
+                    document.getElementById('sendOTP').disabled = false;
+                    document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('otpStatus').textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                document.getElementById('otpStatus').style.display = 'block';
+                document.getElementById('otpStatus').className = 'text-danger mt-1';
+                document.getElementById('sendOTP').disabled = false;
+                document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+            });
+        });
+
+        // Xử lý gửi lại OTP
+        document.getElementById('resendOTP').addEventListener('click', function() {
+            document.getElementById('sendOTP').click();
+            this.style.display = 'none';
+        });
+
+        // Thêm hàm xác thực OTP
+        document.getElementById('verifyOTP').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+            
+            if (!otp) {
+                alert('Vui lòng nhập mã xác thực');
+                return;
+            }
+            
+            // Gửi request kiểm tra OTP
+            fetch('${pageContext.request.contextPath}/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'email=' + encodeURIComponent(email) + '&otp=' + encodeURIComponent(otp)
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    // Hiển thị các trường đăng ký
+                    document.getElementById('registrationFields').style.display = 'block';
+                    document.getElementById('otpGroup').style.display = 'none';
+                    document.getElementById('otpStatus').textContent = 'Email đã được xác thực';
+                    document.getElementById('otpStatus').className = 'text-success mt-1';
+                    document.getElementById('otpStatus').style.display = 'block';
+                } else {
+                    alert(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            });
         });
     </script>
 </body>
