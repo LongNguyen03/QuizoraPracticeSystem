@@ -60,6 +60,34 @@ public class UserProfileDAO extends DBcontext {
         return null;
     }
 
+    // Lấy profile kèm thông tin account
+    public UserProfile getProfileWithAccount(int accountId) {
+        String sql = "SELECT up.*, a.email, a.status, r.name as roleName " +
+                     "FROM UserProfiles up " +
+                     "JOIN Accounts a ON up.accountId = a.id " +
+                     "JOIN Roles r ON a.roleId = r.id " +
+                     "WHERE up.accountId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new UserProfile(
+                    rs.getInt("accountId"),
+                    rs.getString("firstName"),
+                    rs.getString("middleName"),
+                    rs.getString("lastName"),
+                    rs.getString("gender"),
+                    rs.getString("mobile"),
+                    rs.getDate("dateOfBirth"),
+                    rs.getString("avatarUrl")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Cập nhật thông tin profile
     public boolean updateUserProfile(UserProfile profile) {
         String sql = "UPDATE UserProfiles SET firstName = ?, middleName = ?, lastName = ?, gender = ?, mobile = ?, dateOfBirth = ?, avatarUrl = ? " +
@@ -70,7 +98,11 @@ public class UserProfileDAO extends DBcontext {
             ps.setString(3, profile.getLastName());
             ps.setString(4, profile.getGender());
             ps.setString(5, profile.getMobile());
-            ps.setDate(6, new java.sql.Date(profile.getDateOfBirth().getTime()));
+            if (profile.getDateOfBirth() != null) {
+                ps.setDate(6, new java.sql.Date(profile.getDateOfBirth().getTime()));
+            } else {
+                ps.setNull(6, java.sql.Types.DATE);
+            }
             ps.setString(7, profile.getAvatarUrl());
             ps.setInt(8, profile.getAccountId());
             int affected = ps.executeUpdate();
@@ -79,6 +111,50 @@ public class UserProfileDAO extends DBcontext {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Cập nhật avatar
+    public boolean updateAvatar(int accountId, String avatarUrl) {
+        String sql = "UPDATE UserProfiles SET avatarUrl = ? WHERE accountId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, avatarUrl);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Tìm kiếm profile theo tên hoặc email
+    public List<UserProfile> searchProfiles(String keyword) {
+        List<UserProfile> list = new ArrayList<>();
+        String sql = "SELECT up.* FROM UserProfiles up " +
+                     "JOIN Accounts a ON up.accountId = a.id " +
+                     "WHERE up.firstName LIKE ? OR up.middleName LIKE ? OR up.lastName LIKE ? OR a.email LIKE ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            String searchPattern = "%" + keyword + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            ps.setString(4, searchPattern);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new UserProfile(
+                    rs.getInt("accountId"),
+                    rs.getString("firstName"),
+                    rs.getString("middleName"),
+                    rs.getString("lastName"),
+                    rs.getString("gender"),
+                    rs.getString("mobile"),
+                    rs.getDate("dateOfBirth"),
+                    rs.getString("avatarUrl")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     // Xóa profile (thường ít dùng, vì xóa tài khoản thì xóa cascade profile)
