@@ -7,6 +7,7 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/DBcontext.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/VerifyOTPServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/register.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/SendOTPServlet.java</file>
