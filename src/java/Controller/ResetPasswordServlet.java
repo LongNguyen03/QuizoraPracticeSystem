@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import Model.Account;
 import DAO.AccountDAO;
 import Utils.PasswordUtil;
+import Utils.OTPUtil;
 
 @WebServlet(name = "ResetPasswordServlet", urlPatterns = {"/reset-password"})
 public class ResetPasswordServlet extends HttpServlet {
@@ -30,15 +31,7 @@ public class ResetPasswordServlet extends HttpServlet {
         }
 
         HttpSession session = request.getSession();
-        String storedOTP = (String) session.getAttribute("resetOTP");
         String storedEmail = (String) session.getAttribute("resetEmail");
-        Long otpTime = (Long) session.getAttribute("resetOTPTime");
-
-        // Kiểm tra OTP
-        if (storedOTP == null || storedEmail == null || otpTime == null) {
-            response.getWriter().write("Phiên đặt lại mật khẩu đã hết hạn");
-            return;
-        }
 
         // Kiểm tra email có khớp không
         if (!email.equals(storedEmail)) {
@@ -46,15 +39,9 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Kiểm tra OTP có hết hạn chưa (5 phút)
-        if (System.currentTimeMillis() - otpTime > 5 * 60 * 1000) {
-            response.getWriter().write("Mã xác thực đã hết hạn");
-            return;
-        }
-
-        // Kiểm tra OTP có đúng không
-        if (!otp.equals(storedOTP)) {
-            response.getWriter().write("Mã xác thực không đúng");
+        // Kiểm tra OTP
+        if (!OTPUtil.validateOTP(email, otp)) {
+            response.getWriter().write("Mã xác thực không đúng hoặc đã hết hạn");
             return;
         }
 
@@ -70,10 +57,8 @@ public class ResetPasswordServlet extends HttpServlet {
         if (account != null) {
             account.setPasswordHash(PasswordUtil.hashPassword(newPassword));
             if (accountDAO.updateAccount(account)) {
-                // Xóa các thông tin OTP trong session
-                session.removeAttribute("resetOTP");
+                // Xóa thông tin trong session
                 session.removeAttribute("resetEmail");
-                session.removeAttribute("resetOTPTime");
                 response.getWriter().write("success");
             } else {
                 response.getWriter().write("Không thể cập nhật mật khẩu. Vui lòng thử lại sau.");
