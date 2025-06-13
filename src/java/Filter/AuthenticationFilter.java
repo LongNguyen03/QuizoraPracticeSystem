@@ -9,7 +9,7 @@ public class AuthenticationFilter implements Filter {
         "/login.jsp", "/login", "/register.jsp", "/register",
         "/views/login.jsp", "/views/register.jsp", "/views/home.jsp",
         "/css/", "/js/", "/images/", "/index.jsp",
-        "/student/", "/teacher/", "/admin/", "/send-otp"
+        "/student/", "/teacher/", "/admin/", "/send-otp", "/verify-otp"
     };
 
     @Override

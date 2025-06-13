@@ -39,27 +39,10 @@ public class RegisterServlet extends HttpServlet {
 
         // Kiểm tra OTP
         HttpSession session = request.getSession();
-        String storedOTP = (String) session.getAttribute("otp");
-        String storedEmail = (String) session.getAttribute("otpEmail");
-        Long otpTime = (Long) session.getAttribute("otpTime");
         Boolean emailVerified = (Boolean) session.getAttribute("emailVerified");
 
         if (emailVerified == null || !emailVerified) {
             request.setAttribute("error", "Vui lòng xác thực email trước.");
-            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
-            return;
-        }
-
-        // Kiểm tra OTP hết hạn (5 phút)
-        if (System.currentTimeMillis() - otpTime > 5 * 60 * 1000) {
-            request.setAttribute("error", "Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.");
-            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
-            return;
-        }
-
-        // Kiểm tra email và OTP
-        if (!email.equals(storedEmail) || !otp.equals(storedOTP)) {
-            request.setAttribute("error", "Mã OTP không đúng hoặc email không khớp.");
             request.getRequestDispatcher("/views/register.jsp").forward(request, response);
             return;
         }
@@ -154,12 +137,6 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher("/views/register.jsp").forward(request, response);
             return;
         }
-        // Xóa OTP khỏi session
-        session.removeAttribute("otp");
-        session.removeAttribute("otpEmail");
-        session.removeAttribute("otpTime");
-        // Xóa trạng thái xác thực email sau khi đăng ký thành công
-        session.removeAttribute("emailVerified");
         // Thành công, chuyển hướng sang login với thông báo thành công
         request.getSession().setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
         response.sendRedirect(request.getContextPath() + "/login");

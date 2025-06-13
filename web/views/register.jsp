@@ -169,97 +169,98 @@
                        placeholder="Nhập mã xác thực"
                        required>
                 <div class="text-muted mt-1">Mã xác thực sẽ hết hạn sau 5 phút</div>
+                <div id="otpError" class="text-danger mt-1" style="display: none;"></div>
                 <button type="button" class="btn btn-link p-0 mt-1" id="resendOTP" style="display: none;">Gửi lại mã</button>
                 <button type="button" class="btn btn-primary mt-2" id="verifyOTP">Xác thực</button>
             </div>
             
             <div id="registrationFields" style="display: none;">
-                <div class="form-group">
-                    <input type="text"
-                           class="form-control"
-                           id="firstName"
-                           name="firstName"
-                           placeholder="First Name"
-                           required>
+            <div class="form-group">
+                <input type="text"
+                       class="form-control"
+                       id="firstName"
+                       name="firstName"
+                       placeholder="First Name"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <input type="text"
+                       class="form-control"
+                       id="middleName"
+                       name="middleName"
+                       placeholder="Middle Name">
+            </div>
+            
+            <div class="form-group">
+                <input type="text"
+                       class="form-control"
+                       id="lastName"
+                       name="lastName"
+                       placeholder="Last Name"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <select class="form-control"
+                        id="gender"
+                        name="gender"
+                        required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <input type="password"
+                       class="form-control"
+                       id="password"
+                       name="password"
+                       placeholder="Password"
+                       required>
+                <div class="password-requirements">
+                    Password must be at least 8 characters long and include uppercase, lowercase, number and special character
                 </div>
-                
-                <div class="form-group">
-                    <input type="text"
-                           class="form-control"
-                           id="middleName"
-                           name="middleName"
-                           placeholder="Middle Name">
-                </div>
-                
-                <div class="form-group">
-                    <input type="text"
-                           class="form-control"
-                           id="lastName"
-                           name="lastName"
-                           placeholder="Last Name"
-                           required>
-                </div>
-                
-                <div class="form-group">
-                    <select class="form-control"
-                            id="gender"
-                            name="gender"
-                            required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <input type="password"
-                           class="form-control"
-                           id="password"
-                           name="password"
-                           placeholder="Password"
-                           required>
-                    <div class="password-requirements">
-                        Password must be at least 8 characters long and include uppercase, lowercase, number and special character
+            </div>
+            
+            <div class="form-group">
+                <input type="password"
+                       class="form-control"
+                       id="confirmPassword"
+                       name="confirmPassword"
+                       placeholder="Confirm password"
+                       required>
+            </div>
+
+            <div class="role-select">
+                <label>I want to join as:</label>
+                <div class="role-options">
+                    <div class="role-option selected" data-role="student">
+                        <i class="fas fa-user-graduate"></i>
+                        <p>Student</p>
+                    </div>
+                    <div class="role-option" data-role="teacher">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <p>Teacher</p>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <input type="password"
-                           class="form-control"
-                           id="confirmPassword"
-                           name="confirmPassword"
-                           placeholder="Confirm password"
-                           required>
-                </div>
+                <input type="hidden" name="role" id="selectedRole" value="student">
+            </div>
 
-                <div class="role-select">
-                    <label>I want to join as:</label>
-                    <div class="role-options">
-                        <div class="role-option selected" data-role="student">
-                            <i class="fas fa-user-graduate"></i>
-                            <p>Student</p>
-                        </div>
-                        <div class="role-option" data-role="teacher">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <p>Teacher</p>
-                        </div>
-                    </div>
-                    <input type="hidden" name="role" id="selectedRole" value="student">
-                </div>
+            <div class="form-group form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="terms"
+                       name="terms"
+                       required>
+                <label class="form-check-label" for="terms">
+                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+            </div>
 
-                <div class="form-group form-check">
-                    <input type="checkbox"
-                           class="form-check-input"
-                           id="terms"
-                           name="terms"
-                           required>
-                    <label class="form-check-label" for="terms">
-                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-register">Create Account</button>
+            <button type="submit" class="btn btn-register">Create Account</button>
             </div>
         </form>
 
@@ -476,9 +477,11 @@
         document.getElementById('verifyOTP').addEventListener('click', function() {
             const email = document.getElementById('email').value;
             const otp = document.getElementById('otp').value;
+            const otpError = document.getElementById('otpError');
             
             if (!otp) {
-                alert('Vui lòng nhập mã xác thực');
+                otpError.textContent = 'Vui lòng nhập mã xác thực';
+                otpError.style.display = 'block';
                 return;
             }
             
@@ -499,14 +502,24 @@
                     document.getElementById('otpStatus').textContent = 'Email đã được xác thực';
                     document.getElementById('otpStatus').className = 'text-success mt-1';
                     document.getElementById('otpStatus').style.display = 'block';
+                    otpError.style.display = 'none';
                 } else {
-                    alert(data);
+                    otpError.textContent = data;
+                    otpError.style.display = 'block';
+                    // Xóa nội dung OTP để người dùng nhập lại
+                    document.getElementById('otp').value = '';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                otpError.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                otpError.style.display = 'block';
             });
+        });
+
+        // Thêm sự kiện để ẩn thông báo lỗi khi người dùng bắt đầu nhập lại OTP
+        document.getElementById('otp').addEventListener('input', function() {
+            document.getElementById('otpError').style.display = 'none';
         });
     </script>
 </body>
