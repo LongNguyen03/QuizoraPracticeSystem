@@ -42,13 +42,23 @@ public class ForgotPasswordServlet extends HttpServlet {
             return;
         }
 
+        // Kiểm tra xem có OTP đang chờ xử lý không
+        if (!OTPUtil.isOTPExpired(email)) {
+            System.out.println("ForgotPasswordServlet: OTP already exists and not expired");
+            response.getWriter().write("Vui lòng đợi OTP hiện tại hết hạn hoặc thử lại sau");
+            return;
+        }
+
         // Tạo và lưu OTP
         String otp = OTPUtil.generateOTP();
         System.out.println("ForgotPasswordServlet: Generated OTP: " + otp);
+        
+        // Lưu OTP vào store
+        OTPUtil.storeOTP(email, otp);
+        
+        // Lưu email vào session
         HttpSession session = request.getSession();
-        session.setAttribute("resetOTP", otp);
         session.setAttribute("resetEmail", email);
-        session.setAttribute("resetOTPTime", System.currentTimeMillis());
 
         // Gửi OTP qua email
         String subject = "Mã xác thực đặt lại mật khẩu";
@@ -62,6 +72,8 @@ public class ForgotPasswordServlet extends HttpServlet {
         } catch (Exception e) {
             System.out.println("ForgotPasswordServlet: Error sending email: " + e.getMessage());
             e.printStackTrace();
+            // Xóa OTP nếu gửi email thất bại
+            OTPUtil.removeOTP(email);
             response.getWriter().write("Không thể gửi email. Vui lòng thử lại sau.");
         }
     }
