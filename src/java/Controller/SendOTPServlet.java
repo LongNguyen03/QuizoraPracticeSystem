@@ -9,6 +9,7 @@ import java.util.Random;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import DAO.AccountDAO;
+import Utils.EmailTemplateUtil;
 
 @WebServlet(name = "SendOTPServlet", urlPatterns = {"/send-otp"})
 public class SendOTPServlet extends HttpServlet {
@@ -91,17 +92,9 @@ public class SendOTPServlet extends HttpServlet {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-               message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Xác thực đăng ký tài khoản Quizora");
-            
-            String emailContent = "Xin chào,\n\n"
-                    + "Mã OTP của bạn là: " + otp + "\n\n"
-                    + "Mã này có hiệu lực trong 5 phút.\n"
-                    + "Vui lòng không chia sẻ mã này với bất kỳ ai.\n\n"
-                    + "Trân trọng,\n"
-                    + "Team Quizora";
-            
-            message.setText(emailContent);
+            message.setText(EmailTemplateUtil.getRegistrationOTPTemplate(otp));
             
             Transport.send(message);
             return true;
