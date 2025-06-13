@@ -6,8 +6,12 @@ import java.util.concurrent.TimeUnit;
 
 public class OTPUtil {
     private static final SecureRandom secureRandom = new SecureRandom();
+    private static final int OTP_LENGTH = 6;
+    private static final long OTP_VALIDITY_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+    private static final int MAX_ATTEMPTS = 3;
+    private static final long DELAY_BETWEEN_ATTEMPTS = 2000; // 2 seconds delay
     private static final ConcurrentHashMap<String, OTPData> otpStore = new ConcurrentHashMap<>();
-    private static final long OTP_VALIDITY_DURATION = TimeUnit.MINUTES.toMillis(5);
+    private static final ConcurrentHashMap<String, Long> lastAttemptTime = new ConcurrentHashMap<>();
     
     public static class OTPData {
         private final String otp;
@@ -21,25 +25,33 @@ public class OTPUtil {
         }
         
         public boolean isValid() {
-            return System.currentTimeMillis() - timestamp <= OTP_VALIDITY_DURATION;
+            return System.currentTimeMillis() - timestamp < OTP_VALIDITY_DURATION;
         }
         
         public boolean isMaxAttemptsReached() {
-            return attempts >= 3;
+            return attempts >= MAX_ATTEMPTS;
         }
         
         public void incrementAttempts() {
             attempts++;
         }
+        
+        public int getRemainingAttempts() {
+            return MAX_ATTEMPTS - attempts;
+        }
     }
     
     public static String generateOTP() {
-        int otp = 100000 + secureRandom.nextInt(900000);
-        return String.valueOf(otp);
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < OTP_LENGTH; i++) {
+            otp.append(secureRandom.nextInt(10));
+        }
+        return otp.toString();
     }
     
     public static void storeOTP(String email, String otp) {
         otpStore.put(email, new OTPData(otp));
+        lastAttemptTime.put(email, 0L); // Reset last attempt time
     }
     
     public static boolean validateOTP(String email, String otp) {
@@ -48,27 +60,57 @@ public class OTPUtil {
             return false;
         }
         
-        otpData.incrementAttempts();
+        // Check if we need to wait before next attempt
+        long currentTime = System.currentTimeMillis();
+        long lastAttempt = lastAttemptTime.getOrDefault(email, 0L);
+        if (currentTime - lastAttempt < DELAY_BETWEEN_ATTEMPTS) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(DELAY_BETWEEN_ATTEMPTS - (currentTime - lastAttempt));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        lastAttemptTime.put(email, currentTime);
         
-        if (!otpData.isValid() || otpData.isMaxAttemptsReached()) {
+        if (!otpData.isValid()) {
             otpStore.remove(email);
+            lastAttemptTime.remove(email);
             return false;
         }
         
-        boolean isValid = otpData.otp.equals(otp);
-        if (isValid) {
+        if (otpData.isMaxAttemptsReached()) {
             otpStore.remove(email);
+            lastAttemptTime.remove(email);
+            return false;
         }
         
-        return isValid;
+        otpData.incrementAttempts();
+        if (otpData.otp.equals(otp)) {
+            otpStore.remove(email);
+            lastAttemptTime.remove(email);
+            return true;
+        }
+        
+        return false;
     }
     
     public static void removeOTP(String email) {
         otpStore.remove(email);
+        lastAttemptTime.remove(email);
     }
     
     public static boolean isOTPExpired(String email) {
         OTPData otpData = otpStore.get(email);
         return otpData == null || !otpData.isValid();
+    }
+    
+    public static int getRemainingAttempts(String email) {
+        OTPData otpData = otpStore.get(email);
+        return otpData != null ? otpData.getRemainingAttempts() : 0;
+    }
+    
+    public static boolean isMaxAttemptsReached(String email) {
+        OTPData otpData = otpStore.get(email);
+        return otpData != null && otpData.isMaxAttemptsReached();
     }
 } 

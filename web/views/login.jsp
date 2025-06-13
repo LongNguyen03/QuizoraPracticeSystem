@@ -167,36 +167,35 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="forgotPasswordForm">
-                            <div class="mb-3">
-                                <label for="resetEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="resetEmail" required>
-                            </div>
-                            <div id="otpSection" style="display: none;">
+                        <div id="forgotPasswordStep1">
+                            <form id="forgotPasswordForm" action="forgot-password" method="POST">
                                 <div class="mb-3">
-                                    <label for="resetOTP" class="form-label">Mã xác thực</label>
-                                    <input type="text" class="form-control" id="resetOTP" required>
-                                    <div class="text-muted small mt-1">Mã xác thực sẽ được gửi đến email của bạn</div>
+                                    <label for="forgotEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="forgotEmail" name="email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi mã xác thực</button>
+                            </form>
+                        </div>
+                        <div id="forgotPasswordStep2" style="display: none;">
+                            <form id="resetPasswordForm" action="reset-password" method="POST">
+                                <input type="hidden" id="resetEmail" name="email">
+                                <div class="mb-3">
+                                    <label for="otp" class="form-label">Mã xác thực</label>
+                                    <input type="text" class="form-control" id="otp" name="otp" required>
+                                    <div class="form-text">Mã xác thực đã được gửi đến email của bạn. Mã có hiệu lực trong 5 phút.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                                    <input type="password" class="form-control" id="newPassword" required>
-                                    <div class="password-requirements small text-muted mt-1">
-                                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt
-                                    </div>
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                    <div class="form-text">Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="confirmNewPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                                    <input type="password" class="form-control" id="confirmNewPassword" required>
+                                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                                 </div>
-                            </div>
-                            <div id="resetStatus" class="alert" style="display: none;"></div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary" id="sendResetOTP">Gửi mã xác thực</button>
-                        <button type="button" class="btn btn-primary" id="resetPassword" style="display: none;">Đặt lại mật khẩu</button>
+                                <button type="submit" class="btn btn-primary">Đặt lại mật khẩu</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -243,112 +242,47 @@
             }, 5000);
         }
 
-        // Xử lý gửi mã xác thực
-        document.getElementById('sendResetOTP').addEventListener('click', function() {
-            const email = document.getElementById('resetEmail').value;
-            const resetStatus = document.getElementById('resetStatus');
-            const sendOTPButton = document.getElementById('sendResetOTP');
-            
-            if (!email) {
-                showMessage(resetStatus, 'Vui lòng nhập email', 'danger');
-                return;
-            }
-
-            // Disable button and show loading state
-            sendOTPButton.disabled = true;
-            sendOTPButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
-
-            console.log('Sending OTP request for email:', email);
-
-            // Gửi request để lấy OTP
-            fetch('${pageContext.request.contextPath}/forgot-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+        // Handle forgot password form submission
+        $('#forgotPasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response === 'success') {
+                        $('#forgotPasswordStep1').hide();
+                        $('#forgotPasswordStep2').show();
+                        $('#resetEmail').val($('#forgotEmail').val());
+                    } else {
+                        alert(response);
+                    }
                 },
-                body: 'email=' + encodeURIComponent(email)
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.text();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                if (data === 'success') {
-                    document.getElementById('otpSection').style.display = 'block';
-                    sendOTPButton.style.display = 'none';
-                    document.getElementById('resetPassword').style.display = 'block';
-                    showMessage(resetStatus, 'Mã xác thực đã được gửi đến email của bạn', 'success');
-                } else {
-                    // Reset button state on error
-                    sendOTPButton.disabled = false;
-                    sendOTPButton.innerHTML = 'Gửi mã xác thực';
-                    showMessage(resetStatus, data, 'danger');
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Reset button state on error
-                sendOTPButton.disabled = false;
-                sendOTPButton.innerHTML = 'Gửi mã xác thực';
-                showMessage(resetStatus, 'Có lỗi xảy ra. Vui lòng thử lại sau.', 'danger');
             });
         });
 
-        // Xử lý đặt lại mật khẩu
-        document.getElementById('resetPassword').addEventListener('click', function() {
-            const email = document.getElementById('resetEmail').value;
-            const otp = document.getElementById('resetOTP').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-            const resetStatus = document.getElementById('resetStatus');
-
-            if (!otp || !newPassword || !confirmNewPassword) {
-                showMessage(resetStatus, 'Vui lòng nhập đầy đủ thông tin', 'danger');
-                return;
-            }
-
-            if (newPassword !== confirmNewPassword) {
-                showMessage(resetStatus, 'Mật khẩu xác nhận không khớp', 'danger');
-                return;
-            }
-
-            // Kiểm tra độ mạnh của mật khẩu
-            const hasUpperCase = /[A-Z]/.test(newPassword);
-            const hasLowerCase = /[a-z]/.test(newPassword);
-            const hasNumber = /[0-9]/.test(newPassword);
-            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
-            const isLongEnough = newPassword.length >= 8;
-
-            if (!isLongEnough || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
-                showMessage(resetStatus, 'Mật khẩu không đủ mạnh', 'danger');
-                return;
-            }
-
-            // Gửi request để đặt lại mật khẩu
-            fetch('${pageContext.request.contextPath}/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+        // Handle reset password form submission
+        $('#resetPasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response === 'success') {
+                        alert('Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.');
+                        $('#forgotPasswordModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response);
+                    }
                 },
-                body: 'email=' + encodeURIComponent(email) + 
-                      '&otp=' + encodeURIComponent(otp) + 
-                      '&newPassword=' + encodeURIComponent(newPassword)
-            })
-            .then(response => response.text())
-            .then(data => {
-                if (data === 'success') {
-                    showMessage(resetStatus, 'Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.', 'success');
-                    setTimeout(() => {
-                        window.location.href = '${pageContext.request.contextPath}/login';
-                    }, 2000);
-                } else {
-                    showMessage(resetStatus, data, 'danger');
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage(resetStatus, 'Có lỗi xảy ra. Vui lòng thử lại sau.', 'danger');
             });
         });
     </script>

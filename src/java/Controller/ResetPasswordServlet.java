@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import Model.Account;
 import DAO.AccountDAO;
+import Model.Account;
 import Utils.PasswordUtil;
 import Utils.OTPUtil;
 
@@ -18,53 +18,61 @@ public class ResetPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-
         String email = request.getParameter("email");
         String otp = request.getParameter("otp");
         String newPassword = request.getParameter("newPassword");
-
-        if (email == null || otp == null || newPassword == null) {
-            response.getWriter().write("Vui lòng nhập đầy đủ thông tin");
-            return;
-        }
-
+        String confirmPassword = request.getParameter("confirmPassword");
         HttpSession session = request.getSession();
-        String storedEmail = (String) session.getAttribute("resetEmail");
 
-        // Kiểm tra email có khớp không
-        if (!email.equals(storedEmail)) {
-            response.getWriter().write("Email không khớp với phiên đặt lại mật khẩu");
+        // Validate input
+        if (email == null || otp == null || newPassword == null || confirmPassword == null) {
+            session.setAttribute("error", "Vui lòng điền đầy đủ thông tin");
+            response.sendRedirect("views/login.jsp");
             return;
         }
 
-        // Kiểm tra OTP
-        if (!OTPUtil.validateOTP(email, otp)) {
-            response.getWriter().write("Mã xác thực không đúng hoặc đã hết hạn");
+        // Check if passwords match
+        if (!newPassword.equals(confirmPassword)) {
+            session.setAttribute("error", "Mật khẩu xác nhận không khớp");
+            response.sendRedirect("views/login.jsp");
             return;
         }
 
-        // Kiểm tra độ mạnh của mật khẩu
+        // Validate password strength
         if (!PasswordUtil.isStrongPassword(newPassword)) {
-            response.getWriter().write("Mật khẩu không đủ mạnh");
+            session.setAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt");
+            response.sendRedirect("views/login.jsp");
             return;
         }
 
-        // Cập nhật mật khẩu mới
+        // Check if OTP is valid
+        if (!OTPUtil.validateOTP(email, otp)) {
+            int remainingAttempts = OTPUtil.getRemainingAttempts(email);
+            if (remainingAttempts > 0) {
+                session.setAttribute("error", "Mã xác thực không đúng. Bạn còn " + remainingAttempts + " lần thử.");
+            } else {
+                session.setAttribute("error", "Bạn đã nhập sai mã xác thực quá nhiều lần. Vui lòng yêu cầu mã mới.");
+            }
+            response.sendRedirect("views/login.jsp");
+            return;
+        }
+
+        // Update password
         AccountDAO accountDAO = new AccountDAO();
         Account account = accountDAO.getAccountByEmail(email);
         if (account != null) {
-            account.setPasswordHash(PasswordUtil.hashPassword(newPassword));
+            String hashedPassword = PasswordUtil.hashPassword(newPassword);
+            account.setPasswordHash(hashedPassword);
             if (accountDAO.updateAccount(account)) {
-                // Xóa thông tin trong session
-                session.removeAttribute("resetEmail");
-                response.getWriter().write("success");
+                session.setAttribute("success", "Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.");
+                response.sendRedirect("views/login.jsp");
             } else {
-                response.getWriter().write("Không thể cập nhật mật khẩu. Vui lòng thử lại sau.");
+                session.setAttribute("error", "Có lỗi xảy ra khi đặt lại mật khẩu");
+                response.sendRedirect("views/login.jsp");
             }
         } else {
-            response.getWriter().write("Không tìm thấy tài khoản");
+            session.setAttribute("error", "Không tìm thấy tài khoản");
+            response.sendRedirect("views/login.jsp");
         }
     }
 } 
