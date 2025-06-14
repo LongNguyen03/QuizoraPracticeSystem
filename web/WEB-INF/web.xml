@@ -80,6 +80,15 @@
         <url-pattern>/quiz</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>SendOTPServlet</servlet-name>
+        <servlet-class>Controller.SendOTPServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SendOTPServlet</servlet-name>
+        <url-pattern>/send-otp</url-pattern>
+    </servlet-mapping>
+
     <!-- Welcome File List -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

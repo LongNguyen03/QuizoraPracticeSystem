@@ -157,8 +157,24 @@
                        name="email"
                        placeholder="Email address"
                        required>
+                <button type="button" class="btn btn-outline-primary mt-2" id="sendOTP">Gửi mã xác thực</button>
+                <div id="otpStatus" class="text-muted mt-1" style="display: none;"></div>
             </div>
             
+            <div class="form-group" id="otpGroup" style="display: none;">
+                <input type="text"
+                       class="form-control"
+                       id="otp"
+                       name="otp"
+                       placeholder="Nhập mã xác thực"
+                       required>
+                <div class="text-muted mt-1">Mã xác thực sẽ hết hạn sau 5 phút</div>
+                <div id="otpError" class="text-danger mt-1" style="display: none;"></div>
+                <button type="button" class="btn btn-link p-0 mt-1" id="resendOTP" style="display: none;">Gửi lại mã</button>
+                <button type="button" class="btn btn-primary mt-2" id="verifyOTP">Xác thực</button>
+            </div>
+            
+            <div id="registrationFields" style="display: none;">
             <div class="form-group">
                 <input type="text"
                        class="form-control"
@@ -245,6 +261,7 @@
             </div>
 
             <button type="submit" class="btn btn-register">Create Account</button>
+            </div>
         </form>
 
         <div class="login-link">
@@ -303,7 +320,14 @@
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Lấy các giá trị
+            // Kiểm tra OTP
+            const otpInput = document.getElementById('otp');
+            if (otpInput.style.display !== 'none' && !otpInput.value) {
+                alert('Vui lòng nhập mã xác thực');
+                return;
+            }
+            
+            // Kiểm tra mật khẩu
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
@@ -377,6 +401,125 @@
                 <div style="color: ${hasNumber ? 'green' : 'red'}">• Ít nhất 1 số</div>
                 <div style="color: ${hasSpecialChar ? 'green' : 'red'}">• Ít nhất 1 ký tự đặc biệt</div>
             `;
+        });
+
+        // Xử lý gửi OTP
+        document.getElementById('sendOTP').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            if (!email || !emailRegex.test(email)) {
+                alert('Vui lòng nhập email hợp lệ');
+                return;
+            }
+            
+            // Disable nút gửi OTP
+            this.disabled = true;
+            this.textContent = 'Đang gửi...';
+            
+            // Gửi request để lấy OTP
+            fetch('${pageContext.request.contextPath}/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'email=' + encodeURIComponent(email)
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    document.getElementById('otpGroup').style.display = 'block';
+                    document.getElementById('otpStatus').textContent = 'OTP đã được gửi đến email của bạn';
+                    document.getElementById('otpStatus').style.display = 'block';
+                    document.getElementById('otpStatus').className = 'text-success mt-1';
+                    
+                    // Đếm ngược 5 phút
+                    let timeLeft = 300;
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            document.getElementById('sendOTP').disabled = false;
+                            document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                            document.getElementById('otpGroup').style.display = 'none';
+                            document.getElementById('otpStatus').style.display = 'none';
+                            document.getElementById('resendOTP').style.display = 'block';
+                        } else {
+                            const minutes = Math.floor(timeLeft / 60);
+                            const seconds = timeLeft % 60;
+                            document.getElementById('otpStatus').textContent = 
+                                `Mã xác thực còn hiệu lực trong ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        }
+                    }, 1000);
+                } else {
+                    document.getElementById('otpStatus').textContent = data;
+                    document.getElementById('otpStatus').style.display = 'block';
+                    document.getElementById('otpStatus').className = 'text-danger mt-1';
+                    document.getElementById('sendOTP').disabled = false;
+                    document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('otpStatus').textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                document.getElementById('otpStatus').style.display = 'block';
+                document.getElementById('otpStatus').className = 'text-danger mt-1';
+                document.getElementById('sendOTP').disabled = false;
+                document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+            });
+        });
+
+        // Xử lý gửi lại OTP
+        document.getElementById('resendOTP').addEventListener('click', function() {
+            document.getElementById('sendOTP').click();
+            this.style.display = 'none';
+        });
+
+        // Thêm hàm xác thực OTP
+        document.getElementById('verifyOTP').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('otp').value;
+            const otpError = document.getElementById('otpError');
+            
+            if (!otp) {
+                otpError.textContent = 'Vui lòng nhập mã xác thực';
+                otpError.style.display = 'block';
+                return;
+            }
+            
+            // Gửi request kiểm tra OTP
+            fetch('${pageContext.request.contextPath}/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'email=' + encodeURIComponent(email) + '&otp=' + encodeURIComponent(otp)
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    // Hiển thị các trường đăng ký
+                    document.getElementById('registrationFields').style.display = 'block';
+                    document.getElementById('otpGroup').style.display = 'none';
+                    document.getElementById('otpStatus').textContent = 'Email đã được xác thực';
+                    document.getElementById('otpStatus').className = 'text-success mt-1';
+                    document.getElementById('otpStatus').style.display = 'block';
+                    otpError.style.display = 'none';
+                } else {
+                    otpError.textContent = data;
+                    otpError.style.display = 'block';
+                    // Xóa nội dung OTP để người dùng nhập lại
+                    document.getElementById('otp').value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                otpError.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+                otpError.style.display = 'block';
+            });
+        });
+
+        // Thêm sự kiện để ẩn thông báo lỗi khi người dùng bắt đầu nhập lại OTP
+        document.getElementById('otp').addEventListener('input', function() {
+            document.getElementById('otpError').style.display = 'none';
         });
     </script>
 </body>

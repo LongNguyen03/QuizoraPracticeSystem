@@ -3,31 +3,34 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/LoginServlet.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Subject.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Quiz.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AdminAuthorizationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/register.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/admin/dashboard.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/UserProfileDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AuthenticationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/teacher/home.jsp</file>
+<<<<<<< HEAD
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/QuizController.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/questionDetail.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Model/QuestionAnswer.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/teacher/home.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/admin/dashboard.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/views/components/header.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Filter/TeacherAuthorizationFilter.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/HomeController.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/LoginServlet.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/DAO/QuestionDAO.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/LogoutServlet.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Controller/ImageUrlServlet.java</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/questionList.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/web/student/home.jsp</file>
+            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/DAO/DBcontext.java</file>
+=======
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ForgotPasswordServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/student/home.jsp</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/DBcontext.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Account.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/HomeController.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/layout/header.jsp</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/QuizController.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/TeacherAuthorizationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/index.html</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/StudentAuthorizationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/RoleDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/UsersController.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/QuestionDAO.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/AccountDAO.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/VerifyOTPServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/register.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/SendOTPServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ResetPasswordServlet.java</file>
+>>>>>>> bd885c9122401bb0cd00a77a8d100b924c0da3d9
         </group>
     </open-files>
 </project-private>

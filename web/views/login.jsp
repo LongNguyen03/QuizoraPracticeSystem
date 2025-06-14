@@ -153,9 +153,53 @@
             <div class="form-group form-check">
                 <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
                 <label class="form-check-label" for="rememberMe">Remember me</label>
+                <a href="#" class="float-end" id="forgotPasswordLink">Quên mật khẩu?</a>
             </div>
             <button type="submit" class="btn btn-login">Login</button>
         </form>
+
+        <!-- Modal Forgot Password -->
+        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="forgotPasswordModalLabel">Quên mật khẩu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="forgotPasswordStep1">
+                            <form id="forgotPasswordForm" action="forgot-password" method="POST">
+                                <div class="mb-3">
+                                    <label for="forgotEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="forgotEmail" name="email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi mã xác thực</button>
+                            </form>
+                        </div>
+                        <div id="forgotPasswordStep2" style="display: none;">
+                            <form id="resetPasswordForm" action="reset-password" method="POST">
+                                <input type="hidden" id="resetEmail" name="email">
+                                <div class="mb-3">
+                                    <label for="otp" class="form-label">Mã xác thực</label>
+                                    <input type="text" class="form-control" id="otp" name="otp" required>
+                                    <div class="form-text">Mã xác thực đã được gửi đến email của bạn. Mã có hiệu lực trong 5 phút.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                    <div class="form-text">Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Đặt lại mật khẩu</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="social-login">
             <p>Or login with</p>
@@ -172,11 +216,75 @@
             </div>
         </div>
 
-        <div class="register-link">
+        <div class="login-link">
             <p>Don't have an account? <a href="${pageContext.request.contextPath}/register">Register here</a></p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Xử lý quên mật khẩu
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+            modal.show();
+        });
+
+        // Hàm hiển thị thông báo và tự động ẩn sau 5 giây
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = 'alert alert-' + type;
+            element.style.display = 'block';
+            
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle forgot password form submission
+        $('#forgotPasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response === 'success') {
+                        $('#forgotPasswordStep1').hide();
+                        $('#forgotPasswordStep2').show();
+                        $('#resetEmail').val($('#forgotEmail').val());
+                    } else {
+                        alert(response);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                }
+            });
+        });
+
+        // Handle reset password form submission
+        $('#resetPasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response === 'success') {
+                        alert('Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.');
+                        $('#forgotPasswordModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response);
+                    }
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
