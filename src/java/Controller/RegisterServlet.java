@@ -35,6 +35,17 @@ public class RegisterServlet extends HttpServlet {
         String middleName = request.getParameter("middleName");
         String lastName = request.getParameter("lastName");
         String gender = request.getParameter("gender");
+        String otp = request.getParameter("otp");
+
+        // Kiểm tra OTP
+        HttpSession session = request.getSession();
+        Boolean emailVerified = (Boolean) session.getAttribute("emailVerified");
+
+        if (emailVerified == null || !emailVerified) {
+            request.setAttribute("error", "Vui lòng xác thực email trước.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
 
         // Kiểm tra dữ liệu đầu vào
         if (email == null || email.trim().isEmpty()) {
