@@ -9,7 +9,7 @@ package Model;
  * @author dangd
  */
 public class QuestionAnswer {
-    private int id;
+    private int id;  
     private int questionId;
     private String content;
     private boolean isCorrect;

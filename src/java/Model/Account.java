@@ -1,26 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
-
-/**
- *
- * @author dangd
- */
-import java.util.Date;
 
 public class Account {
     private int id;
     private String email;
     private String passwordHash;
     private int roleId;
-    private boolean status;
+    private String status;
 
-    public Account() {
-    }
+    // Thêm thuộc tính phụ: tên vai trò (không có trong DB, dùng khi JOIN)
+    private String roleName;
 
-    public Account(int id, String email, String passwordHash, int roleId, boolean status) {
+    public Account() {}
+
+    public Account(int id, String email, String passwordHash, int roleId, String status) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -28,6 +20,12 @@ public class Account {
         this.status = status;
     }
 
+    public Account(int id, String email, String passwordHash, int roleId, String status, String roleName) {
+        this(id, email, passwordHash, roleId, status);
+        this.roleName = roleName;
+    }
+
+    // Getters & Setters
     public int getId() {
         return id;
     }
@@ -60,11 +58,31 @@ public class Account {
         this.roleId = roleId;
     }
 
-    public boolean isStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    // Optional: override toString() for debugging
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", roleId=" + roleId +
+                ", status='" + status + '\'' +
+                ", roleName='" + roleName + '\'' +
+                '}';
     }
 }

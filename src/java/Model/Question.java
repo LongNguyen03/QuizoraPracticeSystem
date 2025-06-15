@@ -11,36 +11,28 @@ public class Question {
     private int id;
     private int subjectId;
     private int lessonId;
-    private int dimensionId;
     private String level;
     private String content;
     private String status;
     private Date createdAt;
     private Date updatedAt;
-    private byte[] imageUrl; // Sửa thành byte[] để lưu ảnh nhị phân
-
-    private List<QuestionAnswer> answerOptions; // Danh sách đáp án
+    private byte[] imageUrl;
 
     public Question() {
     }
 
-    public Question(int id, int subjectId, int lessonId, int dimensionId, String level,
-                    String content, String status, Date createdAt, Date updatedAt,
-                    byte[] imageUrl, List<QuestionAnswer> answerOptions) {
+    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] imageUrl) {
         this.id = id;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
-        this.dimensionId = dimensionId;
         this.level = level;
         this.content = content;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.imageUrl = imageUrl;
-        this.answerOptions = answerOptions;
     }
 
-    // Getters và setters
     public int getId() {
         return id;
     }
@@ -63,14 +55,6 @@ public class Question {
 
     public void setLessonId(int lessonId) {
         this.lessonId = lessonId;
-    }
-
-    public int getDimensionId() {
-        return dimensionId;
-    }
-
-    public void setDimensionId(int dimensionId) {
-        this.dimensionId = dimensionId;
     }
 
     public String getLevel() {
@@ -120,13 +104,4 @@ public class Question {
     public void setImageUrl(byte[] imageUrl) {
         this.imageUrl = imageUrl;
     }
-
-    public List<QuestionAnswer> getAnswerOptions() {
-        return answerOptions;
-    }
-
-    public void setAnswerOptions(List<QuestionAnswer> answerOptions) {
-        this.answerOptions = answerOptions;
-    }
 }
-

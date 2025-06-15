@@ -23,8 +23,8 @@ public class DBcontext implements Serializable {
         try {
             //Change the username password and url to connect your own database
             String username = "sa";
-            String password = "123";
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=Quizora_DB_Ver2;encrypt=true;trustServerCertificate=true";
+            String password = "sa"; // doi mat khau o day de run
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=Quizora_DB_Ver3;encrypt=true;trustServerCertificate=true";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException ex) {
