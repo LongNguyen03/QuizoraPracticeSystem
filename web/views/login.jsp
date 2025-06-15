@@ -155,7 +155,10 @@
                 <label class="form-check-label" for="rememberMe">Remember me</label>
                 <a href="#" class="float-end" id="forgotPasswordLink">Quên mật khẩu?</a>
             </div>
-            <button type="submit" class="btn btn-login">Login</button>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-login">Login</button>
+                <a href="${pageContext.request.contextPath}/views/home.jsp" class="btn btn-secondary">Back to Home</a>
+            </div>
         </form>
 
         <!-- Modal Forgot Password -->
