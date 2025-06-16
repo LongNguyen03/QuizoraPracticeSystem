@@ -1,9 +1,11 @@
 package Controller;
 
 import DAO.QuestionDAO;
+import DAO.QuestionAnswerDAO;
 import DAO.SubjectDAO;
 import DAO.LessonDAO;
 import Model.Question;
+import Model.QuestionAnswer;
 import Model.Subject;
 import Model.Lesson;
 import jakarta.servlet.*;
@@ -20,12 +22,14 @@ import java.util.List;
 @MultipartConfig(maxFileSize = 16177215)
 public class QuestionController extends HttpServlet {
     private QuestionDAO questionDAO;
+    private QuestionAnswerDAO answerDAO;
     private SubjectDAO subjectDAO;
     private LessonDAO lessonDAO;
 
     @Override
     public void init() throws ServletException {
         questionDAO = new QuestionDAO();
+        answerDAO   = new QuestionAnswerDAO();
         subjectDAO  = new SubjectDAO();
         lessonDAO   = new LessonDAO();
     }
@@ -42,7 +46,10 @@ public class QuestionController extends HttpServlet {
                 break;
             case "edit":
                 int editId = Integer.parseInt(request.getParameter("id"));
-                showForm(request, response, questionDAO.getQuestionById(editId));
+                Question q = questionDAO.getQuestionById(editId);
+                List<QuestionAnswer> answers = answerDAO.getByQuestion(editId);
+                request.setAttribute("answers", answers);
+                showForm(request, response, q);
                 break;
             case "delete":
                 deleteQuestion(request, response);
@@ -70,24 +77,17 @@ public class QuestionController extends HttpServlet {
 
     private void listQuestions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy lessonId để hiển thị danh sách câu hỏi
-        String lessonIdStr = request.getParameter("lessonId");
-        int lessonId = lessonIdStr != null && !lessonIdStr.isEmpty()
-                ? Integer.parseInt(lessonIdStr) : 0;
-
+        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
         List<Question> questions = questionDAO.getQuestionsByLessonId(lessonId);
         List<Subject> subjects = subjectDAO.getAllSubjects();
         List<Lesson> lessons   = lessonDAO.getAllLessons();
-
-        Lesson lesson = lessonId > 0 ? lessonDAO.getLessonById(lessonId) : null;
-        String lessonTitle = lesson != null ? lesson.getTitle() : "";
+        Lesson lesson = lessonDAO.getLessonById(lessonId);
 
         request.setAttribute("questions", questions);
         request.setAttribute("subjects", subjects);
         request.setAttribute("lessons", lessons);
         request.setAttribute("lessonId", lessonId);
-        request.setAttribute("lessonTitle", lessonTitle);
-
+        request.setAttribute("lessonTitle", lesson.getTitle());
         request.getRequestDispatcher("questionList.jsp").forward(request, response);
     }
 
@@ -104,60 +104,62 @@ public class QuestionController extends HttpServlet {
 
     private void insertQuestion(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int subjectId = Integer.parseInt(request.getParameter("subjectId"));
-        int lessonId  = Integer.parseInt(request.getParameter("lessonId"));
-        String level  = request.getParameter("level");
-        String content = request.getParameter("content");
-
-        Part filePart = request.getPart("image");
-        byte[] imageData = filePart != null && filePart.getSize() > 0
-                ? filePart.getInputStream().readAllBytes() : null;
-
-        Question q = new Question();
-        q.setSubjectId(subjectId);
-        q.setLessonId(lessonId);
-        q.setLevel(level);
-        q.setContent(content);
-        q.setStatus("Active");
-        q.setCreatedAt(new Timestamp(new Date().getTime()));
-        q.setUpdatedAt(new Timestamp(new Date().getTime()));
-        q.setImage(imageData);
-
+        Question q = buildQuestionFromRequest(request, true);
         questionDAO.createQuestion(q);
-        response.sendRedirect("QuestionController?action=list&lessonId=" + lessonId);
+        processAnswers(request, q.getId());
+        response.sendRedirect("QuestionController?action=list&lessonId=" + q.getLessonId());
     }
 
     private void updateQuestion(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        int id        = Integer.parseInt(request.getParameter("id"));
-        int subjectId = Integer.parseInt(request.getParameter("subjectId"));
-        int lessonId  = Integer.parseInt(request.getParameter("lessonId"));
-        String level  = request.getParameter("level");
-        String content= request.getParameter("content");
-
-        Part filePart = request.getPart("image");
-        byte[] imageData = filePart != null && filePart.getSize() > 0
-                ? filePart.getInputStream().readAllBytes() : null;
-
-        Question q = new Question();
-        q.setId(id);
-        q.setSubjectId(subjectId);
-        q.setLessonId(lessonId);
-        q.setLevel(level);
-        q.setContent(content);
-        q.setUpdatedAt(new Timestamp(new Date().getTime()));
-        if (imageData != null) q.setImage(imageData);
-
+        Question q = buildQuestionFromRequest(request, false);
         questionDAO.updateQuestion(q);
-        response.sendRedirect("QuestionController?action=list&lessonId=" + lessonId);
+        processAnswers(request, q.getId());
+        response.sendRedirect("QuestionController?action=list&lessonId=" + q.getLessonId());
+    }
+
+    private Question buildQuestionFromRequest(HttpServletRequest request, boolean isNew) throws IOException, ServletException {
+        Question q = new Question();
+        if (!isNew) {
+            q.setId(Integer.parseInt(request.getParameter("id")));
+        }
+        q.setSubjectId(Integer.parseInt(request.getParameter("subjectId")));
+        q.setLessonId(Integer.parseInt(request.getParameter("lessonId")));
+        q.setLevel(request.getParameter("level"));
+        q.setContent(request.getParameter("content"));
+        q.setStatus("Active");
+        Timestamp now = new Timestamp(new Date().getTime());
+        q.setUpdatedAt(now);
+        if (isNew) q.setCreatedAt(now);
+        Part filePart = request.getPart("image");
+        if (filePart != null && filePart.getSize() > 0) {
+            q.setImage(filePart.getInputStream().readAllBytes());
+        }
+        return q;
+    }
+
+    private void processAnswers(HttpServletRequest request, int questionId) {
+        answerDAO.deleteByQuestion(questionId);
+        String[] contents = request.getParameterValues("answerContent[]");
+        String[] corrects = request.getParameterValues("answerIsCorrect[]");
+        String[] orders   = request.getParameterValues("answerOrder[]");
+        if (contents == null) return;
+        for (int i = 0; i < contents.length; i++) {
+            QuestionAnswer a = new QuestionAnswer();
+            a.setQuestionId(questionId);
+            a.setContent(contents[i]);
+            a.setCorrect(corrects != null && i < corrects.length);
+            a.setAnswerOrder(Integer.parseInt(orders[i]));
+            answerDAO.insertAnswer(a);
+        }
     }
 
     private void deleteQuestion(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        // Lấy lessonId trước khi xóa
         String lessonId = request.getParameter("lessonId");
         questionDAO.deleteQuestion(id);
+        answerDAO.deleteByQuestion(id);
         response.sendRedirect("QuestionController?action=list&lessonId=" + lessonId);
     }
 }
