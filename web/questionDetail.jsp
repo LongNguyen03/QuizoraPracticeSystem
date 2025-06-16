@@ -3,244 +3,125 @@
     Created on : May 30, 2025, 8:40:31 AM
     Author     : kan3v
 --%>
+
+<%-- questionDetail.jsp --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="Model.Question, Model.Subject, Model.Lesson, Model.SubjectDimension, Model.QuestionAnswer" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.util.List" %>
+<%@ page import="Model.Question, Model.Subject, Model.Lesson" %>
+<%@ page import="java.text.SimpleDateFormat, java.util.List" %>
 
 <%
     Question q = (Question) request.getAttribute("question");
     boolean isEdit = q != null;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
     List<Subject> subjects = (List<Subject>) request.getAttribute("subjects");
-    List<Lesson> lessons = (List<Lesson>) request.getAttribute("lessons");
-    List<SubjectDimension> dimensions = (List<SubjectDimension>) request.getAttribute("dimensions");
-    List<QuestionAnswer> answers = isEdit ? q.getAnswerOptions() : null;
+    List<Lesson> lessons   = (List<Lesson>)   request.getAttribute("lessons");
 %>
 
 <html>
-    <head>
-        <title><%= isEdit ? "Edit" : "Create" %> Question</title>
-        <style>
-            /* Giữ nguyên style như cũ hoặc chỉnh tùy thích */
-            body {
-                font-family: Arial;
-                background-color: #f9f9f9;
-                margin: 40px;
-            }
-            h2 {
-                color: #333;
-            }
-            table {
-                width: 800px;
-                padding: 20px;
-                background-color: white;
-                border-collapse: collapse;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            }
-            td {
-                padding: 10px;
-            }
-            input[type="text"], input[type="number"], select {
-                width: 100%;
-                padding: 8px;
-                border-radius: 5px;
-                border: 1px solid #ccc;
-            }
-            input[type="submit"], button {
-                padding: 10px 20px;
-                background-color: #007BFF;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-            input[type="submit"]:hover, button:hover {
-                background-color: #0056b3;
-            }
-            a {
-                display: inline-block;
-                margin-top: 20px;
-                color: #007BFF;
-                text-decoration: none;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
-            .answer-table {
-                width: 100%;
-                margin-top: 10px;
-                border: 1px solid #ddd;
-            }
-            .answer-table th, .answer-table td {
-                border: 1px solid #ddd;
-                padding: 8px;
-            }
-            .remove-btn {
-                background-color: red;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-            }
-            .remove-btn:hover {
-                background-color: darkred;
-            }
-        </style>
+<head>
+  <title><%= isEdit ? "Edit" : "Create" %> Question</title>
+  <style>
+    body { font-family: Arial; background:#f9f9f9; padding:40px; }
+    form { max-width:700px; margin:auto; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    .row { margin-bottom:15px; }
+    .row label { display:block; margin-bottom:5px; font-weight:bold; }
+    .row input[type="text"], .row textarea, .row select { width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; }
+    .row input[type="file"] { padding:5px; }
+    .actions { text-align:center; margin-top:20px; }
+    .actions button { padding:10px 20px; background:#007BFF; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+    .actions button:hover { background:#0056b3; }
+    .back { text-align:center; margin-top:20px; }
+    .back a { color:#007BFF; text-decoration:none; }
+    .back a:hover { text-decoration:underline; }
+  </style>
+  <script>
+    // Build JS array of lessons with id and dimension
+    var lessonsData = [
+      <% for (Lesson l : lessons) { %>
+        { id: <%=l.getId()%>, dimension: "<%=l.getDimension().replace("\"","\\\"")%>" },
+      <% } %>
+    ];
+    function onLessonChange(el) {
+      var dimInput = document.getElementById('dimField');
+      var selId = parseInt(el.value);
+      var found = lessonsData.find(function(item) { return item.id === selId; });
+      dimInput.value = found ? found.dimension : '';
+    }
+  </script>
+</head>
+<body>
+  <h2 style="text-align:center"><%= isEdit ? "Edit" : "Create" %> Question</h2>
+  <form action="QuestionController" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>"/>
+    <% if (isEdit) { %>
+      <input type="hidden" name="id" value="<%= q.getId() %>"/>
+    <% } %>
 
-        <script>
-            function addAnswerRow() {
-                const table = document.getElementById("answersBody");
+    <div class="row">
+      <label>Content</label>
+      <textarea name="content" rows="3" required><%= isEdit ? q.getContent() : "" %></textarea>
+    </div>
 
-                const row = table.insertRow();
-                row.innerHTML = `
-                    <td><input type="text" name="answerContent" required /></td>
-                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" /></td>
-                    <td><input type="number" name="answerOrder" min="1" value="${table.rows.length}" required /></td>
-                    <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
-                `;
-            }
+    <div class="row">
+      <label>Level</label>
+      <input type="text" name="level" value="<%= isEdit ? q.getLevel() : "" %>" required/>
+    </div>
 
-            function removeRow(button) {
-                const row = button.parentNode.parentNode;
-                row.parentNode.removeChild(row);
-                // Optional: update answerOrder values after removal
-                updateAnswerOrders();
-            }
+    <div class="row">
+      <label>Subject</label>
+      <select name="subjectId" required>
+        <option value="">-- Select Subject --</option>
+        <% for (Subject s : subjects) { %>
+          <option value="<%= s.getId() %>" <%= isEdit && q.getSubjectId()==s.getId()?"selected":"" %>><%= s.getTitle() %></option>
+        <% } %>
+      </select>
+    </div>
 
-            function updateAnswerOrders() {
-                const orders = document.getElementsByName("answerOrder");
-                for (let i = 0; i < orders.length; i++) {
-                    orders[i].value = i + 1;
-                }
-            }
-        </script>
-    </head>
+    <div class="row">
+      <label>Lesson</label>
+      <select name="lessonId" onchange="onLessonChange(this)" required>
+        <option value="">-- Select Lesson --</option>
+        <% for (Lesson l : lessons) { %>
+          <option value="<%= l.getId() %>" <%= isEdit && q.getLessonId()==l.getId()?"selected":"" %>><%= l.getTitle() %></option>
+        <% } %>
+      </select>
+    </div>
 
-    <body>
-        <h2><%= isEdit ? "Edit" : "Create" %> Question</h2>
+    <div class="row">
+      <label>Dimension</label>
+      <input type="text" id="dimField" name="dimension" readonly
+             value="<%= isEdit 
+                      ? lessons.stream().filter(x->x.getId()==q.getLessonId())
+                               .findFirst().map(x->x.getDimension()).orElse("") 
+                      : "" %>"/>
+    </div>
 
-        <!-- enctype="multipart/form-data" nếu bạn xử lý upload file sau -->
-        <form id="questionForm" action="QuestionController" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="<%= isEdit ? q.getId() : "" %>"/>
-            <table>
-                <tr>
-                    <td>Content:</td>
-                    <td><input type="text" name="content" value="<%= isEdit ? q.getContent() : "" %>" required/></td>
-                </tr>
-                <tr>
-                    <td>Level:</td>
-                    <td><input type="text" name="level" value="<%= isEdit ? q.getLevel() : "" %>" required/></td>
-                </tr>
-                <tr>
-                    <td>Image:</td>
-                    <td>
-                        <input type="file" name="imageFile" accept="image/jpeg,image/png,image/jpg" />
-                        <% if (q != null && q.getImageUrl() != null) { %>
-                        <br/>
-                        <img src="imageUrl?id=<%= q.getId() %>" style="max-width: 300px; height: auto;" />
-                        <% } %>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Subject:</td>
-                    <td>
-                        <select name="subjectId" required>
-                            <option value="">-- Select Subject --</option>
-                            <% for (Subject s : subjects) { %>
-                            <option value="<%= s.getId() %>" <%= isEdit && q.getSubjectId() == s.getId() ? "selected" : "" %>>
-                                <%= s.getTitle() %>
-                            </option>
-                            <% } %>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Lesson:</td>
-                    <td>
-                        <select name="lessonId" required>
-                            <option value="">-- Select Lesson --</option>
-                            <% for (Lesson l : lessons) { %>
-                            <option value="<%= l.getId() %>" <%= isEdit && q.getLessonId() == l.getId() ? "selected" : "" %>>
-                                <%= l.getTitle() %>
-                            </option>
-                            <% } %>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Dimension:</td>
-                    <td>
-                        <select name="dimensionId" required>
-                            <option value="">-- Select Dimension --</option>
-                            <% for (SubjectDimension d : dimensions) { %>
-                            <option value="<%= d.getId() %>" <%= isEdit && q.getDimensionId() == d.getId() ? "selected" : "" %>>
-                                <%= d.getName() %>
-                            </option>
-                            <% } %>
-                        </select>
-                    </td>
-                </tr>
+    <div class="row">
+      <label>Image</label>
+      <input type="file" name="image" accept="image/*"/>
+      <% if (isEdit && q.getImage() != null) { %>
+        <div style="margin-top:10px;"><img src="questionImage?id=<%= q.getId() %>" style="max-width:200px;"/></div>
+      <% } %>
+    </div>
 
-                <% if (isEdit) { %>
-                <tr>
-                    <td>Created At:</td>
-                    <td><input type="text" value="<%= sdf.format(q.getCreatedAt()) %>" readonly/></td>
-                </tr>
-                <tr>
-                    <td>Updated At:</td>
-                    <td><input type="text" value="<%= q.getUpdatedAt() != null ? sdf.format(q.getUpdatedAt()) : "" %>" readonly/></td>
-                </tr>
-                <% } %>
+    <% if (isEdit) { %>
+    <div class="row">
+      <label>Created At</label>
+      <input type="text" readonly value="<%= sdf.format(q.getCreatedAt()) %>"/>
+    </div>
+    <div class="row">
+      <label>Updated At</label>
+      <input type="text" readonly value="<%= q.getUpdatedAt() != null ? sdf.format(q.getUpdatedAt()) : "" %>"/>
+    </div>
+    <% } %>
 
-                <tr>
-                    <td colspan="2">
-                        <h3>Answer Options</h3>
-                        <table class="answer-table">
-                            <thead>
-                                <tr>
-                                    <th>Content</th>
-                                    <th style="text-align:center;">Is Correct</th>
-                                    <th>Order</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="answersBody">
-                                <% if (isEdit && answers != null) {
-                        for (QuestionAnswer a : answers) { %>
-                                <tr>
-                                    <td><input type="text" name="answerContent" value="<%= a.getContent() %>" required /></td>
-                                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" <%= a.isCorrect() ? "checked" : "" %> /></td>
-                                    <td><input type="number" name="answerOrder" value="<%= a.getAnswerOrder() %>" min="1" required /></td>
-                                    <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
-                                </tr>
-                                <% }
-                    } else { %>
-                                <!-- Nếu tạo mới, thêm 1 dòng mặc định -->
-                                <tr>
-                                    <td><input type="text" name="answerContent" required /></td>
-                                    <td style="text-align: center"><input type="checkbox" name="answerIsCorrect" /></td>
-                                    <td><input type="number" name="answerOrder" value="1" min="1" required /></td>
-                                    <td><button type="button" class="remove-btn" onclick="removeRow(this)">X</button></td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                        <button type="button" onclick="addAnswerRow()">+ Add Answer</button>
-                    </td>
-                </tr>
+    <div class="actions">
+      <button type="submit">Save</button>
+    </div>
+  </form>
 
-                <tr>
-                    <td colspan="2" style="text-align: center;">
-                        <input type="submit" value="Save"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-
-        <a href="QuestionController">← Back to Question List</a>
-
-    </body>
+  <div class="back">
+    <a href="QuestionController?action=list&lessonId=<%= isEdit ? q.getLessonId() : "" %>">&larr; Back to Question List</a>
+  </div>
+</body>
 </html>
-
