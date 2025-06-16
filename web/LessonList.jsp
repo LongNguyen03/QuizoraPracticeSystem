@@ -4,102 +4,81 @@
     Author     : kan3v
 --%>
 <%@page import="java.util.List"%>
-<%@page import="Model.Lesson"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page isELIgnored="false"%>
+<%@page import="Model.Lesson, Model.Subject"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Lesson List</title>
     <style>
-        table {
-            width: 95%;
-            margin: auto;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #999;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f3f3f3;
-        }
-        h2 {
-            text-align: center;
-        }
-        tr.clickable-row {
-            cursor: pointer;
-        }
-        td.actions a {
-            margin-right: 8px;
-        }
+        body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h2 { margin: 0; }
+        .add-btn { padding: 8px 12px; background: #007BFF; color: #fff; text-decoration: none; border-radius: 4px; }
+        .lesson-card { display: flex; align-items: center; background: #fff; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; padding: 10px; cursor: pointer; }
+        .lesson-info { flex-grow: 1; }
+        .lesson-info div { margin-bottom: 4px; }
+        .lesson-actions { margin-left: 15px; }
+        .lesson-actions a { display: block; margin-bottom: 5px; color: #007BFF; text-decoration: none; }
+        .lesson-actions a:hover { text-decoration: underline; }
     </style>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('tr.clickable-row').forEach(function(row) {
-                row.addEventListener('click', function() {
-                    var lessonId = this.getAttribute('data-lesson-id');
-                    window.location.href = 'QuestionController?action=list&lessonId=' + lessonId;
+            document.querySelectorAll('.lesson-card').forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    if (e.target.tagName.toLowerCase() === 'a') return;
+                    var id = this.getAttribute('data-id');
+                    window.location.href = 'QuestionController?action=list&lessonId=' + id;
                 });
             });
         });
     </script>
 </head>
 <body>
-    <h2>📚 Danh sách bài học (Lesson List)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Subject ID</th>
-                <th>Tiêu đề</th>
-                <th>Nội dung</th>
-                <th>Phân loại</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th>Ngày cập nhật</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                List<Lesson> lessons = (List<Lesson>) request.getAttribute("lessons");
-                if (lessons != null && !lessons.isEmpty()) {
-                    for (Lesson lesson : lessons) {
-            %>
-            <tr class="clickable-row" data-lesson-id="<%= lesson.getId() %>">
-                <td><%= lesson.getId() %></td>
-                <td><%= lesson.getSubjectId() %></td>
-                <td><%= lesson.getTitle() %></td>
-                <td><%= lesson.getContent() %></td>
-                <td><%= lesson.getDimension() %></td>
-                <td><%= lesson.getStatus() %></td>
-                <td><%= lesson.getCreatedAt() %></td>
-                <td><%= lesson.getUpdatedAt() != null ? lesson.getUpdatedAt() : "Chưa cập nhật" %></td>
-                <td class="actions">
-                    <a href="lesson?action=detail&id=<%= lesson.getId() %>" onclick="event.stopPropagation();">✏️ Sửa</a>
-                    <a href="lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>" onclick="event.stopPropagation(); return confirm('Bạn chắc chắn muốn xoá chứ? 😥');">🗑️ Xoá</a>
-                </td>
-            </tr>
-            <%
-                    }
-                } else {
-            %>
-            <tr>
-                <td colspan="9" style="text-align: center;">Không có bài học nào được tìm thấy... Có lẽ giáo viên chưa đăng bài?</td>
-            </tr>
-            <%
-                }
-            %>
-        </tbody>
-    </table>
-
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="lesson?action=detail" style="padding:8px 12px; background:#007BFF; color:#fff; text-decoration:none; border-radius:4px;">
-            ➕ Thêm bài học mới
-        </a>
+    <div class="header">
+        <h2>📚 Danh sách bài học</h2>
+        <a href="lesson?action=detail" class="add-btn">➕ Thêm bài học mới</a>
     </div>
+
+    <%-- Helper để lấy tên Subject theo id --%>
+    <%! public String getSubjectName(int id, List<Subject> subjects) {
+        for (Subject s : subjects) {
+            if (s.getId() == id) return s.getTitle();
+        }
+        return "";
+    } %>
+
+    <%
+        List<Lesson> lessons = (List<Lesson>) request.getAttribute("lessons");
+        List<Subject> subjects = (List<Subject>) request.getAttribute("subjects");
+        if (subjects == null) subjects = new java.util.ArrayList<>();
+    %>
+
+    <%
+        if (lessons != null && !lessons.isEmpty()) {
+            for (Lesson lesson : lessons) {
+    %>
+    <div class="lesson-card" data-id="<%= lesson.getId() %>">
+        <div class="lesson-info">
+            <div><strong>ID:</strong> <%= lesson.getId() %> — <strong>Subject:</strong> <%= getSubjectName(lesson.getSubjectId(), subjects) %></div>
+            <div><strong>Tiêu đề:</strong> <%= lesson.getTitle() %></div>
+            <div><strong>Dimension:</strong> <%= lesson.getDimension() %></div>
+            <div><strong>Trạng thái:</strong> <%= lesson.getStatus() %></div>
+            <div><strong>Ngày tạo:</strong> <%= lesson.getCreatedAt() %> | <strong>Ngày cập nhật:</strong> <%= lesson.getUpdatedAt()!=null?lesson.getUpdatedAt():"Chưa cập nhật" %></div>
+        </div>
+        <div class="lesson-actions">
+            <a href="lesson?action=detail&id=<%= lesson.getId() %>" onclick="event.stopPropagation();">✏️ Sửa</a>
+            <a href="lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>" onclick="event.stopPropagation(); return confirm('Bạn chắc chắn muốn xoá chứ?');">🗑️ Xoá</a>
+        </div>
+    </div>
+    <%
+            }
+        } else {
+    %>
+    <p>Không có bài học nào được tìm thấy...</p>
+    <%
+        }
+    %>
 </body>
 </html>
