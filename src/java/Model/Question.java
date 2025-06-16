@@ -1,4 +1,4 @@
-/*
+        /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -6,6 +6,11 @@ package Model;
 
 import java.util.Date;
 import java.util.List;
+
+/**
+ *
+ * @author annt
+ */
 
 public class Question {
     private int id;
@@ -16,12 +21,12 @@ public class Question {
     private String status;
     private Date createdAt;
     private Date updatedAt;
-    private byte[] imageUrl;
+    private byte[] image;
 
     public Question() {
     }
 
-    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] imageUrl) {
+    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] image) {
         this.id = id;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
@@ -30,7 +35,7 @@ public class Question {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.imageUrl = imageUrl;
+        this.image = image;
     }
 
     public int getId() {
@@ -97,11 +102,11 @@ public class Question {
         this.updatedAt = updatedAt;
     }
 
-    public byte[] getImageUrl() {
-        return imageUrl;
+    public byte[] getImage() {
+        return image;
     }
 
-    public void setImageUrl(byte[] imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(byte[] image) {
+        this.image= image;
     }
 }

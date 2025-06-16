@@ -29,14 +29,26 @@
         h2 {
             text-align: center;
         }
-        .action-links a {
-            margin-right: 10px;
+        tr.clickable-row {
+            cursor: pointer;
+        }
+        td.actions a {
+            margin-right: 8px;
         }
     </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('tr.clickable-row').forEach(function(row) {
+                row.addEventListener('click', function() {
+                    var lessonId = this.getAttribute('data-lesson-id');
+                    window.location.href = 'QuestionController?action=list&lessonId=' + lessonId;
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <h2>📚 Danh sách bài học (Lesson List)</h2>
-
     <table>
         <thead>
             <tr>
@@ -57,7 +69,7 @@
                 if (lessons != null && !lessons.isEmpty()) {
                     for (Lesson lesson : lessons) {
             %>
-            <tr>
+            <tr class="clickable-row" data-lesson-id="<%= lesson.getId() %>">
                 <td><%= lesson.getId() %></td>
                 <td><%= lesson.getSubjectId() %></td>
                 <td><%= lesson.getTitle() %></td>
@@ -66,10 +78,9 @@
                 <td><%= lesson.getStatus() %></td>
                 <td><%= lesson.getCreatedAt() %></td>
                 <td><%= lesson.getUpdatedAt() != null ? lesson.getUpdatedAt() : "Chưa cập nhật" %></td>
-                <td class="action-links">
-                    <a href="lesson?action=detail&id=<%= lesson.getId() %>">✏️ Sửa</a>
-                    <a href="lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>"
-                       onclick="return confirm('Bạn chắc chắn muốn xoá chứ? 😥');">🗑️ Xoá</a>
+                <td class="actions">
+                    <a href="lesson?action=detail&id=<%= lesson.getId() %>" onclick="event.stopPropagation();">✏️ Sửa</a>
+                    <a href="lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>" onclick="event.stopPropagation(); return confirm('Bạn chắc chắn muốn xoá chứ? 😥');">🗑️ Xoá</a>
                 </td>
             </tr>
             <%
@@ -86,7 +97,9 @@
     </table>
 
     <div style="text-align: center; margin-top: 20px;">
-        <a href="lesson?action=detail">➕ Thêm bài học mới</a>
+        <a href="lesson?action=detail" style="padding:8px 12px; background:#007BFF; color:#fff; text-decoration:none; border-radius:4px;">
+            ➕ Thêm bài học mới
+        </a>
     </div>
 </body>
 </html>
