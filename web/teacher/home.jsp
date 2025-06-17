@@ -125,12 +125,12 @@
                 <div class="col-md-4">
                     <h4 class="mb-3">Quick Actions</h4>
                     <div class="activity-item">
-                        <a href="${pageContext.request.contextPath}/teacher/courses.jsp" class="text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/lesson?action=list" class="text-decoration-none">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-plus-circle me-3 text-primary"></i>
+                                <i class="fas fa-list me-3 text-primary"></i>
                                 <div>
-                                    <h5 class="mb-1 text-dark">Create New Course</h5>
-                                    <p class="text-muted mb-0">Add a new course to your list</p>
+                                    <h5 class="mb-1 text-dark">Manage Lessons</h5>
+                                    <p class="text-muted mb-0">View or update your lessons</p>
                                 </div>
                             </div>
                         </a>
