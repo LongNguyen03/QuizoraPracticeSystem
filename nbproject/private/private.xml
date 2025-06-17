@@ -5,10 +5,13 @@
         <group>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/LoginServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ForgotPasswordServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/QuestionAnswer.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AdminAuthorizationFilter.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Question.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/RegisterServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/VerifyOTPServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/register.jsp</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/Lesson.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/SendOTPServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Utils/EmailTemplateUtil.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ResetPasswordServlet.java</file>
@@ -19,8 +22,6 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Utils/OTPUtil.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Utils/PasswordUtil.java</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/Model/Subject.java</file>
-            <file>file:/C:/Users/kan3v/OneDrive/Documents/NetBeansProjects/New%20folder/QuizoraPracticeSystem/src/java/DAO/LessonDAO.java</file>
         </group>
     </open-files>
 </project-private>
