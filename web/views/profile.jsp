@@ -130,7 +130,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="info-item">
-                                    <div class="info-label">Middle Name</div>
+                                    <div class="info-label">Middle Nam</div>
                                     <div class="info-value">
                                         <input type="text" class="form-control" name="middleName" value="${profile.middleName}" readonly>
                                     </div>
