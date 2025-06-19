@@ -35,14 +35,29 @@ public class ProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
+        Integer accountId = (Integer) session.getAttribute("accountId");
         
-        if (account == null) {
+        if (accountId == null) {
             response.sendRedirect("login");
             return;
         }
 
-        UserProfile profile = profileDAO.getProfileWithAccount(account.getId());
+        UserProfile profile = profileDAO.getProfileWithAccount(accountId);
+        if (profile == null) {
+            // Nếu chưa có profile, tạo profile mặc định
+            profile = new UserProfile();
+            profile.setAccountId(accountId);
+            profile.setFirstName("User");
+            profile.setLastName("Name");
+            profile.setGender("Other");
+        }
+        
+        // Tạo Account object từ session data
+        Account account = new Account();
+        account.setId(accountId);
+        account.setEmail((String) session.getAttribute("email"));
+        account.setRoleName((String) session.getAttribute("role"));
+        
         request.setAttribute("profile", profile);
         request.setAttribute("account", account);
         request.getRequestDispatcher("views/profile.jsp").forward(request, response);
@@ -52,9 +67,9 @@ public class ProfileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
+        Integer accountId = (Integer) session.getAttribute("accountId");
         
-        if (account == null) {
+        if (accountId == null) {
             response.sendRedirect("login");
             return;
         }
@@ -68,7 +83,7 @@ public class ProfileServlet extends HttpServlet {
         String dateOfBirthStr = request.getParameter("dateOfBirth");
 
         UserProfile profile = new UserProfile();
-        profile.setAccountId(account.getId());
+        profile.setAccountId(accountId);
         profile.setFirstName(firstName);
         profile.setMiddleName(middleName);
         profile.setLastName(lastName);
@@ -109,10 +124,10 @@ public class ProfileServlet extends HttpServlet {
         
         // Update profile with new avatar URL
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
+        Integer accountId = (Integer) session.getAttribute("accountId");
         String avatarUrl = "uploads/avatars/" + fileName;
         
-        boolean success = profileDAO.updateAvatar(account.getId(), avatarUrl);
+        boolean success = profileDAO.updateAvatar(accountId, avatarUrl);
         
         response.setContentType("application/json");
         response.getWriter().write("{\"success\": " + success + "}");
