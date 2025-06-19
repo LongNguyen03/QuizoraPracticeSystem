@@ -170,6 +170,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- Message container -->
+                        <div id="messageContainer" class="alert" style="display: none;"></div>
+                        
                         <div id="forgotPasswordStep1">
                             <form id="forgotPasswordForm" action="forgot-password" method="POST">
                                 <div class="mb-3">
@@ -225,44 +228,70 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Xử lý quên mật khẩu
         document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
             e.preventDefault();
             const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
             modal.show();
+            // Reset form khi mở modal
+            $('#forgotPasswordStep1').show();
+            $('#forgotPasswordStep2').hide();
+            $('#forgotPasswordForm')[0].reset();
+            $('#resetPasswordForm')[0].reset();
+            $('#messageContainer').hide();
         });
 
-        // Hàm hiển thị thông báo và tự động ẩn sau 5 giây
-        function showMessage(element, message, type) {
-            element.textContent = message;
-            element.className = 'alert alert-' + type;
-            element.style.display = 'block';
+        // Hàm hiển thị thông báo
+        function showMessage(message, type) {
+            const messageContainer = $('#messageContainer');
+            messageContainer.removeClass('alert-success alert-danger').addClass('alert-' + type);
+            messageContainer.text(message).show();
             
             // Tự động ẩn sau 5 giây
             setTimeout(() => {
-                element.style.display = 'none';
+                messageContainer.hide();
             }, 5000);
         }
 
         // Handle forgot password form submission
         $('#forgotPasswordForm').on('submit', function(e) {
             e.preventDefault();
+            
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalText = submitBtn.text();
+            
+            // Show loading state
+            submitBtn.prop('disabled', true).text('Đang gửi...');
+            $('#messageContainer').hide();
+            
+            console.log('Sending forgot password request...');
+            console.log('URL:', $(this).attr('action'));
+            console.log('Data:', $(this).serialize());
+            
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    if (response === 'success') {
+                    console.log('Forgot password response:', response);
+                    if (response.trim() === 'success') {
+                        showMessage('Mã xác thực đã được gửi đến email của bạn!', 'success');
                         $('#forgotPasswordStep1').hide();
                         $('#forgotPasswordStep2').show();
                         $('#resetEmail').val($('#forgotEmail').val());
                     } else {
-                        alert(response);
+                        showMessage(response, 'danger');
                     }
                 },
-                error: function() {
-                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                error: function(xhr, status, error) {
+                    console.log('Forgot password error:', xhr, status, error);
+                    showMessage('Có lỗi xảy ra. Vui lòng thử lại sau.', 'danger');
+                },
+                complete: function() {
+                    // Reset button state
+                    submitBtn.prop('disabled', false).text(originalText);
                 }
             });
         });
@@ -270,23 +299,53 @@
         // Handle reset password form submission
         $('#resetPasswordForm').on('submit', function(e) {
             e.preventDefault();
+            
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalText = submitBtn.text();
+            
+            // Show loading state
+            submitBtn.prop('disabled', true).text('Đang xử lý...');
+            $('#messageContainer').hide();
+            
+            console.log('Sending reset password request...');
+            console.log('URL:', $(this).attr('action'));
+            console.log('Data:', $(this).serialize());
+            
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    if (response === 'success') {
-                        alert('Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.');
-                        $('#forgotPasswordModal').modal('hide');
-                        location.reload();
+                    console.log('Reset password response:', response);
+                    if (response.trim() === 'success') {
+                        showMessage('Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.', 'success');
+                        setTimeout(() => {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                            modal.hide();
+                            location.reload();
+                        }, 2000);
                     } else {
-                        alert(response);
+                        showMessage(response, 'danger');
                     }
                 },
-                error: function() {
-                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                error: function(xhr, status, error) {
+                    console.log('Reset password error:', xhr, status, error);
+                    showMessage('Có lỗi xảy ra. Vui lòng thử lại sau.', 'danger');
+                },
+                complete: function() {
+                    // Reset button state
+                    submitBtn.prop('disabled', false).text(originalText);
                 }
             });
+        });
+
+        // Reset modal when closed
+        $('#forgotPasswordModal').on('hidden.bs.modal', function () {
+            $('#forgotPasswordStep1').show();
+            $('#forgotPasswordStep2').hide();
+            $('#forgotPasswordForm')[0].reset();
+            $('#resetPasswordForm')[0].reset();
+            $('#messageContainer').hide();
         });
     </script>
 </body>

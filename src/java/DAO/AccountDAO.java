@@ -101,12 +101,16 @@ public class AccountDAO extends DBcontext {
     public boolean updateAccount(Account acc) {
         String sql = "UPDATE Accounts SET passwordHash = ?, roleId = ?, status = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, hashPassword(acc.getPasswordHash()));
+            ps.setString(1, acc.getPasswordHash()); // Không hash lại vì đã được hash từ trước
             ps.setInt(2, acc.getRoleId());
             ps.setString(3, acc.getStatus());
             ps.setInt(4, acc.getId());
-            return ps.executeUpdate() > 0;
+            System.out.println("AccountDAO: Updating account ID " + acc.getId() + " with password hash: " + acc.getPasswordHash());
+            int affected = ps.executeUpdate();
+            System.out.println("AccountDAO: Update affected rows: " + affected);
+            return affected > 0;
         } catch (SQLException e) {
+            System.out.println("AccountDAO: Error updating account: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
