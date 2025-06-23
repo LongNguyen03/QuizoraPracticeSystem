@@ -90,6 +90,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>VerifyOTPServlet</servlet-name>
+        <servlet-class>Controller.VerifyOTPServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VerifyOTPServlet</servlet-name>
+        <url-pattern>/verify-otp</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ForgotPasswordServlet</servlet-name>
         <servlet-class>Controller.ForgotPasswordServlet</servlet-class>
     </servlet>
@@ -105,6 +114,24 @@
     <servlet-mapping>
         <servlet-name>ResetPasswordServlet</servlet-name>
         <url-pattern>/reset-password</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ProfileServlet</servlet-name>
+        <servlet-class>Controller.ProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfileServlet</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>Controller.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
     <!-- Welcome File List -->

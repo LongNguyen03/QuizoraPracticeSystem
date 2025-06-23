@@ -124,9 +124,9 @@ public class RegisterServlet extends HttpServlet {
         // Tạo UserProfile
         UserProfile profile = new UserProfile();
         profile.setAccountId(acc.getId());
-        profile.setFirstName(firstName);
-        profile.setMiddleName(middleName);
-        profile.setLastName(lastName);
+        profile.setFirstName(firstName.trim());
+        profile.setMiddleName(middleName != null ? middleName.trim() : "");
+        profile.setLastName(lastName.trim());
         profile.setGender(gender);
         profile.setMobile(null);
         profile.setDateOfBirth(null);

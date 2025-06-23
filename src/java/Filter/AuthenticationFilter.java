@@ -8,9 +8,9 @@ public class AuthenticationFilter implements Filter {
     private static final String[] PUBLIC_PATHS = {
         "/login.jsp", "/login", "/register.jsp", "/register",
         "/views/login.jsp", "/views/register.jsp", "/views/home.jsp",
-        "/css/", "/js/", "/images/", "/index.jsp",
-        "/student/", "/teacher/", "/admin/", "/send-otp", "/verify-otp",
-        "/forgot-password", "/reset-password"
+        "/css/", "/js/", "/images/", "/uploads/", "/lib/",
+        "/send-otp", "/verify-otp", "/forgot-password", "/reset-password",
+        "/index.html", "/index.jsp", "/register.jsp"
     };
 
     @Override
@@ -34,24 +34,20 @@ public class AuthenticationFilter implements Filter {
         }
 
         HttpSession session = req.getSession(false);
-        if (isPublic || (session != null && session.getAttribute("accountId") != null)) {
-            // Nếu là guest và cố truy cập các trang cần quyền
-            if (session != null && "guest".equals(session.getAttribute("role"))) {
-                if (path.startsWith("/admin/") || path.startsWith("/teacher/") || 
-                    path.startsWith("/student/") || path.startsWith("/quiz/") || 
-                    path.startsWith("/exam/")) {
-                    res.sendRedirect(req.getContextPath() + "/views/home.jsp");
-                    return;
-                }
-            }
+        
+        // Nếu là public path, cho phép truy cập
+        if (isPublic) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
+        // Kiểm tra authentication cho các path khác
+        if (session != null && session.getAttribute("accountId") != null) {
+            // Đã đăng nhập, cho phép truy cập
             chain.doFilter(request, response);
         } else {
-            // Nếu chưa đăng nhập, tạo session guest
-            if (session == null) {
-                session = req.getSession();
-                session.setAttribute("role", "guest");
-            }
-            res.sendRedirect(req.getContextPath() + "/views/home.jsp");
+            // Chưa đăng nhập, chuyển hướng về login
+            res.sendRedirect(req.getContextPath() + "/login");
         }
     }
 

@@ -9,16 +9,32 @@ import java.io.IOException;
 public class LogoutServlet extends HttpServlet {
     
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        performLogout(request, response);
+    }
+    
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        performLogout(request, response);
+    }
+    
+    private void performLogout(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy session hiện tại
         HttpSession session = request.getSession(false);
         if (session != null) {
+            // Log thông tin logout
+            String email = (String) session.getAttribute("email");
+            String role = (String) session.getAttribute("role");
+            System.out.println("User logout: " + email + " (Role: " + role + ")");
+            
             // Xóa tất cả các thuộc tính trong session
             session.invalidate();
         }
         
-        // Chuyển hướng về trang home
-        response.sendRedirect(request.getContextPath() + "/views/home.jsp");
+        // Chuyển hướng về trang login với thông báo
+        response.sendRedirect(request.getContextPath() + "/login?message=You have been logged out successfully.");
     }
 } 

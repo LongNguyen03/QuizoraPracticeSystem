@@ -1,7 +1,9 @@
 package Controller;
 
 import DAO.AccountDAO;
+import DAO.UserProfileDAO;
 import Model.Account;
+import Model.UserProfile;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -10,6 +12,7 @@ import java.io.IOException;
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
     private AccountDAO accountDAO = new AccountDAO();
+    private UserProfileDAO userProfileDAO = new UserProfileDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -18,17 +21,24 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("accountId") != null) {
             String role = (String) session.getAttribute("role");
-            if ("admin".equals(role)) {
+            if ("Admin".equalsIgnoreCase(role)) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
-            } else if ("teacher".equals(role)) {
+            } else if ("Teacher".equalsIgnoreCase(role)) {
                 response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
-            } else if ("student".equals(role)) {
+            } else if ("Student".equalsIgnoreCase(role)) {
                 response.sendRedirect(request.getContextPath() + "/student/home.jsp");
             } else {
                 response.sendRedirect(request.getContextPath() + "/views/home.jsp");
             }
             return;
         }
+        
+        // Xử lý thông báo logout
+        String message = request.getParameter("message");
+        if (message != null && !message.trim().isEmpty()) {
+            request.setAttribute("message", message);
+        }
+        
         // Nếu chưa đăng nhập, forward tới login.jsp
         request.getRequestDispatcher("/views/login.jsp").forward(request, response);
     }
@@ -57,6 +67,25 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("accountId", acc.getId());
                 session.setAttribute("email", acc.getEmail());
                 session.setAttribute("role", acc.getRoleName());
+                
+                // Lấy thông tin user profile
+                UserProfile profile = userProfileDAO.getProfileWithAccount(acc.getId());
+                if (profile != null) {
+                    session.setAttribute("firstName", profile.getFirstName());
+                    session.setAttribute("lastName", profile.getLastName());
+                    session.setAttribute("middleName", profile.getMiddleName());
+                    session.setAttribute("avatarUrl", profile.getAvatarUrl());
+                    session.setAttribute("mobile", profile.getMobile());
+                    session.setAttribute("gender", profile.getGender());
+                    session.setAttribute("dateOfBirth", profile.getDateOfBirth());
+                } else {
+                    // Nếu chưa có profile, tạo profile mặc định
+                    if (userProfileDAO.createDefaultProfile(acc.getId(), "User", "Name")) {
+                        session.setAttribute("firstName", "User");
+                        session.setAttribute("lastName", "Name");
+                        session.setAttribute("avatarUrl", "default-avatar.png");
+                    }
+                }
                 
                 System.out.println("Login successful for user: " + acc.getEmail());
                 System.out.println("Role from database: " + acc.getRoleName());
