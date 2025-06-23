@@ -76,6 +76,24 @@
 <body>
     <jsp:include page="components/header.jsp" />
 
+    <!-- Message Alert -->
+    <c:if test="${not empty sessionScope.message}">
+        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+            ${sessionScope.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("message"); %>
+    </c:if>
+
+    <!-- Error Alert -->
+    <c:if test="${not empty sessionScope.error}">
+        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+            ${sessionScope.error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("error"); %>
+    </c:if>
+
     <div class="profile-header">
         <div class="container">
             <div class="row align-items-center">
@@ -210,8 +228,8 @@
                 const formData = new FormData();
                 formData.append('avatar', file);
                 
-                fetch('upload-avatar', {
-                    method: 'POST',
+                fetch('profile', {
+                    method: 'PUT',
                     body: formData
                 })
                 .then(response => response.json())
