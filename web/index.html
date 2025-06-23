@@ -5,15 +5,37 @@
 -->
 <html>
     <head>
-        <title>Quizora Landing Page</title>
+        <title>Quizora - Redirecting...</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="0;url=views/home.jsp">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+            .loader {
+                border: 4px solid rgba(255,255,255,0.3);
+                border-radius: 50%;
+                border-top: 4px solid white;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
     </head>
     <body>
-        <!-- Link đến HomeController (URL pattern: /home) -->
-        <a href="home">Home</a> |
-        <!-- Link đến QuestionController (URL pattern: /QuestionController) -->
-        <a href="QuestionController">Question</a>
-        <a href="lesson">Lesson</a>
+        <h1>Welcome to Quizora</h1>
+        <div class="loader"></div>
+        <p>Redirecting to home page...</p>
+        <p>If you are not redirected automatically, <a href="views/home.jsp" style="color: white; text-decoration: underline;">click here</a></p>
     </body>
 </html>

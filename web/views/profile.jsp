@@ -36,6 +36,7 @@
             color: #666;
             font-size: 0.9rem;
             margin-bottom: 0.3rem;
+            font-weight: 500;
         }
         .info-value {
             font-size: 1.1rem;
@@ -71,6 +72,38 @@
         .avatar-upload label:hover {
             background: #0056b3;
         }
+        .form-control:read-only {
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+        }
+        .form-control:read-only:focus {
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+            box-shadow: none;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .role-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -99,9 +132,10 @@
             <div class="row align-items-center">
                 <div class="col-md-3 text-center">
                     <div class="avatar-upload">
-                        <img src="${profile.avatarUrl != null ? profile.avatarUrl : 'https://ui-avatars.com/api/?name=' + profile.firstName + '+' + profile.lastName + '&background=random'}" 
+                        <img src="${profile.avatarDisplayUrl}" 
                              alt="Profile Avatar" 
-                             class="profile-avatar">
+                             class="profile-avatar"
+                             id="profile-avatar">
                         <label for="avatar-input">
                             <i class="fas fa-camera"></i>
                         </label>
@@ -109,9 +143,14 @@
                     </div>
                 </div>
                 <div class="col-md-9">
-                    <h1 class="mb-2">${profile.firstName} ${profile.middleName} ${profile.lastName}</h1>
-                    <p class="mb-1"><i class="fas fa-envelope me-2"></i>${account.email}</p>
-                    <p class="mb-0"><i class="fas fa-user-tag me-2"></i>${account.roleName}</p>
+                    <h1 class="mb-2">${profile.displayName}</h1>
+                    <p class="mb-1"><i class="fas fa-envelope me-2"></i>${profile.email}</p>
+                    <p class="mb-1">
+                        <span class="role-badge me-2">${profile.roleName}</span>
+                        <span class="status-badge ${profile.status == 'active' ? 'status-active' : 'status-inactive'}">
+                            ${profile.status}
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -131,7 +170,7 @@
                                 <div class="info-item">
                                     <div class="info-label">First Name</div>
                                     <div class="info-value">
-                                        <input type="text" class="form-control" name="firstName" value="${profile.firstName}" readonly>
+                                        <input type="text" class="form-control" name="firstName" value="${profile.firstName}" readonly required>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +178,7 @@
                                 <div class="info-item">
                                     <div class="info-label">Last Name</div>
                                     <div class="info-value">
-                                        <input type="text" class="form-control" name="lastName" value="${profile.lastName}" readonly>
+                                        <input type="text" class="form-control" name="lastName" value="${profile.lastName}" readonly required>
                                     </div>
                                 </div>
                             </div>
@@ -183,15 +222,21 @@
                                     <div class="info-label">Mobile</div>
                                     <div class="info-value">
                                         <input type="tel" class="form-control" name="mobile" 
-                                               value="${profile.mobile}" readonly>
+                                               value="${profile.mobile}" readonly 
+                                               pattern="[0-9+\-\\s()]{10,15}"
+                                               title="Please enter a valid phone number">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="text-center mt-4 d-none" id="save-buttons">
-                            <button type="submit" class="btn btn-primary me-2">Save Changes</button>
-                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -225,6 +270,11 @@
         document.getElementById('avatar-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                // Show loading state
+                const avatar = document.getElementById('profile-avatar');
+                const originalSrc = avatar.src;
+                avatar.style.opacity = '0.5';
+                
                 const formData = new FormData();
                 formData.append('avatar', file);
                 
@@ -235,17 +285,42 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload();
+                        // Update avatar immediately
+                        avatar.src = data.avatarUrl;
+                        avatar.style.opacity = '1';
+                        // Show success message
+                        showAlert('Avatar updated successfully!', 'success');
                     } else {
-                        alert('Failed to upload avatar');
+                        avatar.src = originalSrc;
+                        avatar.style.opacity = '1';
+                        showAlert(data.message || 'Failed to upload avatar', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Failed to upload avatar');
+                    avatar.src = originalSrc;
+                    avatar.style.opacity = '1';
+                    showAlert('Failed to upload avatar', 'danger');
                 });
             }
         });
+        
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show m-3`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
     </script>
 </body>
 </html> 

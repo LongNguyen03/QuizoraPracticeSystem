@@ -71,7 +71,7 @@ public class UserProfileDAO extends DBcontext {
             ps.setInt(1, accountId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new UserProfile(
+                UserProfile profile = new UserProfile(
                     rs.getInt("accountId"),
                     rs.getString("firstName"),
                     rs.getString("middleName"),
@@ -81,6 +81,11 @@ public class UserProfileDAO extends DBcontext {
                     rs.getDate("dateOfBirth"),
                     rs.getString("avatarUrl")
                 );
+                // Thêm thông tin từ Account
+                profile.setEmail(rs.getString("email"));
+                profile.setStatus(rs.getString("status"));
+                profile.setRoleName(rs.getString("roleName"));
+                return profile;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,8 +134,9 @@ public class UserProfileDAO extends DBcontext {
     // Tìm kiếm profile theo tên hoặc email
     public List<UserProfile> searchProfiles(String keyword) {
         List<UserProfile> list = new ArrayList<>();
-        String sql = "SELECT up.* FROM UserProfiles up " +
+        String sql = "SELECT up.*, a.email, a.status, r.name as roleName FROM UserProfiles up " +
                      "JOIN Accounts a ON up.accountId = a.id " +
+                     "JOIN Roles r ON a.roleId = r.id " +
                      "WHERE up.firstName LIKE ? OR up.middleName LIKE ? OR up.lastName LIKE ? OR a.email LIKE ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             String searchPattern = "%" + keyword + "%";
@@ -140,7 +146,7 @@ public class UserProfileDAO extends DBcontext {
             ps.setString(4, searchPattern);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new UserProfile(
+                UserProfile profile = new UserProfile(
                     rs.getInt("accountId"),
                     rs.getString("firstName"),
                     rs.getString("middleName"),
@@ -149,7 +155,12 @@ public class UserProfileDAO extends DBcontext {
                     rs.getString("mobile"),
                     rs.getDate("dateOfBirth"),
                     rs.getString("avatarUrl")
-                ));
+                );
+                // Thêm thông tin từ Account
+                profile.setEmail(rs.getString("email"));
+                profile.setStatus(rs.getString("status"));
+                profile.setRoleName(rs.getString("roleName"));
+                list.add(profile);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,11 +184,14 @@ public class UserProfileDAO extends DBcontext {
     // Lấy danh sách tất cả profile (nếu cần)
     public List<UserProfile> getAllProfiles() {
         List<UserProfile> list = new ArrayList<>();
-        String sql = "SELECT accountId, firstName, middleName, lastName, gender, mobile, dateOfBirth, avatarUrl FROM UserProfiles";
+        String sql = "SELECT up.*, a.email, a.status, r.name as roleName FROM UserProfiles up " +
+                     "JOIN Accounts a ON up.accountId = a.id " +
+                     "JOIN Roles r ON a.roleId = r.id " +
+                     "ORDER BY up.firstName, up.lastName";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(new UserProfile(
+                UserProfile profile = new UserProfile(
                     rs.getInt("accountId"),
                     rs.getString("firstName"),
                     rs.getString("middleName"),
@@ -186,11 +200,47 @@ public class UserProfileDAO extends DBcontext {
                     rs.getString("mobile"),
                     rs.getDate("dateOfBirth"),
                     rs.getString("avatarUrl")
-                ));
+                );
+                // Thêm thông tin từ Account
+                profile.setEmail(rs.getString("email"));
+                profile.setStatus(rs.getString("status"));
+                profile.setRoleName(rs.getString("roleName"));
+                list.add(profile);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    // Kiểm tra profile có tồn tại không
+    public boolean profileExists(int accountId) {
+        String sql = "SELECT COUNT(*) FROM UserProfiles WHERE accountId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    // Tạo profile mặc định nếu chưa có
+    public boolean createDefaultProfile(int accountId, String firstName, String lastName) {
+        if (profileExists(accountId)) {
+            return true; // Profile đã tồn tại
+        }
+        
+        UserProfile defaultProfile = new UserProfile();
+        defaultProfile.setAccountId(accountId);
+        defaultProfile.setFirstName(firstName != null ? firstName : "User");
+        defaultProfile.setLastName(lastName != null ? lastName : "Name");
+        defaultProfile.setGender("Other");
+        defaultProfile.setAvatarUrl("default-avatar.png");
+        
+        return insertUserProfile(defaultProfile);
     }
 }

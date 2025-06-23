@@ -106,7 +106,7 @@
     </style>
 </head>
 <body>
-    <jsp:include page="layout/header.jsp" />
+    <jsp:include page="components/header.jsp" />
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -174,8 +174,6 @@
             </div>
         </div>
     </section>
-
-
 
     <!-- CTA Section -->
     <section class="cta-section">
