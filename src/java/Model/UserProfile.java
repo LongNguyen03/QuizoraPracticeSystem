@@ -19,6 +19,11 @@ public class UserProfile {
     private String mobile;
     private Date dateOfBirth;
     private String avatarUrl;
+    
+    // Thêm thông tin từ Account
+    private String email;
+    private String status;
+    private String roleName;
 
     public UserProfile() {}
 
@@ -95,5 +100,76 @@ public class UserProfile {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+    
+    // Thêm getter/setter cho thông tin Account
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+    
+    // Thêm các phương thức tiện ích
+    public String getFullName() {
+        StringBuilder fullName = new StringBuilder();
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            fullName.append(firstName.trim());
+        }
+        if (middleName != null && !middleName.trim().isEmpty()) {
+            if (fullName.length() > 0) fullName.append(" ");
+            fullName.append(middleName.trim());
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            if (fullName.length() > 0) fullName.append(" ");
+            fullName.append(lastName.trim());
+        }
+        return fullName.toString();
+    }
+    
+    public String getDisplayName() {
+        String fullName = getFullName();
+        return fullName.isEmpty() ? "User" : fullName;
+    }
+    
+    public String getInitials() {
+        StringBuilder initials = new StringBuilder();
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            initials.append(firstName.trim().charAt(0));
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            initials.append(lastName.trim().charAt(0));
+        }
+        return initials.toString().toUpperCase();
+    }
+    
+    public boolean hasAvatar() {
+        return avatarUrl != null && !avatarUrl.trim().isEmpty() && !avatarUrl.equals("default-avatar.png");
+    }
+    
+    public String getAvatarDisplayUrl() {
+        if (hasAvatar()) {
+            return avatarUrl;
+        } else {
+            // Tạo avatar từ tên người dùng
+            return "https://ui-avatars.com/api/?name=" + getInitials() + "&background=random&size=150";
+        }
     }
 }
