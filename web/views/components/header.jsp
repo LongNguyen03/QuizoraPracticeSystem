@@ -4,10 +4,20 @@
 <header class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="container">
         <!-- Logo/Brand -->
-        <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/home">
-            <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
-            <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
-        </a>
+        <c:choose>
+            <c:when test="${sessionScope.role == 'Student'}">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/student/home">
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/home.jsp">
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
+                </a>
+            </c:otherwise>
+        </c:choose>
         
         <!-- Mobile Toggle Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 

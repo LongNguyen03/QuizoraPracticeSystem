@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,66 +62,28 @@
             <p class="mb-0">Here's what's happening with your courses today.</p>
         </div>
 
-        <!-- Stats Section -->
+        <!-- Subject List Section -->
         <div class="row">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="fas fa-book"></i>
-                    <h3>5</h3>
-                    <p class="text-muted mb-0">Active Courses</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="fas fa-tasks"></i>
-                    <h3>3</h3>
-                    <p class="text-muted mb-0">Pending Assignments</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>85%</h3>
-                    <p class="text-muted mb-0">Average Score</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="row mt-4">
-            <div class="col-md-8">
-                <h4 class="mb-3">Recent Activity</h4>
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-1">Math Quiz</h5>
-                            <p class="text-muted mb-0">Completed with 90% score</p>
+            <h3 class="mb-4">Subjects</h3>
+            <c:choose>
+                <c:when test="${not empty subjects}">
+                    <c:forEach var="subject" items="${subjects}">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">${subject.title}</h5>
+                                    <p class="card-text">${subject.description}</p>
+                                </div>
+                            </div>
                         </div>
-                        <span class="badge bg-success">Completed</span>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <div class="col-12">
+                        <div class="alert alert-info">No subjects available.</div>
                     </div>
-                </div>
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-1">Physics Assignment</h5>
-                            <p class="text-muted mb-0">Due in 2 days</p>
-                        </div>
-                        <span class="badge bg-warning">Pending</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <h4 class="mb-3">Upcoming Deadlines</h4>
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-1">Chemistry Lab Report</h5>
-                            <p class="text-muted mb-0">Due tomorrow</p>
-                        </div>
-                        <span class="badge bg-danger">Urgent</span>
-                    </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 
