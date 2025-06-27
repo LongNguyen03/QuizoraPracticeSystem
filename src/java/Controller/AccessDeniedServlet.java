@@ -33,7 +33,7 @@ public class AccessDeniedServlet extends HttpServlet {
         request.setAttribute("currentRole", currentRole);
         
         // Forward đến trang access-denied.jsp
-        request.getRequestDispatcher("/access-denied.jsp").forward(request, response);
+        request.getRequestDispatcher("/error/access-denied.jsp").forward(request, response);
     }
 
     @Override
