@@ -125,7 +125,7 @@
                 <div class="col-md-4">
                     <h4 class="mb-3">Quick Actions</h4>
                     <div class="activity-item">
-                        <a href="${pageContext.request.contextPath}/admin/users.jsp" class="text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/users" class="text-decoration-none">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-user-plus me-3 text-primary"></i>
                                 <div>
@@ -136,7 +136,7 @@
                         </a>
                     </div>
                     <div class="activity-item">
-                        <a href="${pageContext.request.contextPath}/admin/subjects.jsp" class="text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/subjects" class="text-decoration-none">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-book-medical me-3 text-primary"></i>
                                 <div>

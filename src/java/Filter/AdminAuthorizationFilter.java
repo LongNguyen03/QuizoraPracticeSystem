@@ -15,7 +15,7 @@ public class AdminAuthorizationFilter implements Filter {
         if (session != null && "Admin".equals(session.getAttribute("role"))) {
             chain.doFilter(request, response);
         } else {
-            res.sendRedirect(req.getContextPath() + "/views/home.jsp");
+            res.sendRedirect(req.getContextPath() + "/access-denied");
         }
     }
 

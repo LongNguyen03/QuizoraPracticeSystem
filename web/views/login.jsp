@@ -222,7 +222,7 @@
             </div>
         </div>
 
-        <div class="login-link">
+        <div class="register-link">
             <p>Don't have an account? <a href="${pageContext.request.contextPath}/register">Register here</a></p>
         </div>
     </div>
