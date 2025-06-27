@@ -23,8 +23,8 @@ public class StudentAuthorizationFilter implements Filter {
             // Cho phép tiếp tục request tới servlet/JSP bên trong /student/…
             chain.doFilter(request, response);
         } else {
-            // Nếu chưa login hoặc không phải student, chuyển hướng về trang home
-            res.sendRedirect(req.getContextPath() + "/views/home.jsp");
+            // Nếu chưa login hoặc không phải student, chuyển hướng đến servlet access-denied
+            res.sendRedirect(req.getContextPath() + "/access-denied");
         }
     }
 

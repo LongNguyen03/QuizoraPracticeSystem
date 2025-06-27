@@ -16,6 +16,18 @@
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
+    <!-- Role-based access filter for general URL protection -->
+    <filter>
+        <filter-name>RoleBasedAccessFilter</filter-name>
+        <filter-class>Filter.RoleBasedAccessFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RoleBasedAccessFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
     <filter>
         <filter-name>AdminAuthorizationFilter</filter-name>
         <filter-class>Filter.AdminAuthorizationFilter</filter-class>
@@ -132,6 +144,33 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentHomeServlet</servlet-name>
+        <servlet-class>Controller.StudentHomeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentHomeServlet</servlet-name>
+        <url-pattern>/student/home</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentDashboardServlet</servlet-name>
+        <jsp-file>/student/dashboard.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentDashboardServlet</servlet-name>
+        <url-pattern>/student/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AccessDeniedServlet</servlet-name>
+        <servlet-class>Controller.AccessDeniedServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AccessDeniedServlet</servlet-name>
+        <url-pattern>/access-denied</url-pattern>
     </servlet-mapping>
 
     <!-- Welcome File List -->
