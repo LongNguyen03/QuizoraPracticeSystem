@@ -10,7 +10,7 @@ public class AuthenticationFilter implements Filter {
         "/views/login.jsp", "/views/register.jsp", "/views/home.jsp",
         "/css/", "/js/", "/images/", "/uploads/", "/lib/",
         "/send-otp", "/verify-otp", "/forgot-password", "/reset-password",
-        "/index.html", "/index.jsp", "/register.jsp"
+        "/index.html", "/index.jsp", "/register.jsp", "/access-denied.jsp", "/access-denied"
     };
 
     @Override

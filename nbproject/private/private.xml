@@ -13,7 +13,6 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/home.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/UserProfileDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Filter/AuthenticationFilter.java</file>
-            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/components/header.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/student/home.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/DBcontext.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Model/UserProfile.java</file>
@@ -26,6 +25,7 @@
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/SendOTPServlet.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Utils/EmailTemplateUtil.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/Controller/ResetPasswordServlet.java</file>
+            <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/src/java/DAO/AccountDAO.java</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/views/login.jsp</file>
             <file>file:/A:/SWP391_Project/QuizoraPracticeSystem/web/WEB-INF/web.xml</file>
         </group>

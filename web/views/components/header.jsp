@@ -201,11 +201,7 @@
                                         <i class="fas fa-cog me-2 text-secondary"></i>Settings
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item py-2" href="${pageContext.request.contextPath}/change-password">
-                                        <i class="fas fa-key me-2 text-warning"></i>Change Password
-                                    </a>
-                                </li>
+                                
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item py-2 text-danger" href="${pageContext.request.contextPath}/logout">
