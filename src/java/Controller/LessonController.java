@@ -70,7 +70,7 @@ public class LessonController extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.setAttribute("dimension", dimension);
 
-        request.getRequestDispatcher("LessonList.jsp").forward(request, response);
+        request.getRequestDispatcher("teacher/LessonList.jsp").forward(request, response);
     }
 
     private void showDetail(HttpServletRequest request, HttpServletResponse response)
@@ -89,7 +89,7 @@ public class LessonController extends HttpServlet {
         List<Subject> subjects = subjectDAO.getAllSubjects();
         request.setAttribute("subjects", subjects);
         request.setAttribute("lesson", lesson);
-        request.getRequestDispatcher("LessonDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("teacher/LessonDetail.jsp").forward(request, response);
     }
 
     private void deleteLesson(HttpServletRequest request, HttpServletResponse response)

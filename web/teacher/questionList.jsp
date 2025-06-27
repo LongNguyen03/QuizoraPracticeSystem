@@ -68,12 +68,12 @@
 
     <div class="top-bar">
         <h2>Question List</h2>
-        <a href="QuestionController?action=create" style="padding:8px 12px; background:#007BFF; color:#fff; text-decoration:none; border-radius:4px;">
+        <a href="${pageContext.request.contextPath}/QuestionController?action=create" style="padding:8px 12px; background:#007BFF; color:#fff; text-decoration:none; border-radius:4px;">
             ➕ Create New Question
         </a>
     </div>
 
-    <form method="get" action="QuestionController" class="filter-form">
+    <form method="get" action="${pageContext.request.contextPath}/QuestionController" class="filter-form">
         <input type="hidden" name="action" value="list"/>
         <label>Subject:</label>
         <select name="subjectId">
@@ -121,7 +121,7 @@
     <div class="question-card">
         <div class="index"><%= idx++ %>.</div>
         <% if(q.getImage()!=null){ %>
-            <img class="img" src="questionImage?id=<%=q.getId()%>" alt="img"/>
+            <img class="img" src="${pageContext.request.contextPath}/questionImage?id=<%=q.getId()%>" alt="img"/>
         <% } else { %>
             <div class="no-img">No Image</div>
         <% } %>
@@ -141,8 +141,8 @@
             </div>
         </div>
         <div class="actions">
-            <a href="QuestionController?action=edit&id=<%=q.getId()%>">✏️ Edit</a>
-            <a href="QuestionController?action=delete&id=<%=q.getId()%>" onclick="return confirm('Delete this question?');">🗑️ Delete</a>
+            <a href="${pageContext.request.contextPath}/QuestionController?action=edit&id=<%=q.getId()%>">✏️ Edit</a>
+            <a href="${pageContext.request.contextPath}/QuestionController?action=delete&id=<%=q.getId()%>" onclick="return confirm('Delete this question?');">🗑️ Delete</a>
         </div>
     </div>
     <% } %>

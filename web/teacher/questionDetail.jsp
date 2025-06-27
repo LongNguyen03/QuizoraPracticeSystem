@@ -72,7 +72,7 @@
 </head>
 <body>
   <h2 style="text-align:center"><%= isEdit ? "Edit" : "Create" %> Question</h2>
-  <form action="QuestionController" method="post" enctype="multipart/form-data">
+  <form action="${pageContext.request.contextPath}/QuestionController" method="post" enctype="multipart/form-data">
     <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>"/>
     <% if(isEdit){ %><input type="hidden" name="id" value="<%=q.getId()%>"/><% } %>
 
@@ -102,7 +102,7 @@
     <div class="row"><label>Image</label>
       <input type="file" name="image" accept="image/*"/>
       <% if(isEdit&&q.getImage()!=null){%>
-        <div style="margin-top:10px;"><img src="questionImage?id=<%=q.getId()%>" style="max-width:200px;"/></div>
+        <div style="margin-top:10px;"><img src="${pageContext.request.contextPath}/questionImage?id=<%=q.getId()%>" style="max-width:200px;"/></div>
       <%}%>
     </div>
 
@@ -134,6 +134,6 @@
 
     <div class="actions"><button type="submit">Save</button></div>
   </form>
-  <div class="back"><a href="QuestionController?action=list&lessonId=<%=isEdit?q.getLessonId():""%>">&larr; Back</a></div>
+  <div class="back"><a href="${pageContext.request.contextPath}/QuestionController?action=list&lessonId=<%=isEdit?q.getLessonId():""%>">&larr; Back</a></div>
 </body>
 </html>
