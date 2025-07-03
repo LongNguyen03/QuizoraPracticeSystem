@@ -33,24 +33,24 @@ public class QuizDAO extends DBcontext {
         return quizzes;
     }
     
-     public int insert(Quiz q) throws SQLException {
-        Connection conn = DB.getConnection();
-        PreparedStatement ps = conn.prepareStatement(
-          "INSERT INTO Quizzes(name, subjectId, level, numberOfQuestions, durationMinutes, passRate, type, createdAt) VALUES (?,?,?,?,?,?,?,?)",
-          Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, q.getName());
-        ps.setInt(2, q.getSubjectId());
-        ps.setString(3, q.getLevel());
-        ps.setInt(4, q.getNumberOfQuestions());
-        ps.setInt(5, q.getDurationMinutes());
-        ps.setDouble(6, q.getPassRate());
-        ps.setString(7, q.getType());
-        ps.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
-        ps.executeUpdate();
-        ResultSet keys = ps.getGeneratedKeys();
-        keys.next();
-        int newId = keys.getInt(1);
-        keys.close(); ps.close(); conn.close();
-        return newId;
-    }
+//     public int insert(Quiz q) throws SQLException {
+//        Connection conn = DB.getConnection();
+//        PreparedStatement ps = conn.prepareStatement(
+//          "INSERT INTO Quizzes(name, subjectId, level, numberOfQuestions, durationMinutes, passRate, type, createdAt) VALUES (?,?,?,?,?,?,?,?)",
+//          Statement.RETURN_GENERATED_KEYS);
+//        ps.setString(1, q.getName());
+//        ps.setInt(2, q.getSubjectId());
+//        ps.setString(3, q.getLevel());
+//        ps.setInt(4, q.getNumberOfQuestions());
+//        ps.setInt(5, q.getDurationMinutes());
+//        ps.setDouble(6, q.getPassRate());
+//        ps.setString(7, q.getType());
+//        ps.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+//        ps.executeUpdate();
+//        ResultSet keys = ps.getGeneratedKeys();
+//        keys.next();
+//        int newId = keys.getInt(1);
+//        keys.close(); ps.close(); conn.close();
+//        return newId;
+//    }
 }
