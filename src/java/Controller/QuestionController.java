@@ -88,7 +88,7 @@ public class QuestionController extends HttpServlet {
         request.setAttribute("lessons", lessons);
         request.setAttribute("lessonId", lessonId);
         request.setAttribute("lessonTitle", lesson.getTitle());
-        request.getRequestDispatcher("questionList.jsp").forward(request, response);
+        request.getRequestDispatcher("teacher/questionList.jsp").forward(request, response);
     }
 
     private void showForm(HttpServletRequest request, HttpServletResponse response, Question q)
@@ -99,7 +99,7 @@ public class QuestionController extends HttpServlet {
         request.setAttribute("question", q);
         request.setAttribute("subjects", subjects);
         request.setAttribute("lessons", lessons);
-        request.getRequestDispatcher("questionDetail.jsp").forward(request, response);
+        request.getRequestDispatcher("teacher/questionDetail.jsp").forward(request, response);
     }
 
     private void insertQuestion(HttpServletRequest request, HttpServletResponse response)

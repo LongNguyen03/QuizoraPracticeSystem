@@ -136,7 +136,7 @@
                         </a>
                     </div>
                     <div class="activity-item">
-                        <a href="${pageContext.request.contextPath}/teacher/quizzes.jsp" class="text-decoration-none">
+                        <a href="${pageContext.request.contextPath}/QuestionController?action=list" class="text-decoration-none">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-plus-circle me-3 text-primary"></i>
                                 <div>

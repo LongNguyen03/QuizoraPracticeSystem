@@ -54,7 +54,7 @@
 
 <h2 style="text-align:center;"><%= "edit".equals(formAction) ? "Chỉnh sửa bài học" : "Thêm bài học mới" %></h2>
 
-<form action="lesson" method="post">
+<form action="${pageContext.request.contextPath}/lesson" method="post">
     <input type="hidden" name="action" value="<%= formAction %>"/>
     <input type="hidden" name="id" value="<%= lesson.getId() %>"/>
 
@@ -87,7 +87,7 @@
     <textarea name="content" id="content" rows="6"><%= lesson.getContent() != null ? lesson.getContent() : "" %></textarea>
 
     <input type="submit" value="<%= "edit".equals(formAction) ? "Cập nhật" : "Thêm mới" %>"/>
-    <a href="lesson?action=list&subjectId=<%= lesson.getSubjectId() %>" class="button">Hủy</a>
+    <a href="${pageContext.request.contextPath}/lesson?action=list&subjectId=<%= lesson.getSubjectId() %>" class="button">Hủy</a>
 </form>
 
 </body>

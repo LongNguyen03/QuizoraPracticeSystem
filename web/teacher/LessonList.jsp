@@ -29,7 +29,7 @@
                 card.addEventListener('click', function(e) {
                     if (e.target.tagName.toLowerCase() === 'a') return;
                     var id = this.getAttribute('data-id');
-                    window.location.href = 'QuestionController?action=list&lessonId=' + id;
+                    window.location.href = '${pageContext.request.contextPath}/QuestionController?action=list&lessonId=' + id;
                 });
             });
         });
@@ -38,7 +38,7 @@
 <body>
     <div class="header">
         <h2>📚 Danh sách bài học</h2>
-        <a href="lesson?action=detail" class="add-btn">➕ Thêm bài học mới</a>
+        <a href="${pageContext.request.contextPath}/lesson?action=detail" class="add-btn">➕ Thêm bài học mới</a>
     </div>
 
     <%-- Helper để lấy tên Subject theo id --%>
