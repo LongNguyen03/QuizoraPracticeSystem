@@ -5,3 +5,6 @@
 # Documentation files - không push lên Git
 /docs/
 *.md
+# Ignore tất cả file XML và properties
+*.xml
+*.properties
