@@ -68,8 +68,8 @@
             <div><strong>Ngày tạo:</strong> <%= lesson.getCreatedAt() %> | <strong>Ngày cập nhật:</strong> <%= lesson.getUpdatedAt()!=null?lesson.getUpdatedAt():"Chưa cập nhật" %></div>
         </div>
         <div class="lesson-actions">
-            <a href="${pageContext.request.contextPath}/lesson?action=detail&id=<%= lesson.getId() %>" onclick="event.stopPropagation();">✏️ Sửa</a>
-            <a href="${pageContext.request.contextPath}/lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>" onclick="event.stopPropagation(); return confirm('Bạn chắc chắn muốn xoá chứ?');">🗑️ Xoá</a>
+            <a href="lesson?action=detail&id=<%= lesson.getId() %>" onclick="event.stopPropagation();">✏️ </a>
+            <a href="lesson?action=delete&id=<%= lesson.getId() %>&subjectId=<%= lesson.getSubjectId() %>" onclick="event.stopPropagation(); return confirm('Bạn chắc chắn muốn xoá chứ?');">🗑️</a>
         </div>
     </div>
     <%
