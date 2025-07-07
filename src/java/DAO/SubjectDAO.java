@@ -21,7 +21,7 @@ public class SubjectDAO extends DBcontext {
      */
     public List<Subject> getAllSubjects() {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT * FROM Subjects WHERE Status = 'Active'";
+        String sql = "SELECT * FROM Subjects";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -113,6 +113,20 @@ public class SubjectDAO extends DBcontext {
         return false;
     }
     
+    /**
+     * Xóa môn học theo ID
+     */
+    public boolean deleteSubject(int id) {
+        String sql = "DELETE FROM Subjects WHERE Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 //    public List<Subject> findAll() throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement("SELECT id, title FROM Subjects WHERE status='Active'");
