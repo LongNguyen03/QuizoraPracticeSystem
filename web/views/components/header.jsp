@@ -5,6 +5,12 @@
     <div class="container">
         <!-- Logo/Brand -->
         <c:choose>
+            <c:when test="${sessionScope.role == 'Admin'}">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/admin/dashboard">
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
+                </a>
+            </c:when>
             <c:when test="${sessionScope.role == 'Student'}">
                 <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/student/home">
                     <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>

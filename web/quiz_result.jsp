@@ -9,9 +9,10 @@
   QuizResult result = (QuizResult) request.getAttribute("result");
 %>
 <html><body>
+    <jsp:include page="views/components/header.jsp" />
   <h2>K?t qu? Quiz: <%= result.getQuiz().getName() %></h2>
   ?i?m: <%=result.getScore()%>%<br/>
   Passed: <%= result.isPassed() ? "Passed" : "Not Passed" %><br/>
-  Ngày làm: <%= result.getAttemptDate() %><br/>
-  <a href="quiz?action=list">V? danh sách Quiz</a>
+  Ngï¿½y lï¿½m: <%= result.getAttemptDate() %><br/>
+  <a href="quiz?action=list">V? danh sï¿½ch Quiz</a>
 </body></html>

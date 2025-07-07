@@ -22,7 +22,7 @@ public class LoginServlet extends HttpServlet {
         if (session != null && session.getAttribute("accountId") != null) {
             String role = (String) session.getAttribute("role");
             if ("Admin".equalsIgnoreCase(role)) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else if ("Teacher".equalsIgnoreCase(role)) {
                 response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
             } else if ("Student".equalsIgnoreCase(role)) {
@@ -92,7 +92,7 @@ public class LoginServlet extends HttpServlet {
 
                 // Chuyển hướng dựa vào role
                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
-                    response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
                 } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {

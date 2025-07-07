@@ -19,6 +19,7 @@
   }
 </script>
 </head><body>
+    <jsp:include page="views/components/header.jsp" />
   <div style="width:25%; float:left; border-right:1px solid #ccc; height: 100vh; overflow:auto;">
     <% for(int i=0; i<questions.size(); i++){ %>
       <button onclick="goTo(<%=i%>)"><%=i+1%></button>
@@ -29,7 +30,7 @@
     </form>
   </div>
   <div style="width:75%; float:right; padding:20px;">
-    <h3>Câu <%= current+1 %>: <%= q.getContent() %></h3>
+    <h3>Cï¿½u <%= current+1 %>: <%= q.getContent() %></h3>
     <% if(q.getImage()!=null){ %>
       <img src="data:image/png;base64,<%= Base64.getEncoder().encodeToString(q.getImage()) %>" />
     <% } %>
@@ -42,8 +43,8 @@
                  ? "checked":"" %> />
         <%=a.getContent()%><br/>
       <% } %>
-      <button type="submit">L?u câu tr? l?i & Chuy?n</button>
-      <button type="submit" name="finish" value="true">Hoàn thành</button>
+      <button type="submit">L?u cï¿½u tr? l?i & Chuy?n</button>
+      <button type="submit" name="finish" value="true">Hoï¿½n thï¿½nh</button>
     </form>
   </div>
 </body></html>
