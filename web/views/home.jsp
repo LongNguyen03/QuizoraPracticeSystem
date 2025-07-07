@@ -1,4 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="DAO.SubjectDAO" %>
+<%@ page import="Model.Subject" %>
+<%
+    java.util.List<Subject> subjects = new SubjectDAO().getAllSubjects();
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,17 +48,35 @@
             text-align: center;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.08);
             margin-bottom: 30px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            background: #fff;
+            border: 2px solid #f3f6fd;
+            position: relative;
+            overflow: hidden;
         }
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 32px rgba(102,126,234,0.18);
+            border-color: #667eea;
         }
-        .feature-icon {
+        .feature-card .subject-thumb {
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        .feature-card .fallback-icon {
             font-size: 2.5rem;
             color: #667eea;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+        }
+        .feature-card .btn {
+            border-radius: 20px;
+            font-size: 0.95rem;
+            padding: 6px 20px;
         }
         .about-section {
             background: #f8f9fa;
@@ -143,6 +166,32 @@
                         <p>Get detailed insights into learning progress and quiz performance</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subjects Section -->
+    <section class="features-section" id="subjects">
+        <div class="container">
+            <h2 class="text-center mb-5">Danh sách môn học nổi bật</h2>
+            <div class="row">
+                <% for (Subject s : subjects) { 
+                    if (!"active".equals(s.getStatus())) continue;
+                %>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <% if (s.getThumbnailUrl() != null && !s.getThumbnailUrl().isEmpty()) { %>
+                            <img src="<%= s.getThumbnailUrl() %>" alt="Thumbnail" class="subject-thumb" />
+                        <% } else { %>
+                            <i class="fas fa-book-open fallback-icon"></i>
+                        <% } %>
+                        <h4 class="mb-2"><%= s.getTitle() %></h4>
+                        <p class="text-muted mb-1"><%= s.getTagline() != null ? s.getTagline() : "" %></p>
+                        <p style="min-height:48px;"><%= s.getDescription() != null ? s.getDescription() : "" %></p>
+                        <a href="/subject/detail?id=<%= s.getId() %>" class="btn btn-outline-primary btn-sm mt-2">Xem chi tiết</a>
+                    </div>
+                </div>
+                <% } %>
             </div>
         </div>
     </section>
