@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(name = "SubjectController", urlPatterns = {"/admin/subjects", "/admin/subject/create", "/admin/subject/edit"})
+@WebServlet(name = "SubjectController", urlPatterns = {"/admin/subjects", "/admin/subject/create", "/admin/subject/edit", "/admin/subject/delete", "/admin/subject/toggle"})
 public class SubjectController extends HttpServlet {
     private SubjectDAO subjectDAO = new SubjectDAO();
 
@@ -37,6 +37,26 @@ public class SubjectController extends HttpServlet {
             } else {
                 response.sendRedirect("/admin/subjects");
             }
+        } else if (uri.endsWith("/admin/subject/delete")) {
+            String idStr = request.getParameter("id");
+            if (idStr != null) {
+                int id = Integer.parseInt(idStr);
+                subjectDAO.deleteSubject(id);
+            }
+            response.sendRedirect("/admin/subjects");
+        } else if (uri.endsWith("/admin/subject/toggle")) {
+            String idStr = request.getParameter("id");
+            if (idStr != null) {
+                int id = Integer.parseInt(idStr);
+                Subject subject = subjectDAO.getSubjectById(id);
+                if (subject != null) {
+                    String newStatus = "active".equals(subject.getStatus()) ? "inactive" : "active";
+                    subject.setStatus(newStatus);
+                    subject.setUpdatedAt(new Date());
+                    subjectDAO.updateSubject(subject);
+                }
+            }
+            response.sendRedirect("/admin/subjects");
         }
     }
 

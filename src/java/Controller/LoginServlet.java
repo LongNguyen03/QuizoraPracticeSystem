@@ -62,6 +62,19 @@ public class LoginServlet extends HttpServlet {
             // Gọi DAO kiểm tra
             Account acc = accountDAO.login(email, password);
             if (acc != null) {
+                // Kiểm tra trạng thái tài khoản
+                String status = acc.getStatus();
+                if ("banned".equals(status)) {
+                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin.");
+                    request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                    return;
+                }
+                if ("deleted".equals(status)) {
+                    request.setAttribute("error", "Tài khoản đã bị xóa vì một số lý do.");
+                    request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                    return;
+                }
+                
                 // Đăng nhập thành công → lưu vào session
                 HttpSession session = request.getSession();
                 session.setAttribute("accountId", acc.getId());
