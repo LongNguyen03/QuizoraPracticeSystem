@@ -112,4 +112,16 @@ public class SubjectDAO extends DBcontext {
         }
         return false;
     }
+    
+//    public List<Subject> findAll() throws SQLException {
+//        Connection conn = DB.getConnection();
+//        PreparedStatement ps = conn.prepareStatement("SELECT id, title FROM Subjects WHERE status='Active'");
+//        ResultSet rs = ps.executeQuery();
+//        List<Subject> list = new ArrayList<>();
+//        while (rs.next()) {
+//            list.add(new Subject(rs.getInt("id"), rs.getString("title")));
+//        }
+//        rs.close(); ps.close(); conn.close();
+//        return list;
+//    }
 }

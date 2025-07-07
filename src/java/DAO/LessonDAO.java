@@ -162,4 +162,18 @@ public class LessonDAO extends DBcontext {
         return list;
     }
 
+//    public List<Lesson> findBySubject(int subjectId) throws SQLException {
+//        Connection conn = DB.getConnection();
+//        PreparedStatement ps = conn.prepareStatement(
+//            "SELECT id, title FROM Lessons WHERE subjectId=? AND status='Active'");
+//        ps.setInt(1, subjectId);
+//        ResultSet rs = ps.executeQuery();
+//        List<Lesson> list = new ArrayList<>();
+//        while (rs.next()) {
+//            list.add(new Lesson(rs.getInt("id"), rs.getString("title")));
+//        }
+//        rs.close(); ps.close(); conn.close();
+//        return list;
+//    }
+    
 }
