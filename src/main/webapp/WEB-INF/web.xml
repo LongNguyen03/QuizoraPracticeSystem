@@ -80,4 +80,21 @@
         <url-pattern>/quiz</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>SubjectController</servlet-name>
+        <servlet-class>Controller.SubjectController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubjectController</servlet-name>
+        <url-pattern>/admin/subjects</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectController</servlet-name>
+        <url-pattern>/admin/subject/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectController</servlet-name>
+        <url-pattern>/admin/subject/edit</url-pattern>
+    </servlet-mapping>
+
 </web-app> 

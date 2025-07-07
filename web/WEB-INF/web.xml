@@ -173,6 +173,15 @@
         <url-pattern>/access-denied</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <jsp-file>/admin/dashboard.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <url-pattern>/admin/dashboard</url-pattern>
+    </servlet-mapping>
+
     <!-- Welcome File List -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
