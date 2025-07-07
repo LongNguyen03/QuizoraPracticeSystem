@@ -86,8 +86,13 @@
             <input type="text" name="tagline" value="<%= isEdit ? subject.getTagline() : "" %>" class="subject-form-input"/><br>
             <%-- <label>Chủ sở hữu (ID):</label><br>
             <input type="number" name="ownerId" value="<%= isEdit ? subject.getOwnerId() : "" %>" required/><br> --%>
-            <label class="subject-form-label">Trạng thái:</label><br>
-            <input type="text" name="status" value="<%= isEdit ? subject.getStatus() : "Active" %>" required class="subject-form-input"/><br>
+            <% if (isEdit) { %>
+                <label class="subject-form-label">Trạng thái:</label><br>
+                <div class="mb-3"><span class="badge <%= "active".equals(subject.getStatus()) ? "bg-success" : "bg-secondary" %>"><%= subject.getStatus() %></span></div>
+                <input type="hidden" name="status" value="<%= subject.getStatus() %>" />
+            <% } else { %>
+                <input type="hidden" name="status" value="active" />
+            <% } %>
             <label class="subject-form-label">Mô tả:</label><br>
             <textarea name="description" class="subject-form-textarea"><%= isEdit ? subject.getDescription() : "" %></textarea><br>
             <label class="subject-form-label">Thumbnail URL:</label><br>
