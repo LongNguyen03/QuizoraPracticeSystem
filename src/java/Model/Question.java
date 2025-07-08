@@ -22,11 +22,12 @@ public class Question {
     private Date createdAt;
     private Date updatedAt;
     private byte[] image;
+    private boolean isPracticeOnly;
 
     public Question() {
     }
 
-    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] image) {
+    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] image, boolean isPracticeOnly) {
         this.id = id;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
@@ -36,6 +37,7 @@ public class Question {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.image = image;
+        this.isPracticeOnly = isPracticeOnly;
     }
 
     public int getId() {
@@ -108,5 +110,24 @@ public class Question {
 
     public void setImage(byte[] image) {
         this.image= image;
+    }
+    
+    public boolean isPracticeOnly() {
+        return isPracticeOnly;
+    }
+
+    public void setPracticeOnly(boolean practiceOnly) {
+        isPracticeOnly = practiceOnly;
+    }
+    
+    // Additional properties for quiz questions
+    private List<QuestionAnswer> answers;
+    
+    public List<QuestionAnswer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<QuestionAnswer> answers) {
+        this.answers = answers;
     }
 }

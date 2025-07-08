@@ -22,6 +22,10 @@ public class Quiz {
     private String type;
     private Date createdAt;
     private Date updatedAt;
+    
+    // Additional properties for UI
+    private boolean isFavorite;
+    private String subjectTitle;
 
     public Quiz() {
     }
@@ -119,6 +123,23 @@ public class Quiz {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    // Additional getters and setters
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public String getSubjectTitle() {
+        return subjectTitle;
+    }
+
+    public void setSubjectTitle(String subjectTitle) {
+        this.subjectTitle = subjectTitle;
     }
 }
 

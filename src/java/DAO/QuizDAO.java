@@ -33,6 +33,79 @@ public class QuizDAO extends DBcontext {
         return quizzes;
     }
     
+    /**
+     * Lấy tất cả quiz có sẵn
+     */
+    public List<Quiz> getAllAvailableQuizzes() {
+        List<Quiz> quizzes = new ArrayList<>();
+        String sql = "SELECT Id, Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt, UpdatedAt FROM Quizzes ORDER BY CreatedAt DESC";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                quizzes.add(new Quiz(
+                    rs.getInt("Id"),
+                    rs.getString("Name"),
+                    rs.getInt("SubjectId"),
+                    rs.getString("Level"),
+                    rs.getInt("NumberOfQuestions"),
+                    rs.getInt("DurationMinutes"),
+                    rs.getDouble("PassRate"),
+                    rs.getString("Type"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getTimestamp("UpdatedAt")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizzes;
+    }
+    
+    /**
+     * Lấy tất cả levels có sẵn
+     */
+    public List<String> getAllQuizLevels() {
+        List<String> levels = new ArrayList<>();
+        String sql = "SELECT DISTINCT Level FROM Quizzes ORDER BY Level";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                levels.add(rs.getString("Level"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return levels;
+    }
+    
+    /**
+     * Lấy quiz theo ID
+     */
+    public Quiz getQuizById(int quizId) {
+        String sql = "SELECT Id, Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt, UpdatedAt FROM Quizzes WHERE Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quizId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Quiz(
+                    rs.getInt("Id"),
+                    rs.getString("Name"),
+                    rs.getInt("SubjectId"),
+                    rs.getString("Level"),
+                    rs.getInt("NumberOfQuestions"),
+                    rs.getInt("DurationMinutes"),
+                    rs.getDouble("PassRate"),
+                    rs.getString("Type"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getTimestamp("UpdatedAt")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
 //     public int insert(Quiz q) throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement(

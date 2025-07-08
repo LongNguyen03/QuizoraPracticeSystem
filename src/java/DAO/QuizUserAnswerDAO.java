@@ -1,0 +1,112 @@
+package DAO;
+
+import Model.QuizUserAnswer;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuizUserAnswerDAO extends DBcontext {
+    
+    /**
+     * Lưu user answer
+     */
+    public void saveUserAnswer(QuizUserAnswer userAnswer) {
+        String sql = "INSERT INTO QuizUserAnswers (QuizResultId, QuestionId, AnswerId, IsCorrect) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userAnswer.getQuizResultId());
+            ps.setInt(2, userAnswer.getQuestionId());
+            ps.setInt(3, userAnswer.getAnswerId());
+            ps.setBoolean(4, userAnswer.isCorrect());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Cập nhật QuizResultId cho user answers
+     */
+    public void updateQuizResultId(int resultId, int accountId, int quizId) {
+        String sql = "UPDATE QuizUserAnswers SET QuizResultId = ? " +
+                     "WHERE QuizResultId = 0 AND QuestionId IN " +
+                     "(SELECT qq.QuestionId FROM QuizQuestions qq WHERE qq.QuizId = ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, resultId);
+            ps.setInt(2, quizId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Lấy user answers theo quiz result ID
+     */
+    public List<QuizUserAnswer> getUserAnswersByResultId(int resultId) {
+        List<QuizUserAnswer> answers = new ArrayList<>();
+        String sql = "SELECT * FROM QuizUserAnswers WHERE QuizResultId = ?";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, resultId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    answers.add(mapRowToQuizUserAnswer(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return answers;
+    }
+    
+    /**
+     * Lấy user answers với thông tin chi tiết
+     */
+    public List<QuizUserAnswer> getUserAnswersWithDetails(int resultId) {
+        List<QuizUserAnswer> answers = new ArrayList<>();
+        String sql = "SELECT qua.*, q.Content as QuestionContent, qa.Content as AnswerContent " +
+                     "FROM QuizUserAnswers qua " +
+                     "JOIN Questions q ON qua.QuestionId = q.Id " +
+                     "LEFT JOIN QuestionAnswers qa ON qua.AnswerId = qa.Id " +
+                     "WHERE qua.QuizResultId = ? " +
+                     "ORDER BY qua.QuestionId";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, resultId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    QuizUserAnswer answer = mapRowToQuizUserAnswer(rs);
+                    answer.setQuestionContent(rs.getString("QuestionContent"));
+                    answer.setAnswerContent(rs.getString("AnswerContent"));
+                    answers.add(answer);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return answers;
+    }
+    
+    /**
+     * Xóa user answers theo quiz result ID
+     */
+    public void deleteUserAnswersByResultId(int resultId) {
+        String sql = "DELETE FROM QuizUserAnswers WHERE QuizResultId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, resultId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private QuizUserAnswer mapRowToQuizUserAnswer(ResultSet rs) throws SQLException {
+        QuizUserAnswer answer = new QuizUserAnswer();
+        answer.setId(rs.getInt("Id"));
+        answer.setQuizResultId(rs.getInt("QuizResultId"));
+        answer.setQuestionId(rs.getInt("QuestionId"));
+        answer.setAnswerId(rs.getInt("AnswerId"));
+        answer.setCorrect(rs.getBoolean("IsCorrect"));
+        return answer;
+    }
+} 
