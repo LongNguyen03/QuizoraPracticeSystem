@@ -103,6 +103,11 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher("/views/register.jsp").forward(request, response);
             return;
         }
+        if (accountDAO.isEmailDeleted(email)) {
+            request.setAttribute("error", "Tài khoản này đã bị xóa và không thể đăng ký lại bằng email này.");
+            request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+            return;
+        }
         String formattedRoleName = roleName.equals("student") ? "Student" : "Teacher";
         Role role = roleDAO.getRoleByName(formattedRoleName);
         if (role == null) {

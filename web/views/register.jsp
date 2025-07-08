@@ -54,6 +54,14 @@
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
             border-color: #667eea;
         }
+        /* Thay đổi màu cursor trong input fields */
+        .form-control {
+            caret-color: #667eea; /* Màu xanh tím */
+        }
+        /* Hoặc có thể dùng màu khác */
+        /* .form-control {
+            caret-color: #ff6b6b; 
+        } */
         .btn-register {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
