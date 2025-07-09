@@ -17,7 +17,7 @@ public class QuizResult {
     private double score;
     private boolean passed;
     private Date attemptDate;
-    
+
     // Additional properties for JOIN queries
     private String quizName;
     private String subjectTitle;

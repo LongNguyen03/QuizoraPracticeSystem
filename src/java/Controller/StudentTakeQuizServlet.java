@@ -34,13 +34,12 @@ public class StudentTakeQuizServlet extends HttpServlet {
         }
         
         try {
-            String quizIdStr = request.getParameter("quizId");
-            if (quizIdStr == null || quizIdStr.isEmpty()) {
+            String pathInfo = request.getPathInfo(); // /{id}
+            if (pathInfo == null || pathInfo.length() <= 1) {
                 response.sendRedirect(request.getContextPath() + "/student/quizzes");
                 return;
             }
-            
-            int quizId = Integer.parseInt(quizIdStr);
+            int quizId = Integer.parseInt(pathInfo.substring(1));
             QuizDAO quizDao = new QuizDAO();
             QuestionDAO questionDao = new QuestionDAO();
             QuestionAnswerDAO answerDao = new QuestionAnswerDAO();
@@ -93,13 +92,17 @@ public class StudentTakeQuizServlet extends HttpServlet {
         }
         
         try {
-            String quizIdStr = request.getParameter("quizId");
-            if (quizIdStr == null || quizIdStr.isEmpty()) {
+            String pathInfo = request.getPathInfo(); // /{id}
+            System.out.println("StudentTakeQuizServlet POST: pathInfo = " + pathInfo);
+            
+            if (pathInfo == null || pathInfo.length() <= 1) {
+                System.out.println("StudentTakeQuizServlet POST: Invalid pathInfo, redirecting to quizzes");
                 response.sendRedirect(request.getContextPath() + "/student/quizzes");
                 return;
             }
+            int quizId = Integer.parseInt(pathInfo.substring(1));
+            System.out.println("StudentTakeQuizServlet POST: quizId = " + quizId);
             
-            int quizId = Integer.parseInt(quizIdStr);
             QuizDAO quizDao = new QuizDAO();
             QuizResultDAO resultDao = new QuizResultDAO();
             QuizUserAnswerDAO userAnswerDao = new QuizUserAnswerDAO();
@@ -107,7 +110,10 @@ public class StudentTakeQuizServlet extends HttpServlet {
             
             // Get quiz details
             Quiz quiz = quizDao.getQuizById(quizId);
+            System.out.println("StudentTakeQuizServlet POST: Found quiz = " + (quiz != null ? quiz.getName() : "null"));
+            
             if (quiz == null) {
+                System.out.println("StudentTakeQuizServlet POST: Quiz not found");
                 request.setAttribute("error", "Quiz not found.");
                 request.getRequestDispatcher("/student/quizzes.jsp").forward(request, response);
                 return;
@@ -116,6 +122,9 @@ public class StudentTakeQuizServlet extends HttpServlet {
             // Calculate score
             int totalQuestions = quiz.getNumberOfQuestions();
             int correctAnswers = 0;
+            int answeredQuestions = 0;
+            
+            System.out.println("StudentTakeQuizServlet POST: Processing " + totalQuestions + " questions");
             
             // Create quiz result
             QuizResult result = new QuizResult();
@@ -123,7 +132,56 @@ public class StudentTakeQuizServlet extends HttpServlet {
             result.setAccountId(accountId);
             result.setAttemptDate(new Date());
             
-            // Process each question
+            // Process each question and count correct answers
+            for (int i = 1; i <= totalQuestions; i++) {
+                String answerIdStr = request.getParameter("answer_" + i);
+                String questionIdStr = request.getParameter("question_" + i);
+                
+                System.out.println("StudentTakeQuizServlet POST: Question " + i + " - answerId: " + answerIdStr + ", questionId: " + questionIdStr);
+                
+                if (answerIdStr != null && questionIdStr != null) {
+                    answeredQuestions++;
+                    int answerId = Integer.parseInt(answerIdStr);
+                    int questionId = Integer.parseInt(questionIdStr);
+                    
+                    // Check if answer is correct
+                    QuestionAnswer selectedAnswer = answerDao.getAnswerById(answerId);
+                    boolean isCorrect = selectedAnswer != null && selectedAnswer.isCorrect();
+                    
+                    System.out.println("StudentTakeQuizServlet POST: Question " + i + " - selected answer: " + answerId + ", isCorrect: " + isCorrect);
+                    
+                    if (isCorrect) {
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            System.out.println("StudentTakeQuizServlet POST: Total answered: " + answeredQuestions + ", correct: " + correctAnswers);
+            
+            // Calculate final score
+            double score = 0.0;
+            if (totalQuestions > 0) {
+                score = (double) correctAnswers / totalQuestions * 100;
+            }
+            boolean passed = score >= quiz.getPassRate();
+            
+            System.out.println("StudentTakeQuizServlet POST: Final score: " + score + "%, passed: " + passed + ", pass rate: " + quiz.getPassRate() + "%");
+            
+            result.setScore(score);
+            result.setPassed(passed);
+            
+            // Save quiz result first
+            int resultId = resultDao.saveQuizResult(result);
+            System.out.println("Saved quiz result with ID: " + resultId);
+            
+            if (resultId == -1) {
+                // Failed to save result
+                request.setAttribute("error", "Failed to save quiz result.");
+                request.getRequestDispatcher("/student/quizzes.jsp").forward(request, response);
+                return;
+            }
+            
+            // Now save user answers with correct result ID
             for (int i = 1; i <= totalQuestions; i++) {
                 String answerIdStr = request.getParameter("answer_" + i);
                 String questionIdStr = request.getParameter("question_" + i);
@@ -136,35 +194,20 @@ public class StudentTakeQuizServlet extends HttpServlet {
                     QuestionAnswer selectedAnswer = answerDao.getAnswerById(answerId);
                     boolean isCorrect = selectedAnswer != null && selectedAnswer.isCorrect();
                     
-                    if (isCorrect) {
-                        correctAnswers++;
-                    }
-                    
-                    // Save user answer
+                    // Save user answer with correct result ID
                     QuizUserAnswer userAnswer = new QuizUserAnswer();
                     userAnswer.setQuestionId(questionId);
                     userAnswer.setAnswerId(answerId);
                     userAnswer.setCorrect(isCorrect);
-                    userAnswer.setQuizResultId(result.getId()); // Will be set after result is saved
+                    userAnswer.setQuizResultId(resultId);
                     
                     // Save to database
                     userAnswerDao.saveUserAnswer(userAnswer);
+                    System.out.println("Saved user answer for question " + i + ": " + answerId + " (correct: " + isCorrect + ")");
                 }
             }
             
-            // Calculate final score
-            double score = (double) correctAnswers / totalQuestions * 100;
-            boolean passed = score >= quiz.getPassRate();
-            
-            result.setScore(score);
-            result.setPassed(passed);
-            
-            // Save quiz result
-            int resultId = resultDao.saveQuizResult(result);
-            
-            // Update user answers with result ID
-            userAnswerDao.updateQuizResultId(resultId, accountId, quizId);
-            
+            System.out.println("Quiz submission completed. Redirecting to result page with resultId: " + resultId);
             // Redirect to result page
             response.sendRedirect(request.getContextPath() + "/student/quiz-result?resultId=" + resultId);
             

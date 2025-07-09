@@ -639,5 +639,15 @@
             });
         });
     </script>
+    
+    <!-- Debug Section -->
+    <div class="container mt-4">
+        <div class="alert alert-warning">
+            <strong>Debug:</strong> 
+            <a href="${pageContext.request.contextPath}/student/test-quiz" class="btn btn-warning btn-sm">
+                Test Quiz Submission
+            </a>
+        </div>
+    </div>
 </body>
 </html>

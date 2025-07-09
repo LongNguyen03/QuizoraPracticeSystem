@@ -22,7 +22,7 @@ public class Quiz {
     private String type;
     private Date createdAt;
     private Date updatedAt;
-    
+
     // Additional properties for UI
     private boolean isFavorite;
     private String subjectTitle;

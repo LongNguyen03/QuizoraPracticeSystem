@@ -76,12 +76,19 @@ public class QuizUserAnswerDAO extends DBcontext {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     QuizUserAnswer answer = mapRowToQuizUserAnswer(rs);
-                    answer.setQuestionContent(rs.getString("QuestionContent"));
-                    answer.setAnswerContent(rs.getString("AnswerContent"));
+                    String questionContent = rs.getString("QuestionContent");
+                    String answerContent = rs.getString("AnswerContent");
+                    
+                    // Kiểm tra null và set giá trị mặc định
+                    answer.setQuestionContent(questionContent != null ? questionContent : "Nội dung câu hỏi không có");
+                    answer.setAnswerContent(answerContent != null ? answerContent : "Nội dung đáp án không có");
+                    
+                    System.out.println("DEBUG: Adding answer - QuestionContent: " + questionContent + ", AnswerContent: " + answerContent);
                     answers.add(answer);
                 }
             }
         } catch (SQLException e) {
+            System.err.println("Error in getUserAnswersWithDetails: " + e.getMessage());
             e.printStackTrace();
         }
         return answers;

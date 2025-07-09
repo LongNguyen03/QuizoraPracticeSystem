@@ -136,4 +136,15 @@ public class QuestionAnswerDAO extends DBcontext {
         answer.setAnswerOrder(rs.getInt("AnswerOrder"));
         return answer;
     }
+
+    // Thêm lại các method cũ để tương thích code cũ
+    public List<QuestionAnswer> getByQuestion(int questionId) {
+        return getAnswersByQuestionId(questionId);
+    }
+    public void deleteByQuestion(int questionId) {
+        deleteAnswersByQuestionId(questionId);
+    }
+    public void insertAnswer(QuestionAnswer a) {
+        createAnswer(a);
+    }
 }

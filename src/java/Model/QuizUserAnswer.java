@@ -15,7 +15,7 @@ public class QuizUserAnswer {
     private int questionId;
     private Integer answerId; // nullable
     private boolean isCorrect;
-    
+
     // Additional properties for JOIN queries
     private String questionContent;
     private String answerContent;

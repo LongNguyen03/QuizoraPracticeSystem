@@ -209,6 +209,24 @@
         <url-pattern>/admin/dashboard</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>StudentQuizResultServlet</servlet-name>
+        <servlet-class>Controller.StudentQuizResultServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentQuizResultServlet</servlet-name>
+        <url-pattern>/student/quiz-result</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TestQuizServlet</servlet-name>
+        <servlet-class>Controller.TestQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestQuizServlet</servlet-name>
+        <url-pattern>/student/test-quiz</url-pattern>
+    </servlet-mapping>
+
     <!-- Welcome File List -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
