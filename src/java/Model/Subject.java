@@ -21,6 +21,11 @@ public class Subject {
     private Date updatedAt;
     private String thumbnailUrl;
 
+    // Thêm các thuộc tính cho giao diện student
+    private Integer quizCount = 0;
+    private Integer lessonCount = 0;
+    private Integer progress = 0;
+
     public Subject() {
     }
 
@@ -106,5 +111,25 @@ public class Subject {
 
     public void setThumbnailUrl(String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    // Getter & Setter cho các thuộc tính giao diện
+    public Integer getQuizCount() {
+        return quizCount;
+    }
+    public void setQuizCount(Integer quizCount) {
+        this.quizCount = quizCount;
+    }
+    public Integer getLessonCount() {
+        return lessonCount;
+    }
+    public void setLessonCount(Integer lessonCount) {
+        this.lessonCount = lessonCount;
+    }
+    public Integer getProgress() {
+        return progress;
+    }
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
 }

@@ -18,6 +18,10 @@ public class QuizResult {
     private boolean passed;
     private Date attemptDate;
 
+    // Additional properties for JOIN queries
+    private String quizName;
+    private String subjectTitle;
+
     public QuizResult() {
     }
 
@@ -77,5 +81,22 @@ public class QuizResult {
 
     public void setAttemptDate(Date attemptDate) {
         this.attemptDate = attemptDate;
+    }
+    
+    // Additional getters and setters
+    public String getQuizName() {
+        return quizName;
+    }
+
+    public void setQuizName(String quizName) {
+        this.quizName = quizName;
+    }
+
+    public String getSubjectTitle() {
+        return subjectTitle;
+    }
+
+    public void setSubjectTitle(String subjectTitle) {
+        this.subjectTitle = subjectTitle;
     }
 }

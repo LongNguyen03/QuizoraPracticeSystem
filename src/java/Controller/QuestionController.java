@@ -47,7 +47,7 @@ public class QuestionController extends HttpServlet {
             case "edit":
                 int editId = Integer.parseInt(request.getParameter("id"));
                 Question q = questionDAO.getQuestionById(editId);
-                List<QuestionAnswer> answers = answerDAO.getByQuestion(editId);
+                List<QuestionAnswer> answers = answerDAO.getAnswersByQuestionId(editId);
                 request.setAttribute("answers", answers);
                 showForm(request, response, q);
                 break;
@@ -139,7 +139,7 @@ public class QuestionController extends HttpServlet {
     }
 
     private void processAnswers(HttpServletRequest request, int questionId) {
-        answerDAO.deleteByQuestion(questionId);
+        answerDAO.deleteAnswersByQuestionId(questionId);
         String[] contents = request.getParameterValues("answerContent[]");
         String[] corrects = request.getParameterValues("answerIsCorrect[]");
         String[] orders   = request.getParameterValues("answerOrder[]");
@@ -150,7 +150,7 @@ public class QuestionController extends HttpServlet {
             a.setContent(contents[i]);
             a.setCorrect(corrects != null && i < corrects.length);
             a.setAnswerOrder(Integer.parseInt(orders[i]));
-            answerDAO.insertAnswer(a);
+            answerDAO.createAnswer(a);
         }
     }
 
@@ -159,7 +159,7 @@ public class QuestionController extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         String lessonId = request.getParameter("lessonId");
         questionDAO.deleteQuestion(id);
-        answerDAO.deleteByQuestion(id);
+        answerDAO.deleteAnswersByQuestionId(id);
         response.sendRedirect("QuestionController?action=list&lessonId=" + lessonId);
     }
 }

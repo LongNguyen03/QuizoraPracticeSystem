@@ -16,6 +16,10 @@ public class QuizUserAnswer {
     private Integer answerId; // nullable
     private boolean isCorrect;
 
+    // Additional properties for JOIN queries
+    private String questionContent;
+    private String answerContent;
+
     public QuizUserAnswer() {
     }
 
@@ -65,5 +69,22 @@ public class QuizUserAnswer {
 
     public void setCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
+    }
+    
+    // Additional getters and setters
+    public String getQuestionContent() {
+        return questionContent;
+    }
+
+    public void setQuestionContent(String questionContent) {
+        this.questionContent = questionContent;
+    }
+
+    public String getAnswerContent() {
+        return answerContent;
+    }
+
+    public void setAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
     }
 }

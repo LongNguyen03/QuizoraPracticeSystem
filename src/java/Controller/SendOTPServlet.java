@@ -41,6 +41,10 @@ public class SendOTPServlet extends HttpServlet {
             response.getWriter().write("Email đã được sử dụng. Vui lòng chọn email khác");
             return;
         }
+        if (accountDAO.isEmailDeleted(email)) {
+            response.getWriter().write("Tài khoản này đã bị xóa và không thể đăng ký lại bằng email này");
+            return;
+        }
         
         try {
             // Tạo mã OTP ngẫu nhiên 6 số
