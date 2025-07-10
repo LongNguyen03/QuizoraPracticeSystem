@@ -130,7 +130,39 @@ public class StudentTakeQuizServlet extends HttpServlet {
             QuizResult result = new QuizResult();
             result.setQuizId(quizId);
             result.setAccountId(accountId);
-            result.setAttemptDate(new Date());
+            
+            String startTimeStr = request.getParameter("startTime");
+            Date completionTime = new Date(); // Thời gian hiện tại khi nộp bài
+            result.setCompletionTime(completionTime);
+            
+            // Sửa: set attemptDate = startTime client gửi lên
+            if (startTimeStr != null && !startTimeStr.trim().isEmpty()) {
+                try {
+                    long startTime = Long.parseLong(startTimeStr);
+                    result.setAttemptDate(new Date(startTime));
+                } catch (NumberFormatException e) {
+                    result.setAttemptDate(completionTime); // fallback nếu lỗi
+                }
+            } else {
+                result.setAttemptDate(completionTime); // fallback nếu không có startTime
+            }
+            
+            // Tính thời gian hoàn thành từ sessionStorage
+            // String startTimeStr = request.getParameter("startTime"); // This line is removed as per the new_code
+            // Date completionTime = new Date(); // Thời gian hiện tại khi nộp bài // This line is removed as per the new_code
+            // result.setCompletionTime(completionTime); // This line is removed as per the new_code
+            
+            // Nếu có startTime từ form, tính thời gian làm bài
+            // if (startTimeStr != null && !startTimeStr.trim().isEmpty()) { // This line is removed as per the new_code
+            //     try { // This line is removed as per the new_code
+            //         long startTime = Long.parseLong(startTimeStr); // This line is removed as per the new_code
+            //         long endTime = completionTime.getTime(); // This line is removed as per the new_code
+            //         long timeTaken = (endTime - startTime) / 1000; // Thời gian làm bài tính bằng giây // This line is removed as per the new_code
+            //         System.out.println("StudentTakeQuizServlet POST: Time taken = " + timeTaken + " seconds"); // This line is removed as per the new_code
+            //     } catch (NumberFormatException e) { // This line is removed as per the new_code
+            //         System.out.println("StudentTakeQuizServlet POST: Invalid startTime format: " + startTimeStr); // This line is removed as per the new_code
+            //     } // This line is removed as per the new_code
+            // } // This line is removed as per the new_code
             
             // Process each question and count correct answers
             for (int i = 1; i <= totalQuestions; i++) {

@@ -10,9 +10,10 @@
 %>
 <html><body>
     <jsp:include page="views/components/header.jsp" />
-  <h2>K?t qu? Quiz: <%= result.getQuiz().getName() %></h2>
-  ?i?m: <%=result.getScore()%>%<br/>
+  <h2>Kết quả Quiz: <%= result.getQuiz().getName() %></h2>
+  Điểm: <%=result.getScore()%>%<br/>
   Passed: <%= result.isPassed() ? "Passed" : "Not Passed" %><br/>
-  Ng�y l�m: <%= result.getAttemptDate() %><br/>
-  <a href="quiz?action=list">V? danh s�ch Quiz</a>
+  Ngày làm: <%= result.getAttemptDate() %><br/>
+  Thời gian làm bài: <%= result.getTimeTakenFormatted() %><br/>
+  <a href="quiz?action=list">Về danh sách Quiz</a>
 </body></html>

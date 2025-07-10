@@ -30,6 +30,7 @@
             <div class="mb-4">
                 <h2>Kết quả quiz: ${quiz.name}</h2>
                 <p>Ngày làm: <b>${quizResult.attemptDate}</b></p>
+                <p>Thời gian làm bài: <b>${quizResult.timeTakenFormatted}</b></p>
                 <h3>
                     Điểm: <span>${quizResult.score}%</span>
                     <span class="${quizResult.passed ? 'result-pass' : 'result-fail'}">

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -500,7 +501,7 @@
                                         <p class="text-muted mb-0">${result.subjectTitle}</p>
                                         <small class="text-muted">
                                             <i class="fas fa-calendar me-1"></i>
-                                            ${result.attemptDate}
+                                            <fmt:formatDate value="${result.attemptDate}" pattern="dd/MM/yyyy HH:mm" />
                                         </small>
                                     </div>
                                     <div class="col-md-3 text-center">
@@ -546,58 +547,7 @@
         </div>
 
         <!-- Favorite Quizzes -->
-        <div class="row">
-            <div class="col-12">
-                <h3 class="section-title">
-                    <i class="fas fa-heart"></i>
-                    Favorite Quizzes
-                </h3>
-            </div>
-        </div>
-
-        <div class="row">
-            <c:choose>
-                <c:when test="${not empty favoriteQuizzes}">
-                    <c:forEach var="quiz" items="${favoriteQuizzes}">
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="subject-card">
-                                <h5>${quiz.quizName}</h5>
-                                <p>${quiz.subjectTitle}</p>
-                                
-                                <div class="subject-stats">
-                                    <div class="subject-stat">
-                                        <div class="number">${quiz.numberOfQuestions}</div>
-                                        <div class="label">Questions</div>
-                                    </div>
-                                    <div class="subject-stat">
-                                        <div class="number">${quiz.durationMinutes}</div>
-                                        <div class="label">Minutes</div>
-                                    </div>
-                                    <div class="subject-stat">
-                                        <div class="number">${quiz.level}</div>
-                                        <div class="label">Level</div>
-                                    </div>
-                                </div>
-                                
-                                <a href="${pageContext.request.contextPath}/student/quiz/${quiz.quizId}" 
-                                   class="btn btn-quiz w-100">
-                                    <i class="fas fa-play me-2"></i>Take Quiz
-                                </a>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <div class="col-12">
-                        <div class="empty-state">
-                            <i class="fas fa-heart"></i>
-                            <h4>No Favorite Quizzes</h4>
-                            <p>Add quizzes to your favorites to access them quickly.</p>
-                        </div>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
+        <!-- Đã xóa section này theo yêu cầu -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

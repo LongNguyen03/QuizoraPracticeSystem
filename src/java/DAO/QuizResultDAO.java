@@ -11,13 +11,15 @@ public class QuizResultDAO extends DBcontext {
      * Lưu quiz result và trả về ID
      */
     public int saveQuizResult(QuizResult result) {
-        String sql = "INSERT INTO QuizResults (QuizId, AccountId, Score, Passed, AttemptDate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO QuizResults (QuizId, AccountId, Score, Passed, AttemptDate, CompletionTime) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, result.getQuizId());
             ps.setInt(2, result.getAccountId());
             ps.setDouble(3, result.getScore());
             ps.setBoolean(4, result.isPassed());
             ps.setTimestamp(5, new Timestamp(result.getAttemptDate().getTime()));
+            ps.setTimestamp(6, result.getCompletionTime() != null ? 
+                new Timestamp(result.getCompletionTime().getTime()) : null);
             
             ps.executeUpdate();
             
@@ -142,6 +144,13 @@ public class QuizResultDAO extends DBcontext {
         result.setScore(rs.getDouble("Score"));
         result.setPassed(rs.getBoolean("Passed"));
         result.setAttemptDate(rs.getTimestamp("AttemptDate"));
+        
+        // Đọc CompletionTime nếu có
+        Timestamp completionTime = rs.getTimestamp("CompletionTime");
+        if (completionTime != null) {
+            result.setCompletionTime(completionTime);
+        }
+        
         return result;
     }
 } 
