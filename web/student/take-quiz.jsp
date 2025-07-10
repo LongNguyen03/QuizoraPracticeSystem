@@ -32,6 +32,7 @@
     
     <form method="post" action="${pageContext.request.contextPath}/student/quiz/${quiz.id}" id="quizForm">
         <input type="hidden" name="quizId" value="${quiz.id}" />
+        <input type="hidden" name="startTime" id="startTimeInput" />
         <c:forEach var="q" items="${questions}" varStatus="status">
             <div class="card question-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -187,6 +188,12 @@
             e.preventDefault();
             alert('Vui lòng trả lời tất cả các câu hỏi trước khi nộp bài!');
             return false;
+        }
+        
+        // Set start time value before submitting
+        var startTime = sessionStorage.getItem('quizStartTime_${quiz.id}');
+        if (startTime) {
+            document.getElementById('startTimeInput').value = startTime;
         }
         
         // Xóa dữ liệu session khi nộp bài thành công
