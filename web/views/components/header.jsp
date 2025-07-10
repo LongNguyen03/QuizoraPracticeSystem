@@ -119,6 +119,11 @@
                                     <i class="fas fa-chart-pie me-1"></i>Progress
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/student/favorite-quizzes">
+                                    <i class="fas fa-heart me-1"></i>Favorite Quizzes
+                                </a>
+                            </li>
                         </c:when>
                     </c:choose>
                     

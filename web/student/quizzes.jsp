@@ -414,10 +414,13 @@
                                     <h5 class="quiz-title">${quiz.name}</h5>
                                     <p class="quiz-subject">${quiz.subjectTitle}</p>
                                 </div>
-                                <button class="favorite-btn ${quiz.favorite ? '' : 'not-favorite'}" 
-                                        onclick="toggleFavorite(${quiz.id}, this)">
-                                    <i class="fas fa-heart"></i>
-                                </button>
+                                <form method="post" action="${pageContext.request.contextPath}/student/favorite-quiz" style="display:inline;">
+                                    <input type="hidden" name="quizId" value="${quiz.id}" />
+                                    <input type="hidden" name="action" value="${quiz.favorite ? 'remove' : 'add'}" />
+                                    <button type="submit" class="favorite-btn ${quiz.favorite ? '' : 'not-favorite'}" title="${quiz.favorite ? 'Bỏ yêu thích' : 'Yêu thích'}">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </form>
                             </div>
                             
                             <div class="quiz-stats">
@@ -474,35 +477,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function toggleFavorite(quizId, button) {
-            const isFavorite = button.classList.contains('not-favorite');
-            const action = isFavorite ? 'add' : 'remove';
-            
-            fetch('${pageContext.request.contextPath}/student/favorite-quiz', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `quizId=${quizId}&action=${action}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (isFavorite) {
-                        button.classList.remove('not-favorite');
-                    } else {
-                        button.classList.add('not-favorite');
-                    }
-                } else {
-                    alert('Failed to update favorite status');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating favorite status');
-            });
-        }
-
         // Add some interactive animations
         document.addEventListener('DOMContentLoaded', function() {
             // Animate quiz cards on scroll

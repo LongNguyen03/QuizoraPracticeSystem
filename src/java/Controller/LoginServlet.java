@@ -80,6 +80,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("accountId", acc.getId());
                 session.setAttribute("email", acc.getEmail());
                 session.setAttribute("role", acc.getRoleName());
+                session.setAttribute("account", acc);
                 
                 // Lấy thông tin user profile
                 UserProfile profile = userProfileDAO.getProfileWithAccount(acc.getId());
