@@ -22,7 +22,7 @@ public class LoginServlet extends HttpServlet {
         if (session != null && session.getAttribute("accountId") != null) {
             String role = (String) session.getAttribute("role");
             if ("Admin".equalsIgnoreCase(role)) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else if ("Teacher".equalsIgnoreCase(role)) {
                 response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
             } else if ("Student".equalsIgnoreCase(role)) {
@@ -62,11 +62,25 @@ public class LoginServlet extends HttpServlet {
             // Gọi DAO kiểm tra
             Account acc = accountDAO.login(email, password);
             if (acc != null) {
+                // Kiểm tra trạng thái tài khoản
+                String status = acc.getStatus();
+                if ("banned".equals(status)) {
+                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin.");
+                    request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                    return;
+                }
+                if ("deleted".equals(status)) {
+                    request.setAttribute("error", "Tài khoản đã bị xóa vì một số lý do.");
+                    request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                    return;
+                }
+                
                 // Đăng nhập thành công → lưu vào session
                 HttpSession session = request.getSession();
                 session.setAttribute("accountId", acc.getId());
                 session.setAttribute("email", acc.getEmail());
                 session.setAttribute("role", acc.getRoleName());
+                session.setAttribute("account", acc);
                 
                 // Lấy thông tin user profile
                 UserProfile profile = userProfileDAO.getProfileWithAccount(acc.getId());
@@ -92,7 +106,7 @@ public class LoginServlet extends HttpServlet {
 
                 // Chuyển hướng dựa vào role
                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
-                    response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
                 } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {

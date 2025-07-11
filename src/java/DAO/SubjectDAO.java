@@ -21,7 +21,7 @@ public class SubjectDAO extends DBcontext {
      */
     public List<Subject> getAllSubjects() {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT * FROM Subjects WHERE Status = 'Active'";
+        String sql = "SELECT * FROM Subjects";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -70,7 +70,63 @@ public class SubjectDAO extends DBcontext {
         }
         return null;
     }
+
+    /**
+     * Thêm môn học mới
+     */
+    public boolean insertSubject(Subject s) {
+        String sql = "INSERT INTO Subjects (Title, Tagline, OwnerId, Status, Description, CreatedAt, UpdatedAt, ThumbnailUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, s.getTitle());
+            ps.setString(2, s.getTagline());
+            ps.setInt(3, s.getOwnerId());
+            ps.setString(4, s.getStatus());
+            ps.setString(5, s.getDescription());
+            ps.setTimestamp(6, new java.sql.Timestamp(s.getCreatedAt().getTime()));
+            ps.setTimestamp(7, new java.sql.Timestamp(s.getUpdatedAt().getTime()));
+            ps.setString(8, s.getThumbnailUrl());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Cập nhật môn học
+     */
+    public boolean updateSubject(Subject s) {
+        String sql = "UPDATE Subjects SET Title = ?, Tagline = ?, OwnerId = ?, Status = ?, Description = ?, UpdatedAt = ?, ThumbnailUrl = ? WHERE Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, s.getTitle());
+            ps.setString(2, s.getTagline());
+            ps.setInt(3, s.getOwnerId());
+            ps.setString(4, s.getStatus());
+            ps.setString(5, s.getDescription());
+            ps.setTimestamp(6, new java.sql.Timestamp(s.getUpdatedAt().getTime()));
+            ps.setString(7, s.getThumbnailUrl());
+            ps.setInt(8, s.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     
+    /**
+     * Xóa môn học theo ID
+     */
+    public boolean deleteSubject(int id) {
+        String sql = "DELETE FROM Subjects WHERE Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 //    public List<Subject> findAll() throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement("SELECT id, title FROM Subjects WHERE status='Active'");

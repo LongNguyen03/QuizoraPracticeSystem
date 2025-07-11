@@ -39,8 +39,8 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void createQuestion(Question q) {
-        String sql = "INSERT INTO Questions (SubjectId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Questions (SubjectId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl, IsPracticeOnly) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             Timestamp now = new Timestamp(new Date().getTime());
             ps.setInt(1, q.getSubjectId());
@@ -51,6 +51,7 @@ public class QuestionDAO extends DBcontext {
             ps.setTimestamp(6, now);
             ps.setTimestamp(7, now);
             ps.setBytes(8, q.getImage());
+            ps.setBoolean(9, q.isPracticeOnly());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -63,7 +64,7 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void updateQuestion(Question q) {
-        String sql = "UPDATE Questions SET SubjectId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=? WHERE Id=?";
+        String sql = "UPDATE Questions SET SubjectId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=?, IsPracticeOnly=? WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, q.getSubjectId());
             ps.setInt(2, q.getLessonId());
@@ -72,7 +73,8 @@ public class QuestionDAO extends DBcontext {
             ps.setString(5, q.getStatus());
             ps.setTimestamp(6, new Timestamp(new Date().getTime()));
             ps.setBytes(7, q.getImage());
-            ps.setInt(8, q.getId());
+            ps.setBoolean(8, q.isPracticeOnly());
+            ps.setInt(9, q.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,6 +149,29 @@ public class QuestionDAO extends DBcontext {
         }
         return list;
     }
+    
+    /**
+     * Lấy câu hỏi theo quiz ID
+     */
+    public List<Question> getQuestionsByQuizId(int quizId) {
+        List<Question> list = new ArrayList<>();
+        String sql = "SELECT q.* FROM Questions q " +
+                     "JOIN QuizQuestions qq ON q.Id = qq.QuestionId " +
+                     "WHERE qq.QuizId = ? " +
+                     "ORDER BY qq.QuestionOrder";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToQuestion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     // Map ResultSet row to Question object
     private Question mapRowToQuestion(ResultSet rs) throws SQLException {
@@ -160,6 +185,7 @@ public class QuestionDAO extends DBcontext {
         q.setCreatedAt(rs.getTimestamp("CreatedAt"));
         q.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
         q.setImage(rs.getBytes("ImageUrl"));
+        q.setPracticeOnly(rs.getBoolean("IsPracticeOnly"));
         return q;
     }
 }

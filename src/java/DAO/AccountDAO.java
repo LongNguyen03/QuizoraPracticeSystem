@@ -2,6 +2,8 @@ package DAO;
 
 import Model.Account;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AccountDAO extends DBcontext {
@@ -9,7 +11,7 @@ public class AccountDAO extends DBcontext {
     // 1. Check login
     public Account login(String email, String passwordPlain) {
         String sql = "SELECT a.id, a.email, a.passwordHash, a.roleId, a.status, r.name AS roleName " +
-                     "FROM Accounts a JOIN Roles r ON a.roleId = r.id WHERE a.email = ?";
+                     "FROM Accounts a JOIN Roles r ON a.roleId = r.id WHERE a.email = ? AND a.status <> 'deleted'";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -27,7 +29,7 @@ public class AccountDAO extends DBcontext {
 
     // 2. Kiểm tra email đã tồn tại
     public boolean isEmailExists(String email) {
-        String sql = "SELECT id FROM Accounts WHERE email = ?";
+        String sql = "SELECT id FROM Accounts WHERE email = ? AND status <> 'deleted'";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -116,9 +118,9 @@ public class AccountDAO extends DBcontext {
         return false;
     }
 
-    // 7. Xóa Account
+    // 7. Xóa Account (xóa mềm)
     public boolean deleteAccount(int id) {
-        String sql = "DELETE FROM Accounts WHERE id = ?";
+        String sql = "UPDATE Accounts SET status = 'deleted' WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
@@ -147,5 +149,60 @@ public class AccountDAO extends DBcontext {
 
     private boolean verifyPassword(String plain, String storedHash) {
         return hashPassword(plain).equals(storedHash);
+    }
+
+    // Lấy danh sách tất cả user (trừ user đã xóa và admin)
+    public static List<Account> getAllUsers() {
+        List<Account> list = new ArrayList<>();
+        String sql = "SELECT a.id, a.email, a.passwordHash, a.roleId, a.status, r.name AS roleName " +
+                     "FROM Accounts a JOIN Roles r ON a.roleId = r.id " +
+                     "WHERE a.status <> 'deleted' AND a.roleId <> 1";
+        DBcontext db = new DBcontext();
+        try (Connection conn = db.connection;
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Account acc = new Account(
+                    rs.getInt("id"),
+                    rs.getString("email"),
+                    rs.getString("passwordHash"),
+                    rs.getInt("roleId"),
+                    rs.getString("status"),
+                    rs.getString("roleName")
+                );
+                list.add(acc);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Cập nhật status user theo id
+    public static boolean updateUserStatus(int id, String status) {
+        String sql = "UPDATE Accounts SET status = ? WHERE id = ?";
+        DBcontext db = new DBcontext();
+        try (Connection conn = db.connection;
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Kiểm tra email đã bị xóa mềm
+    public boolean isEmailDeleted(String email) {
+        String sql = "SELECT id FROM Accounts WHERE email = ? AND status = 'deleted'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

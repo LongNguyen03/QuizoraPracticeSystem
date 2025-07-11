@@ -165,12 +165,66 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>StudentQuizzesServlet</servlet-name>
+        <servlet-class>Controller.StudentQuizzesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentQuizzesServlet</servlet-name>
+        <url-pattern>/student/quizzes</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FavoriteQuizServlet</servlet-name>
+        <servlet-class>Controller.FavoriteQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FavoriteQuizServlet</servlet-name>
+        <url-pattern>/student/favorite-quiz</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentTakeQuizServlet</servlet-name>
+        <servlet-class>Controller.StudentTakeQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentTakeQuizServlet</servlet-name>
+        <url-pattern>/student/quiz/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>AccessDeniedServlet</servlet-name>
         <servlet-class>Controller.AccessDeniedServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>AccessDeniedServlet</servlet-name>
         <url-pattern>/access-denied</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <jsp-file>/admin/dashboard.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminDashboardServlet</servlet-name>
+        <url-pattern>/admin/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentQuizResultServlet</servlet-name>
+        <servlet-class>Controller.StudentQuizResultServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentQuizResultServlet</servlet-name>
+        <url-pattern>/student/quiz-result</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TestQuizServlet</servlet-name>
+        <servlet-class>Controller.TestQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestQuizServlet</servlet-name>
+        <url-pattern>/student/test-quiz</url-pattern>
     </servlet-mapping>
 
     <!-- Welcome File List -->

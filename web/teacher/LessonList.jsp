@@ -36,6 +36,7 @@
     </script>
 </head>
 <body>
+    <jsp:include page="../views/components/header.jsp" />
     <div class="header">
         <h2>📚 Danh sách bài học</h2>
         <a href="${pageContext.request.contextPath}/lesson?action=detail" class="add-btn">➕ Thêm bài học mới</a>

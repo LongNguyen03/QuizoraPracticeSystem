@@ -5,6 +5,12 @@
     <div class="container">
         <!-- Logo/Brand -->
         <c:choose>
+            <c:when test="${sessionScope.role == 'Admin'}">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/admin/dashboard">
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
+                </a>
+            </c:when>
             <c:when test="${sessionScope.role == 'Student'}">
                 <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/student/home">
                     <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
@@ -111,6 +117,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/student/progress">
                                     <i class="fas fa-chart-pie me-1"></i>Progress
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/student/favorite-quizzes">
+                                    <i class="fas fa-heart me-1"></i>Favorite Quizzes
                                 </a>
                             </li>
                         </c:when>
