@@ -149,7 +149,6 @@
             if (answeredQuestions.size < questionData.length) {
                 if (!confirm('Bạn chưa trả lời hết các câu hỏi. Vẫn muốn nộp bài?')) return;
             }
-            // Serialize userAnswers thành chuỗi questionId:answerId,questionId:answerId,...
             let pairs = [];
             Object.keys(userAnswers).forEach(function(idx) {
                 let qid = questionData[parseInt(idx)].id;

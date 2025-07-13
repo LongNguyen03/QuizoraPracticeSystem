@@ -165,25 +165,15 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <!-- Debug info -->
-                        <div class="alert alert-info">
-                            <strong>Debug Info:</strong><br>
-                            Practice Answers Count: ${fn:length(practiceAnswers)}<br>
-                            Questions Count: ${fn:length(questions)}<br>
-                            Stats: ${stats.totalQuestions} total, ${stats.correctAnswers} correct
-                        </div>
-                        
                         <c:forEach var="answer" items="${practiceAnswers}" varStatus="status">
                             <div class="answer-item ${answer.correct ? 'correct' : 'incorrect'}">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="flex-grow-1">
                                         <h6 class="mb-2">
                                             <i class="fas fa-question-circle me-2"></i>
-                                            Câu ${status.index + 1} (QuestionId: ${answer.questionId}, AnswerId: ${answer.answerId})
+                                            Câu ${status.index + 1}
                                         </h6>
-                                        <p class="mb-2">
-                                            <strong>Question Content:</strong> ${answer.questionContent}
-                                        </p>
+                                        <p class="mb-2">${answer.questionContent}</p>
                                         <c:if test="${not empty answer.answerContent}">
                                             <p class="mb-1">
                                                 <strong>Đáp án của bạn:</strong> ${answer.answerContent}
