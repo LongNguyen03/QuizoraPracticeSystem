@@ -33,6 +33,55 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         
+        // Kiểm tra cookie Remember Me nếu chưa có session
+        if (session == null || session.getAttribute("accountId") == null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    if ("rememberMe".equals(c.getName())) {
+                        String value = c.getValue();
+                        if (value != null && value.contains(":")) {
+                            String[] parts = value.split(":", 2);
+                            String email = parts[0];
+                            String passwordHash = new String(java.util.Base64.getDecoder().decode(parts[1]));
+                            // Kiểm tra thông tin đăng nhập từ DB
+                            Account acc = accountDAO.loginWithHash(email, passwordHash);
+                            if (acc != null) {
+                                // Tạo session tự động
+                                session = request.getSession();
+                                session.setAttribute("accountId", acc.getId());
+                                session.setAttribute("email", acc.getEmail());
+                                session.setAttribute("role", acc.getRoleName());
+                                session.setAttribute("account", acc);
+                                // Lấy thông tin user profile (tùy chọn, giống như doPost)
+                                UserProfile profile = userProfileDAO.getProfileWithAccount(acc.getId());
+                                if (profile != null) {
+                                    session.setAttribute("firstName", profile.getFirstName());
+                                    session.setAttribute("lastName", profile.getLastName());
+                                    session.setAttribute("middleName", profile.getMiddleName());
+                                    session.setAttribute("avatarUrl", profile.getAvatarUrl());
+                                    session.setAttribute("mobile", profile.getMobile());
+                                    session.setAttribute("gender", profile.getGender());
+                                    session.setAttribute("dateOfBirth", profile.getDateOfBirth());
+                                }
+                                // Chuyển hướng đúng role
+                                if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
+                                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                                                } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/dashboard");
+                } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
+                    response.sendRedirect(request.getContextPath() + "/student/home");
+                                } else {
+                                    response.sendRedirect(request.getContextPath() + "/views/home.jsp");
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         // Xử lý thông báo logout
         String message = request.getParameter("message");
         if (message != null && !message.trim().isEmpty()) {
@@ -50,6 +99,7 @@ public class LoginServlet extends HttpServlet {
             // Lấy email & password từ form
             String email = request.getParameter("email");
             String password = request.getParameter("password");
+            String rememberMe = request.getParameter("rememberMe"); // Lấy giá trị checkbox Remember Me
 
             // Validate cơ bản
             if (email == null || email.trim().isEmpty() ||
@@ -82,6 +132,28 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("role", acc.getRoleName());
                 session.setAttribute("account", acc);
                 
+                // Remember Me: nếu người dùng chọn, tạo cookie
+                if ("on".equals(rememberMe)) {
+                    // Tạo giá trị cookie (có thể dùng token bảo mật hơn)
+                    String cookieValue = acc.getEmail() + ":" + java.util.Base64.getEncoder().encodeToString(acc.getPasswordHash().getBytes());
+                    Cookie rememberCookie = new Cookie("rememberMe", cookieValue);
+                    rememberCookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+                    rememberCookie.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+                    response.addCookie(rememberCookie);
+                } else {
+                    // Nếu không chọn, xóa cookie nếu có
+                    Cookie[] cookies = request.getCookies();
+                    if (cookies != null) {
+                        for (Cookie c : cookies) {
+                            if ("rememberMe".equals(c.getName())) {
+                                c.setMaxAge(0);
+                                c.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+                                response.addCookie(c);
+                            }
+                        }
+                    }
+                }
+                
                 // Lấy thông tin user profile
                 UserProfile profile = userProfileDAO.getProfileWithAccount(acc.getId());
                 if (profile != null) {
@@ -108,7 +180,7 @@ public class LoginServlet extends HttpServlet {
                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
-                    response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
+                    response.sendRedirect(request.getContextPath() + "/teacher/dashboard");
                 } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/student/home");
                 } else {

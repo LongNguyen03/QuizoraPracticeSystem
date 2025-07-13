@@ -107,6 +107,22 @@ public class QuestionDAO extends DBcontext {
         return list;
     }
 
+    public List<Question> getQuestionsBySubjectId(int subjectId) {
+        List<Question> list = new ArrayList<>();
+        String sql = "SELECT * FROM Questions WHERE SubjectId = ? AND Status = 'Active'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, subjectId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToQuestion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public List<Question> getFilteredQuestions(
             String subjectIdStr, String lessonIdStr,
             String dimensionStr, String levelStr, String search) {
