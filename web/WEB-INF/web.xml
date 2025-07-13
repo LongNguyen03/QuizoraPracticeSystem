@@ -157,7 +157,7 @@
 
     <servlet>
         <servlet-name>StudentDashboardServlet</servlet-name>
-        <jsp-file>/student/dashboard.jsp</jsp-file>
+        <servlet-class>Controller.StudentDashboardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>StudentDashboardServlet</servlet-name>
@@ -202,7 +202,7 @@
 
     <servlet>
         <servlet-name>AdminDashboardServlet</servlet-name>
-        <jsp-file>/admin/dashboard.jsp</jsp-file>
+        <servlet-class>Controller.AdminDashboardServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>AdminDashboardServlet</servlet-name>
@@ -234,6 +234,55 @@
     <servlet-mapping>
         <servlet-name>StudentPracticeServlet</servlet-name>
         <url-pattern>/student/practice</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherDashboardServlet</servlet-name>
+        <servlet-class>Controller.TeacherDashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherDashboardServlet</servlet-name>
+        <url-pattern>/teacher/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentHistoryServlet</servlet-name>
+        <servlet-class>Controller.StudentHistoryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentHistoryServlet</servlet-name>
+        <url-pattern>/student/history</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AdminReportsServlet</servlet-name>
+        <servlet-class>Controller.AdminReportsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminReportsServlet</servlet-name>
+        <url-pattern>/admin/reports</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UsersController</servlet-name>
+        <servlet-class>Controller.UsersController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UsersController</servlet-name>
+        <url-pattern>/admin/users</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SubjectController</servlet-name>
+        <servlet-class>Controller.SubjectController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubjectController</servlet-name>
+        <url-pattern>/admin/subjects</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectController</servlet-name>
+        <url-pattern>/admin/subject/*</url-pattern>
     </servlet-mapping>
 
     <!-- Welcome File List -->

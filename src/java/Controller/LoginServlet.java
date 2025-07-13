@@ -67,10 +67,10 @@ public class LoginServlet extends HttpServlet {
                                 // Chuyển hướng đúng role
                                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
                                     response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                                } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
-                                    response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
-                                } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
-                                    response.sendRedirect(request.getContextPath() + "/student/home.jsp");
+                                                } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
+                    response.sendRedirect(request.getContextPath() + "/teacher/dashboard");
+                } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
+                    response.sendRedirect(request.getContextPath() + "/student/home");
                                 } else {
                                     response.sendRedirect(request.getContextPath() + "/views/home.jsp");
                                 }
@@ -180,7 +180,7 @@ public class LoginServlet extends HttpServlet {
                 if ("Admin".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 } else if ("Teacher".equalsIgnoreCase(acc.getRoleName())) {
-                    response.sendRedirect(request.getContextPath() + "/teacher/home.jsp");
+                    response.sendRedirect(request.getContextPath() + "/teacher/dashboard");
                 } else if ("Student".equalsIgnoreCase(acc.getRoleName())) {
                     response.sendRedirect(request.getContextPath() + "/student/home");
                 } else {

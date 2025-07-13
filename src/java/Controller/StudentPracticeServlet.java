@@ -12,7 +12,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import DAO.QuestionAnswerDAO;
+import jakarta.servlet.annotation.WebServlet;
 
+@WebServlet(name = "StudentPracticeServlet", urlPatterns = {"/student/practice"})
 public class StudentPracticeServlet extends HttpServlet {
     
     @Override

@@ -53,11 +53,7 @@
                                     <i class="fas fa-book me-1"></i>Subject Management
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/quizzes">
-                                    <i class="fas fa-question-circle me-1"></i>Quiz Management
-                                </a>
-                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/reports">
                                     <i class="fas fa-chart-bar me-1"></i>Reports
@@ -105,18 +101,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/student/my-quizzes">
-                                    <i class="fas fa-list me-1"></i>My Quizzes
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/student/history">
                                     <i class="fas fa-history me-1"></i>Quiz History
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/student/progress">
-                                    <i class="fas fa-chart-pie me-1"></i>Progress
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -134,7 +120,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/practice">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/student/practice">
                             <i class="fas fa-dumbbell me-1"></i>Practice
                         </a>
                     </li>

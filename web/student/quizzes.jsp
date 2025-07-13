@@ -447,7 +447,7 @@
                                    class="btn btn-take-quiz">
                                     <i class="fas fa-play me-2"></i>Take Quiz
                                 </a>
-                                <a href="${pageContext.request.contextPath}/student/practice/${quiz.id}" 
+                                <a href="${pageContext.request.contextPath}/student/practice?action=start&subjectId=${quiz.subjectId}" 
                                    class="btn btn-practice">
                                     <i class="fas fa-dumbbell"></i>
                                 </a>
