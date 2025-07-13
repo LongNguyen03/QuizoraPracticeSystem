@@ -6,6 +6,7 @@ public class PracticeAnswer {
     private int questionId;
     private Integer answerId; // nullable
     private boolean isCorrect;
+    private int displayOrder; // Thứ tự hiển thị câu hỏi
 
     // Additional properties for JOIN queries
     private String questionContent;
@@ -69,6 +70,14 @@ public class PracticeAnswer {
         isCorrect = correct;
     }
 
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
     public String getQuestionContent() {
         return questionContent;
     }
@@ -93,6 +102,7 @@ public class PracticeAnswer {
                 ", questionId=" + questionId +
                 ", answerId=" + answerId +
                 ", isCorrect=" + isCorrect +
+                ", displayOrder=" + displayOrder +
                 ", questionContent='" + questionContent + '\'' +
                 ", answerContent='" + answerContent + '\'' +
                 '}';

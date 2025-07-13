@@ -27,6 +27,23 @@ public class AccountDAO extends DBcontext {
         return null;
     }
 
+    // Đăng nhập bằng email và passwordHash (dùng cho Remember Me)
+    public Account loginWithHash(String email, String passwordHash) {
+        String sql = "SELECT a.id, a.email, a.passwordHash, a.roleId, a.status, r.name AS roleName " +
+                     "FROM Accounts a JOIN Roles r ON a.roleId = r.id WHERE a.email = ? AND a.passwordHash = ? AND a.status <> 'deleted'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, passwordHash);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return extractAccount(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // 2. Kiểm tra email đã tồn tại
     public boolean isEmailExists(String email) {
         String sql = "SELECT id FROM Accounts WHERE email = ? AND status <> 'deleted'";

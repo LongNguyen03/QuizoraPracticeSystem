@@ -1,7 +1,6 @@
 package Controller;
 
 import DAO.UserProfileDAO;
-import Model.Account;
 import Model.UserProfile;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
