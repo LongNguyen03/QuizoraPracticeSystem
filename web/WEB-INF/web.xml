@@ -227,6 +227,15 @@
         <url-pattern>/student/test-quiz</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>StudentPracticeServlet</servlet-name>
+        <servlet-class>Controller.StudentPracticeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentPracticeServlet</servlet-name>
+        <url-pattern>/student/practice</url-pattern>
+    </servlet-mapping>
+
     <!-- Welcome File List -->
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

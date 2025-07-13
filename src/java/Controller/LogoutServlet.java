@@ -34,6 +34,18 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
         
+        // Xóa cookie rememberMe nếu có
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("rememberMe".equals(c.getName())) {
+                    c.setMaxAge(0);
+                    c.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+                    response.addCookie(c);
+                }
+            }
+        }
+        
         // Chuyển hướng về trang login với thông báo
         response.sendRedirect(request.getContextPath() + "/login?message=You have been logged out successfully.");
     }

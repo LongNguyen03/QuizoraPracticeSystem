@@ -162,6 +162,22 @@ public class LessonDAO extends DBcontext {
         return list;
     }
 
+    public List<Lesson> getLessonsBySubjectAndStatus(int subjectId, String status) {
+        List<Lesson> list = new ArrayList<>();
+        String sql = "SELECT * FROM Lessons WHERE SubjectId = ? AND Status = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, subjectId);
+            ps.setString(2, status);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(extractLesson(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 //    public List<Lesson> findBySubject(int subjectId) throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement(
