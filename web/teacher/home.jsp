@@ -141,7 +141,9 @@
                                 <i class="fas fa-plus-circle me-3 text-primary"></i>
                                 <div>
                                     <h5 class="mb-1 text-dark">Create New Quiz</h5>
-                                    <p class="text-muted mb-0">Create a new quiz for your students</p>
+                                    <p class="text-muted mb-0"><a href="${pageContext.request.contextPath}/quiz">Quản lý Quiz</a>
+</p>
+                                    
                                 </div>
                             </div>
                         </a>

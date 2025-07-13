@@ -18,7 +18,7 @@
                 </a>
             </c:when>
             <c:otherwise>
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/home.jsp">
+                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}./home.jsp">
                     <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
                     <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
                 </a>
@@ -73,7 +73,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/create-quiz">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
                                     <i class="fas fa-plus me-1"></i>Create Quiz
                                 </a>
                             </li>
