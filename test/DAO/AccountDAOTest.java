@@ -1,202 +1,90 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package DAO;
 
 import Model.Account;
+import org.junit.jupiter.api.*;
+
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AccountDAOTest {
-    
-    public AccountDAOTest() {
-    }
-    
+class AccountDAOTest {
+
+    static AccountDAO dao;
+
     @BeforeAll
-    public static void setUpClass() {
-    }
-    
-    @AfterAll
-    public static void tearDownClass() {
-    }
-    
-    @BeforeEach
-    public void setUp() {
-    }
-    
-    @AfterEach
-    public void tearDown() {
+    static void setup() {
+        dao = new AccountDAO();
     }
 
-    /**
-     * Test of login method, of class AccountDAO.
-     */
     @Test
-    public void testLogin() {
-        System.out.println("login");
-        String email = "";
-        String passwordPlain = "";
-        AccountDAO instance = new AccountDAO();
-        Account expResult = null;
-        Account result = instance.login(email, passwordPlain);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    void testRegisterAndLogin() {
+        // Tạo user test
+        String email = "testuser@example.com";
+        String plainPassword = "secret123";
+
+        // Nếu email tồn tại thì xóa
+        if (dao.isEmailExists(email)) {
+            Account acc = dao.getAccountByEmail(email);
+            dao.deleteAccount(acc.getId());
+        }
+
+        // Đăng ký
+        Account acc = new Account();
+        acc.setEmail(email);
+        acc.setPasswordHash(plainPassword);
+        acc.setRoleId(2); // Ví dụ 2 = user
+        acc.setStatus("active");
+
+        boolean registered = dao.register(acc);
+        assertTrue(registered, "Đăng ký thất bại!");
+
+        assertTrue(acc.getId() > 0, "ID phải được set sau khi insert!");
+
+        // Test login đúng
+        Account loginAcc = dao.login(email, plainPassword);
+        assertNotNull(loginAcc, "Login thất bại!");
+        assertEquals(email, loginAcc.getEmail());
+
+        // Test login sai
+        Account loginFail = dao.login(email, "wrongpassword");
+        assertNull(loginFail, "Login sai password phải trả về null!");
+
+        // Test login bằng hash
+        String hash = dao.getAccountByEmail(email).getPasswordHash();
+        Account loginHash = dao.loginWithHash(email, hash);
+        assertNotNull(loginHash, "Login bằng hash thất bại!");
+
+        // Test update
+        loginAcc.setStatus("inactive");
+        boolean updated = dao.updateAccount(loginAcc);
+        assertTrue(updated, "Cập nhật thất bại!");
+
+        Account updatedAcc = dao.getAccountById(loginAcc.getId());
+        assertEquals("inactive", updatedAcc.getStatus(), "Trạng thái không khớp!");
+
+        // Xóa mềm
+        boolean deleted = dao.deleteAccount(loginAcc.getId());
+        assertTrue(deleted, "Xóa mềm thất bại!");
+
+        assertTrue(dao.isEmailDeleted(email), "Email phải ở trạng thái deleted!");
     }
 
-    /**
-     * Test of loginWithHash method, of class AccountDAO.
-     */
     @Test
-    public void testLoginWithHash() {
-        System.out.println("loginWithHash");
-        String email = "";
-        String passwordHash = "";
-        AccountDAO instance = new AccountDAO();
-        Account expResult = null;
-        Account result = instance.loginWithHash(email, passwordHash);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    void testGetAllUsers() {
+        List<Account> users = AccountDAO.getAllUsers();
+        assertNotNull(users, "Danh sách không null");
+        System.out.println("Tổng user: " + users.size());
     }
 
-    /**
-     * Test of isEmailExists method, of class AccountDAO.
-     */
     @Test
-    public void testIsEmailExists() {
-        System.out.println("isEmailExists");
-        String email = "";
-        AccountDAO instance = new AccountDAO();
-        boolean expResult = false;
-        boolean result = instance.isEmailExists(email);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    void testUpdateUserStatus() {
+        // Lấy 1 user thật
+        List<Account> users = AccountDAO.getAllUsers();
+        if (!users.isEmpty()) {
+            Account acc = users.get(0);
+            boolean ok = AccountDAO.updateUserStatus(acc.getId(), "inactive");
+            assertTrue(ok, "Cập nhật status thất bại!");
+        }
     }
 
-    /**
-     * Test of register method, of class AccountDAO.
-     */
-    @Test
-    public void testRegister() {
-        System.out.println("register");
-        Account acc = null;
-        AccountDAO instance = new AccountDAO();
-        boolean expResult = false;
-        boolean result = instance.register(acc);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAccountByEmail method, of class AccountDAO.
-     */
-    @Test
-    public void testGetAccountByEmail() {
-        System.out.println("getAccountByEmail");
-        String email = "";
-        AccountDAO instance = new AccountDAO();
-        Account expResult = null;
-        Account result = instance.getAccountByEmail(email);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAccountById method, of class AccountDAO.
-     */
-    @Test
-    public void testGetAccountById() {
-        System.out.println("getAccountById");
-        int id = 0;
-        AccountDAO instance = new AccountDAO();
-        Account expResult = null;
-        Account result = instance.getAccountById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of updateAccount method, of class AccountDAO.
-     */
-    @Test
-    public void testUpdateAccount() {
-        System.out.println("updateAccount");
-        Account acc = null;
-        AccountDAO instance = new AccountDAO();
-        boolean expResult = false;
-        boolean result = instance.updateAccount(acc);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of deleteAccount method, of class AccountDAO.
-     */
-    @Test
-    public void testDeleteAccount() {
-        System.out.println("deleteAccount");
-        int id = 0;
-        AccountDAO instance = new AccountDAO();
-        boolean expResult = false;
-        boolean result = instance.deleteAccount(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAllUsers method, of class AccountDAO.
-     */
-    @Test
-    public void testGetAllUsers() {
-        System.out.println("getAllUsers");
-        List<Account> expResult = null;
-        List<Account> result = AccountDAO.getAllUsers();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of updateUserStatus method, of class AccountDAO.
-     */
-    @Test
-    public void testUpdateUserStatus() {
-        System.out.println("updateUserStatus");
-        int id = 0;
-        String status = "";
-        boolean expResult = false;
-        boolean result = AccountDAO.updateUserStatus(id, status);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of isEmailDeleted method, of class AccountDAO.
-     */
-    @Test
-    public void testIsEmailDeleted() {
-        System.out.println("isEmailDeleted");
-        String email = "";
-        AccountDAO instance = new AccountDAO();
-        boolean expResult = false;
-        boolean result = instance.isEmailDeleted(email);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
 }
