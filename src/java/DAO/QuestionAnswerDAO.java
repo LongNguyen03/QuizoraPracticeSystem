@@ -13,7 +13,7 @@ public class QuestionAnswerDAO extends DBcontext {
     public List<QuestionAnswer> getAnswersByQuestionId(int questionId) {
         List<QuestionAnswer> answers = new ArrayList<>();
         String sql = "SELECT * FROM QuestionAnswers WHERE QuestionId = ? ORDER BY AnswerOrder";
-        
+
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, questionId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -26,7 +26,7 @@ public class QuestionAnswerDAO extends DBcontext {
         }
         return answers;
     }
-    
+
     /**
      * Lấy đáp án theo ID
      */
@@ -44,7 +44,7 @@ public class QuestionAnswerDAO extends DBcontext {
         }
         return null;
     }
-    
+
     /**
      * Lấy đáp án đúng của một câu hỏi
      */
@@ -62,7 +62,7 @@ public class QuestionAnswerDAO extends DBcontext {
         }
         return null;
     }
-    
+
     /**
      * Tạo đáp án mới
      */
@@ -74,7 +74,7 @@ public class QuestionAnswerDAO extends DBcontext {
             ps.setBoolean(3, answer.isCorrect());
             ps.setInt(4, answer.getAnswerOrder());
             ps.executeUpdate();
-            
+
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     answer.setId(rs.getInt(1));
@@ -84,7 +84,7 @@ public class QuestionAnswerDAO extends DBcontext {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Cập nhật đáp án
      */
@@ -100,7 +100,7 @@ public class QuestionAnswerDAO extends DBcontext {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Xóa đáp án
      */
@@ -113,7 +113,7 @@ public class QuestionAnswerDAO extends DBcontext {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Xóa tất cả đáp án của một câu hỏi
      */
@@ -126,7 +126,7 @@ public class QuestionAnswerDAO extends DBcontext {
             e.printStackTrace();
         }
     }
-    
+
     private QuestionAnswer mapRowToQuestionAnswer(ResultSet rs) throws SQLException {
         QuestionAnswer answer = new QuestionAnswer();
         answer.setId(rs.getInt("Id"));
@@ -141,10 +141,27 @@ public class QuestionAnswerDAO extends DBcontext {
     public List<QuestionAnswer> getByQuestion(int questionId) {
         return getAnswersByQuestionId(questionId);
     }
+
     public void deleteByQuestion(int questionId) {
         deleteAnswersByQuestionId(questionId);
     }
+
     public void insertAnswer(QuestionAnswer a) {
         createAnswer(a);
     }
+
+    public boolean isAnswerCorrect(int questionId, int answerId) {
+        String sql = "SELECT 1 FROM QuestionAnswers WHERE QuestionId = ? AND Id = ? AND IsCorrect = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, questionId);
+            ps.setInt(2, answerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
