@@ -12,6 +12,7 @@
 <html>
 <head>
     <title>Lesson Detail</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/header.css">
     <style>
         form {
             width: 600px;
