@@ -15,12 +15,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import DAO.SubjectDAO;
+import Model.Subject;
 
 @WebServlet(name = "QuizController", urlPatterns = { "/quiz" })
 public class QuizController extends HttpServlet {
@@ -81,6 +84,9 @@ public class QuizController extends HttpServlet {
         LessonDAO lessonDAO = new LessonDAO();
         List<Lesson> lessons = lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
+        SubjectDAO subjectDAO = new SubjectDAO();
+        List<Subject> subjects = subjectDAO.getAllSubjects();
+        request.setAttribute("subjects", subjects);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_form.jsp");
         dispatcher.forward(request, response);
     }
@@ -123,14 +129,23 @@ public class QuizController extends HttpServlet {
         request.setAttribute("quizQuestions", quizQuestions);
         request.setAttribute("answersMap", answersMap);
 
+        SubjectDAO subjectDAO = new SubjectDAO();
+        List<Subject> subjects = subjectDAO.getAllSubjects();
+        request.setAttribute("subjects", subjects);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_form.jsp");
         dispatcher.forward(request, response);
     }
 
     private void insertQuiz(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws ServletException, IOException {
 
         String name = request.getParameter("name");
+        if (quizDAO.isQuizNameExists(name)) {
+            request.setAttribute("error", "Tên quiz đã tồn tại, vui lòng chọn tên khác!");
+            showCreateForm(request, response);
+            return;
+        }
         int lessonId = Integer.parseInt(request.getParameter("lessonId"));
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
@@ -164,10 +179,15 @@ public class QuizController extends HttpServlet {
     }
 
     private void updateQuiz(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws IOException, ServletException {
 
         int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
+        if (quizDAO.isQuizNameExists(name) && !name.equals(quizDAO.getQuizById(id).getName())) {
+            request.setAttribute("error", "Tên quiz đã tồn tại, vui lòng chọn tên khác!");
+            showEditForm(request, response);
+            return;
+        }
         int lessonId = Integer.parseInt(request.getParameter("lessonId"));
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));

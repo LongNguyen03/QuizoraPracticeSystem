@@ -178,6 +178,35 @@ public class LessonDAO extends DBcontext {
         return list;
     }
 
+    public List<String> getAllDimensions() {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT Dimension FROM Lessons WHERE Dimension IS NOT NULL AND Dimension <> ''";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("Dimension"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Lesson> getLessonsByTeacherId(int teacherId) {
+        List<Lesson> list = new ArrayList<>();
+        String sql = "SELECT * FROM Lessons WHERE OwnerId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, teacherId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(extractLesson(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 //    public List<Lesson> findBySubject(int subjectId) throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement(

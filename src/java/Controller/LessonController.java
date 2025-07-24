@@ -9,10 +9,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @WebServlet("/lesson")
 public class LessonController extends HttpServlet {
@@ -61,8 +66,18 @@ public class LessonController extends HttpServlet {
             catch (NumberFormatException ignored) {}
         }
 
-        List<Lesson> lessons   = lessonDAO.getAllLessons(subjectId, keyword, dimension);
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("accountId") == null ||
+            session.getAttribute("role") == null ||
+            !"Teacher".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        int teacherId = (int) session.getAttribute("accountId");
+        List<Lesson> lessons = lessonDAO.getAllLessons(subjectId, keyword, dimension);
         List<Subject> subjects = subjectDAO.getAllSubjects();
+        List<String> dimensionList = lessonDAO.getAllDimensions();
+        request.setAttribute("dimensionList", dimensionList);
 
         request.setAttribute("lessons", lessons);
         request.setAttribute("subjects", subjects);
@@ -87,6 +102,8 @@ public class LessonController extends HttpServlet {
         }
 
         List<Subject> subjects = subjectDAO.getAllSubjects();
+        List<String> dimensionList = lessonDAO.getAllDimensions();
+        request.setAttribute("dimensionList", dimensionList);
         request.setAttribute("subjects", subjects);
         request.setAttribute("lesson", lesson);
         request.getRequestDispatcher("teacher/LessonDetail.jsp").forward(request, response);

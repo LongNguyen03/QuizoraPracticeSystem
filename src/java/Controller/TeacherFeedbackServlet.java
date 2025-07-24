@@ -33,7 +33,15 @@ public class TeacherFeedbackServlet extends HttpServlet {
         }
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<Feedback> feedbackList = feedbackDAO.getFeedbacksByAccountId(account.getId());
+        // Fetch replies for each feedback
+        DAO.FeedbackReplyDAO replyDAO = new DAO.FeedbackReplyDAO();
+        java.util.Map<Integer, java.util.List<Model.FeedbackReply>> feedbackRepliesMap = new java.util.HashMap<>();
+        for (Feedback fb : feedbackList) {
+            java.util.List<Model.FeedbackReply> replies = replyDAO.getRepliesByFeedbackId(fb.getId());
+            feedbackRepliesMap.put(fb.getId(), replies);
+        }
         request.setAttribute("feedbackList", feedbackList);
+        request.setAttribute("feedbackRepliesMap", feedbackRepliesMap);
         request.getRequestDispatcher("/teacher/feedback.jsp").forward(request, response);
     }
 

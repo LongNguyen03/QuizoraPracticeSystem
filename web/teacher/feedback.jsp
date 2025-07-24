@@ -54,23 +54,50 @@
                             <tr>
                                 <th style="width: 160px;">Thời gian</th>
                                 <th>Nội dung</th>
+                                <th style="width: 220px;">Phản hồi từ Admin</th>
                                 <th style="width: 120px;">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             <%
                                 List<Feedback> feedbackList = (List<Feedback>) request.getAttribute("feedbackList");
+                                java.util.Map<Integer, java.util.List<Model.FeedbackReply>> feedbackRepliesMap = (java.util.Map<Integer, java.util.List<Model.FeedbackReply>>) request.getAttribute("feedbackRepliesMap");
+                                DAO.AccountDAO accountDAO = new DAO.AccountDAO();
+                                DAO.RoleDAO roleDAO = new DAO.RoleDAO();
+                            %>
+                            <%
                                 if (feedbackList != null && !feedbackList.isEmpty()) {
                                     for (Feedback fb : feedbackList) {
+                                        java.util.List<Model.FeedbackReply> replies = feedbackRepliesMap != null ? feedbackRepliesMap.get(fb.getId()) : null;
+                                        Model.FeedbackReply latestReply = null;
+                                        if (replies != null && !replies.isEmpty()) {
+                                            latestReply = replies.get(replies.size() - 1); // get the last reply (latest)
+                                        }
                             %>
                             <tr>
                                 <td><%= fb.getCreatedAt() %></td>
                                 <td><%= fb.getContent() %></td>
                                 <td>
+                                    <% if (latestReply != null) { %>
+                                        <div class="bg-light rounded px-2 py-1 mb-1">
+                                            <i class="fas fa-user-shield text-primary"></i>
+                                            <span class="fw-semibold">Phản hồi:</span>
+                                            <span><%= latestReply.getContent() %></span>
+                                            <span class="text-muted small">(<%= latestReply.getCreatedAt() %>)</span>
+                                        </div>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
                                     <% if ("Pending".equalsIgnoreCase(fb.getStatus())) { %>
                                         <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                    <% } else if ("Approve".equalsIgnoreCase(fb.getStatus())) { %>
+                                        <span class="badge bg-success">Đã duyệt</span>
+                                    <% } else if ("Reject".equalsIgnoreCase(fb.getStatus())) { %>
+                                        <span class="badge bg-danger">Bị từ chối</span>
                                     <% } else { %>
-                                        <span class="badge bg-success">Đã xử lý</span>
+                                        <span class="badge bg-secondary">Đã xử lý</span>
                                     <% } %>
                                 </td>
                             </tr>
@@ -79,7 +106,7 @@
                                 } else {
                             %>
                             <tr>
-                                <td colspan="3" class="text-center text-muted">Bạn chưa gửi phản hồi nào.</td>
+                                <td colspan="4" class="text-center text-muted">Bạn chưa gửi phản hồi nào.</td>
                             </tr>
                             <%
                                 }

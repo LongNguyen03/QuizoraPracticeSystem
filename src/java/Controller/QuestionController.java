@@ -104,6 +104,38 @@ public class QuestionController extends HttpServlet {
 
     private void insertQuestion(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        // Lấy dữ liệu
+        String content = request.getParameter("content");
+        String[] answerContents = request.getParameterValues("answerContent[]");
+        String correctIndexStr = request.getParameter("answerIsCorrect");
+
+        // Validation
+        if (content == null || content.trim().isEmpty()) {
+            request.setAttribute("error", "Nội dung câu hỏi không được để trống!");
+            showForm(request, response, null);
+            return;
+        }
+        if (answerContents == null || answerContents.length < 2) {
+            request.setAttribute("error", "Phải có ít nhất 2 đáp án!");
+            showForm(request, response, null);
+            return;
+        }
+        boolean hasEmpty = false;
+        for (String ans : answerContents) {
+            if (ans == null || ans.trim().isEmpty()) hasEmpty = true;
+        }
+        if (hasEmpty) {
+            request.setAttribute("error", "Không được để trống nội dung đáp án!");
+            showForm(request, response, null);
+            return;
+        }
+        if (correctIndexStr == null) {
+            request.setAttribute("error", "Phải chọn 1 đáp án đúng!");
+            showForm(request, response, null);
+            return;
+        }
+
+        // Nếu hợp lệ, tiếp tục lưu
         Question q = buildQuestionFromRequest(request, true);
         questionDAO.createQuestion(q);
         processAnswers(request, q.getId());
@@ -141,15 +173,23 @@ public class QuestionController extends HttpServlet {
     private void processAnswers(HttpServletRequest request, int questionId) {
         answerDAO.deleteAnswersByQuestionId(questionId);
         String[] contents = request.getParameterValues("answerContent[]");
-        String[] corrects = request.getParameterValues("answerIsCorrect[]");
-        String[] orders   = request.getParameterValues("answerOrder[]");
+        String correctIndexStr = request.getParameter("answerIsCorrect"); // chỉ số đáp án đúng
         if (contents == null) return;
+
+        // Validation: phải có ít nhất 2 đáp án và 1 đáp án đúng
+        if (contents.length < 2 || correctIndexStr == null) {
+            // Có thể ném exception hoặc set thông báo lỗi
+            return;
+        }
+
+        int correctIndex = Integer.parseInt(correctIndexStr);
+
         for (int i = 0; i < contents.length; i++) {
             QuestionAnswer a = new QuestionAnswer();
             a.setQuestionId(questionId);
             a.setContent(contents[i]);
-            a.setCorrect(corrects != null && i < corrects.length);
-            a.setAnswerOrder(Integer.parseInt(orders[i]));
+            a.setCorrect(i == correctIndex); // chỉ đáp án đúng mới set true
+            a.setAnswerOrder(i + 1); // order tự động tăng
             answerDAO.createAnswer(a);
         }
     }
