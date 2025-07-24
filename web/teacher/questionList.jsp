@@ -19,6 +19,7 @@
     String dimension = request.getParameter("dimension");
     String level     = request.getParameter("level");
     String search    = request.getParameter("search");
+    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
 %>
 
 <%! 
@@ -47,105 +48,69 @@
 <html>
 <head>
     <title>Question List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 40px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; }
-        .filter-form { background: #fff; padding: 15px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin:20px 0; }
-        .filter-form label, .filter-form select, .filter-form input { margin-right:15px; }
-        .question-card { display:flex; align-items:center; background:#fff; border:1px solid #ccc;
-                         margin-bottom:10px; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-        .question-card .index { width:40px; font-weight:bold; color:#007BFF; }
-        .question-card .img { width:100px; height:100px; object-fit:cover; margin:0 15px; }
-        .question-card .no-img { width:100px; height:100px; background:#eee; display:flex;
-                                 align-items:center; justify-content:center; margin:0 15px; }
-        .question-card .info { flex-grow:1; }
-        .question-card .actions { margin-left:15px; }
-        .question-card a { display:block; margin-bottom:5px; color:#007BFF; text-decoration:none; }
-        .question-card a:hover { text-decoration:underline; }
+        body { background: #f7f7f7; padding: 40px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .question-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; margin-bottom: 18px; transition: box-shadow 0.2s, transform 0.1s; }
+        .question-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.13); transform: translateY(-2px); }
+        .question-card .index { font-size: 1.3rem; color: #764ba2; font-weight: bold; margin-right: 18px; }
+        .question-card .img, .question-card .no-img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; background: #eee; display: flex; align-items: center; justify-content: center; margin-right: 18px; }
+        .question-card .info { flex-grow: 1; }
+        .question-card .actions { display: flex; flex-direction: column; gap: 8px; margin-left: 18px; }
+        .question-card .actions a { padding: 6px 14px; border-radius: 6px; font-size: 1rem; text-decoration: none; transition: background 0.2s; }
+        .question-card .actions a.edit { background: #e3e8ff; color: #3b3b7a; }
+        .question-card .actions a.edit:hover { background: #b2bfff; }
+        .question-card .actions a.delete { background: #ffe3e3; color: #a33b3b; }
+        .question-card .actions a.delete:hover { background: #ffb2b2; }
+        .question-card .meta { font-size: 0.95rem; color: #888; margin-bottom: 4px; }
+        .question-card .badge { font-size: 0.95rem; }
+        .create-btn { padding: 10px 22px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 8px; font-weight: 500; border: none; text-decoration: none; transition: background 0.2s; }
+        .create-btn:hover { background: linear-gradient(90deg, #764ba2 0%, #667eea 100%); color: #fff; }
     </style>
 </head>
 <body>
-
+    <jsp:include page="../views/components/header.jsp" />
     <div class="top-bar">
-        <h2>Question List</h2>
-        <a href="${pageContext.request.contextPath}/QuestionController?action=create" style="padding:8px 12px; background:#007BFF; color:#fff; text-decoration:none; border-radius:4px;">
-            ➕ Create New Question
+        <h2 class="fw-bold text-primary"><i class="fas fa-list me-2"></i>Question List</h2>
+        <a href="${pageContext.request.contextPath}/QuestionController?action=create&lessonId=${lessonId}" class="create-btn">
+            <i class="fas fa-plus me-1"></i> Create New Question
         </a>
     </div>
-
-    <form method="get" action="${pageContext.request.contextPath}/QuestionController" class="filter-form">
-        <input type="hidden" name="action" value="list"/>
-        <label>Subject:</label>
-        <select name="subjectId">
-            <option value="" <%= (subjectId==null||subjectId.isEmpty())?"selected":"" %>>All</option>
-            <% for(Subject s: subjects){ %>
-                <option value="<%=s.getId()%>" <%= String.valueOf(s.getId()).equals(subjectId)?"selected":"" %>><%=s.getTitle()%></option>
+    <div class="container-fluid px-0">
+        <% if (questions != null && !questions.isEmpty()) { int idx=1; %>
+            <% for(Question q: questions){ %>
+            <div class="question-card d-flex align-items-center">
+                <div class="index"><%= idx++ %>.</div>
+                <% if(q.getImage()!=null){ %>
+                    <img class="img" src="${pageContext.request.contextPath}/questionImage?id=<%=q.getId()%>" alt="img"/>
+                <% } else { %>
+                    <div class="no-img"><i class="fas fa-image fa-2x text-muted"></i></div>
+                <% } %>
+                <div class="info">
+                    <div class="fw-semibold mb-1"><i class="fas fa-question-circle text-primary me-1"></i> <%= q.getContent() %></div>
+                    <div class="meta mb-1">
+                        <span class="badge bg-secondary me-1"><i class="fas fa-book me-1"></i> <%= getSubjectName(q.getSubjectId(), subjects) %></span>
+                        <span class="badge bg-info text-dark me-1"><i class="fas fa-chalkboard me-1"></i> <%= getLessonName(q.getLessonId(), lessons) %></span>
+                        <span class="badge bg-light text-dark"><i class="fas fa-layer-group me-1"></i> <%= q.getLevel() %></span>
+                    </div>
+                    <div class="meta">
+                        <i class="fas fa-calendar-plus me-1"></i> <strong>Created:</strong> <%= sdf.format(q.getCreatedAt()) %>
+                        &nbsp;|&nbsp;
+                        <i class="fas fa-calendar-check me-1"></i> <strong>Updated:</strong> <%= q.getUpdatedAt()!=null?sdf.format(q.getUpdatedAt()):"N/A" %>
+                    </div>
+                </div>
+                <div class="actions ms-auto">
+                    <a href="${pageContext.request.contextPath}/QuestionController?action=edit&id=<%=q.getId()%>" class="edit"><i class="fas fa-pen"></i> Edit</a>
+                    <a href="${pageContext.request.contextPath}/QuestionController?action=delete&id=<%=q.getId()%>&lessonId=<%=q.getLessonId()%>" class="delete" onclick="return confirm('Delete this question?');"><i class="fas fa-trash"></i> Delete</a>
+                </div>
+            </div>
             <% } %>
-        </select>
-
-        <label>Lesson:</label>
-        <select name="lessonId">
-            <option value="" <%= (lessonId==null||lessonId.isEmpty())?"selected":"" %>>All</option>
-            <% for(Lesson l: lessons){ %>
-                <option value="<%=l.getId()%>" <%= String.valueOf(l.getId()).equals(lessonId)?"selected":"" %>><%=l.getTitle()%></option>
-            <% } %>
-        </select>
-
-        <label>Dimension:</label>
-        <select name="dimension">
-            <option value="" <%= (dimension==null||dimension.isEmpty())?"selected":"" %>>All</option>
-            <% for(Lesson l: lessons){ %>
-                <option value="<%=l.getDimension()%>" <%= l.getDimension().equals(dimension)?"selected":"" %>><%=l.getDimension()%></option>
-            <% } %>
-        </select>
-
-        <label>Level:</label>
-        <select name="level">
-            <option value="" <%= (level==null||level.isEmpty())?"selected":"" %>>All</option>
-            <option value="Easy"   <%= "Easy".equals(level)?"selected":"" %>>Easy</option>
-            <option value="Medium" <%= "Medium".equals(level)?"selected":"" %>>Medium</option>
-            <option value="Hard"   <%= "Hard".equals(level)?"selected":"" %>>Hard</option>
-        </select>
-
-        <label>Search:</label>
-        <input type="text" name="search" placeholder="Search content..." value="<%= search!=null?search:"" %>"/>
-
-        <input type="submit" value="Filter" style="padding:6px 10px"/>
-    </form>
-
-    <%
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        int idx=1;
-        for(Question q: questions){
-    %>
-    <div class="question-card">
-        <div class="index"><%= idx++ %>.</div>
-        <% if(q.getImage()!=null){ %>
-            <img class="img" src="${pageContext.request.contextPath}/questionImage?id=<%=q.getId()%>" alt="img"/>
         <% } else { %>
-            <div class="no-img">No Image</div>
+            <div class="alert alert-info text-center">No questions found for this lesson.</div>
         <% } %>
-        <div class="info">
-            <div><strong>Content:</strong> <%= q.getContent() %></div>
-            <div>
-                <strong>Subject:</strong> <%= getSubjectName(q.getSubjectId(), subjects) %> |
-                <strong>Lesson:</strong> <%= getLessonName(q.getLessonId(), lessons) %>
-            </div>
-            <div>
-                <strong>Dimension:</strong> <%= getDimension(q.getLessonId(), lessons) %> |
-                <strong>Level:</strong> <%= q.getLevel() %>
-            </div>
-            <div>
-                <strong>Created:</strong> <%= sdf.format(q.getCreatedAt()) %> |
-                <strong>Updated:</strong> <%= q.getUpdatedAt()!=null?sdf.format(q.getUpdatedAt()):"N/A" %>
-            </div>
-        </div>
-        <div class="actions">
-            <a href="${pageContext.request.contextPath}/QuestionController?action=edit&id=<%=q.getId()%>">✏️ Edit</a>
-            <a href="${pageContext.request.contextPath}/QuestionController?action=delete&id=<%=q.getId()%>" onclick="return confirm('Delete this question?');">🗑️ Delete</a>
-        </div>
     </div>
-    <% } %>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -205,4 +205,43 @@ public class QuizDAO extends DBcontext {
         }
     }
     
+    public boolean isQuizNameExists(String name) {
+        String sql = "SELECT COUNT(*) FROM Quizzes WHERE Name = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<Quiz> getQuizzesByOwnerId(int ownerId) {
+        List<Quiz> quizzes = new ArrayList<>();
+        String sql = "SELECT * FROM Quizzes WHERE OwnerId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, ownerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                quizzes.add(new Quiz(
+                    rs.getInt("Id"),
+                    rs.getString("Name"),
+                    rs.getInt("SubjectId"),
+                    rs.getString("Level"),
+                    rs.getInt("NumberOfQuestions"),
+                    rs.getInt("DurationMinutes"),
+                    rs.getDouble("PassRate"),
+                    rs.getString("Type"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getTimestamp("UpdatedAt")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizzes;
+    }
 }
