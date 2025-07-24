@@ -459,7 +459,7 @@
                                     </div>
                                 </div>
                                 
-                                <a href="${pageContext.request.contextPath}/student/subject/${subject.id}/quizzes" 
+                                <a href="${pageContext.request.contextPath}/student/subject/${subject.id}/lessons" 
                                    class="btn btn-quiz w-100">
                                     <i class="fas fa-play me-2"></i>Start Learning
                                 </a>

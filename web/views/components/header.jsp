@@ -83,8 +83,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/results">
-                                    <i class="fas fa-chart-line me-1"></i>Results
+                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/classes">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i>My Classes
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -118,17 +118,14 @@
                         </c:when>
                     </c:choose>
                     
-                    <!-- Common Menu Items for all users -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/lessons">
-                            <i class="fas fa-book-open me-1"></i>Lessons
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/student/practice">
-                            <i class="fas fa-dumbbell me-1"></i>Practice
-                        </a>
-                    </li>
+                    <!-- Common Menu Items for all users except Student -->
+                    <c:if test="${sessionScope.role != 'Student'}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/lesson?action=list">
+                                <i class="fas fa-book-open me-1"></i>Lessons
+                            </a>
+                        </li>
+                    </c:if>
                 </c:if>
             </ul>
             
