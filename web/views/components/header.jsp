@@ -92,6 +92,11 @@
                                     <i class="fas fa-chart-line me-1"></i>Results
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/feedback">
+                                    <i class="fas fa-comment-dots me-1"></i>Feedback
+                                </a>
+                            </li>
                         </c:when>
                         <c:when test="${sessionScope.role == 'Student'}">
                             <!-- Student Menu -->

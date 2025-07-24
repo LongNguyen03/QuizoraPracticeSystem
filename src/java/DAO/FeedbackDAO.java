@@ -35,20 +35,31 @@ public class FeedbackDAO extends DBcontext {
 
     public List<Feedback> getAllFeedbacks() {
         List<Feedback> list = new ArrayList<>();
-        String sql = "SELECT f.*, a.Email as AccountEmail, a.Name as AccountName FROM Feedbacks f JOIN Accounts a ON f.AccountId = a.Id ORDER BY f.CreatedAt DESC";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Feedback fb = mapRowToFeedback(rs);
-                fb.setAccountEmail(rs.getString("AccountEmail"));
-                fb.setAccountName(rs.getString("AccountName"));
-                list.add(fb);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        String sql = "SELECT f.*, a.Email as AccountEmail, " +
+                 "u.FirstName, u.MiddleName, u.LastName " +
+                 "FROM Feedbacks f " +
+                 "JOIN Accounts a ON f.AccountId = a.Id " +
+                 "LEFT JOIN UserProfiles u ON a.Id = u.AccountId " +
+                 "ORDER BY f.CreatedAt DESC";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Feedback fb = mapRowToFeedback(rs);
+            String firstName = rs.getString("FirstName");
+            String middleName = rs.getString("MiddleName");
+            String lastName = rs.getString("LastName");
+            String fullName = (firstName != null ? firstName : "") +
+                              (middleName != null && !middleName.isEmpty() ? " " + middleName : "") +
+                              (lastName != null ? " " + lastName : "");
+            fb.setAccountName(fullName.trim());
+            fb.setAccountEmail(rs.getString("AccountEmail"));
+            list.add(fb);
         }
-        return list;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return list;
+}
 
     public void updateFeedbackStatus(int feedbackId, String status) {
         String sql = "UPDATE Feedbacks SET Status = ?, UpdatedAt = GETDATE() WHERE Id = ?";
