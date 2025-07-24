@@ -133,7 +133,6 @@ public class StudentHomeServlet extends HttpServlet {
             }
             request.setAttribute("favoriteQuizzes", favoriteQuizzes);
             
-            System.out.println("Successfully loaded all data for student home");
             request.getRequestDispatcher("/student/home.jsp").forward(request, response);
             
         } catch (Exception e) {
