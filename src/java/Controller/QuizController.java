@@ -147,7 +147,10 @@ public class QuizController extends HttpServlet {
         List<Question> selectedQuestions = allQuestions.subList(0, Math.min(numberOfQuestions, allQuestions.size()));
 
         // 3. Tạo quiz mới, chỉ lưu subjectId (lấy từ lessonId)
-        quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type);
+        // TODO: Lấy ownerId thực tế từ session, tạm thời để 0
+        int ownerId = 0;
+        boolean isPracticeable = true; // hoặc lấy từ request nếu có
+        quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type, ownerId, isPracticeable);
 
         // 4. Lấy id quiz vừa tạo
         int quizId = quizDAO.getLatestQuizId();
@@ -175,7 +178,9 @@ public class QuizController extends HttpServlet {
         // Lấy subjectId từ lessonId
         int subjectId = quizDAO.getSubjectIdByLessonId(lessonId);
 
-        Quiz quiz = new Quiz(id, name, subjectId, level, numberOfQuestions, durationMinutes, passRate, type, null, new java.util.Date());
+        int ownerId = 0; // TODO: Lấy ownerId thực tế từ session
+        boolean isPracticeable = true; // hoặc lấy từ request nếu có
+        Quiz quiz = new Quiz(id, name, subjectId, ownerId, level, numberOfQuestions, durationMinutes, passRate, type, isPracticeable, null, new java.util.Date());
         quizDAO.updateQuiz(quiz);
 
         response.sendRedirect("quiz");

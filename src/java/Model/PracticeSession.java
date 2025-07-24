@@ -7,7 +7,6 @@ public class PracticeSession {
     private int accountId;
     private int subjectId;
     private Integer lessonId; // nullable
-    private int ownerId;
     private Timestamp startTime;
     private Timestamp endTime;
     private Double totalScore; // nullable
@@ -20,12 +19,11 @@ public class PracticeSession {
 
     public PracticeSession() {}
 
-    public PracticeSession(int id, int accountId, int subjectId, Integer lessonId, int ownerId, Timestamp startTime, Timestamp endTime, Double totalScore, boolean completed) {
+    public PracticeSession(int id, int accountId, int subjectId, Integer lessonId, Timestamp startTime, Timestamp endTime, Double totalScore, boolean completed) {
         this.id = id;
         this.accountId = accountId;
         this.subjectId = subjectId;
         this.lessonId = lessonId;
-        this.ownerId = ownerId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.totalScore = totalScore;
@@ -35,7 +33,7 @@ public class PracticeSession {
     public PracticeSession(int id, int accountId, int subjectId, Integer lessonId, 
                           Timestamp startTime, Timestamp endTime, Double totalScore, boolean completed,
                           String accountEmail, String subjectTitle, String lessonTitle) {
-        this(id, accountId, subjectId, lessonId, 0, startTime, endTime, totalScore, completed); // Assuming ownerId is 0 for now
+        this(id, accountId, subjectId, lessonId, startTime, endTime, totalScore, completed);
         this.accountEmail = accountEmail;
         this.subjectTitle = subjectTitle;
         this.lessonTitle = lessonTitle;
@@ -72,14 +70,6 @@ public class PracticeSession {
 
     public void setLessonId(Integer lessonId) {
         this.lessonId = lessonId;
-    }
-
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
     }
 
     public Timestamp getStartTime() {
@@ -145,7 +135,6 @@ public class PracticeSession {
                 ", accountId=" + accountId +
                 ", subjectId=" + subjectId +
                 ", lessonId=" + lessonId +
-                ", ownerId=" + ownerId +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 ", totalScore=" + totalScore +

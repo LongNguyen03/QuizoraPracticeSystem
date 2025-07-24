@@ -7,7 +7,6 @@ public class PracticeAnswer {
     private Integer answerId; // nullable
     private boolean isCorrect;
     private int displayOrder; // Thứ tự hiển thị câu hỏi
-    private int ownerId;
 
     // Additional properties for JOIN queries
     private String questionContent;
@@ -77,14 +76,6 @@ public class PracticeAnswer {
 
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
-    }
-
-    public int getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(int ownerId) {
-        this.ownerId = ownerId;
     }
 
     public String getQuestionContent() {
