@@ -11,160 +11,119 @@
 <head>
     <meta charset="UTF-8">
     <title>Lesson List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+ 
     <style>
-        /* ----- BODY ----- */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background: #f7f7f7;
-            padding: 40px;
             margin: 0;
+            padding: 0;
         }
-
-        /* ----- HEADER ----- */
+        .lesson-list-container {
+            max-width: 900px;
+            margin: 40px auto 0 auto;
+            padding: 0 16px;
+        }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-
         .header h2 {
             margin: 0;
+            font-size: 2rem;
+            color: #4a4a4a;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
-
         .add-btn {
-            padding: 8px 12px;
-            background: #007BFF;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             text-decoration: none;
-            border-radius: 4px;
-            transition: background 0.3s;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+            transition: background 0.3s, box-shadow 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-
         .add-btn:hover {
-            background: #0056b3;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.18);
+            color: #fff;
         }
-
-        /* ----- LESSON CARD ----- */
         .lesson-card {
             display: flex;
             align-items: flex-start;
             background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 10px;
-            padding: 15px;
-            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(102,126,234,0.08);
+            margin-bottom: 18px;
+            padding: 20px 24px;
             transition: box-shadow 0.3s, transform 0.1s;
+            cursor: pointer;
         }
-
         .lesson-card:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 24px rgba(102,126,234,0.18);
             transform: translateY(-2px);
         }
-
         .lesson-info {
             flex-grow: 1;
         }
-
         .lesson-info div {
-            margin-bottom: 4px;
-            line-height: 1.4;
+            margin-bottom: 6px;
+            line-height: 1.5;
+            color: #333;
+            font-size: 1rem;
         }
-
+        .lesson-info strong {
+            color: #764ba2;
+            font-weight: 600;
+        }
         .lesson-actions {
-            margin-left: 20px;
+            margin-left: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-
         .lesson-actions a {
-            display: inline-block;
-            margin-bottom: 5px;
-            color: #007BFF;
-            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f3f3fa;
+            color: #667eea;
             font-size: 1.2rem;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
         }
-
         .lesson-actions a:hover {
-            text-decoration: underline;
+            background: #667eea;
+            color: #fff;
         }
-
-        /* ----- HEADER NAVBAR basic fix ----- */
-        .navbar-brand:hover {
-            transform: scale(1.05);
-            transition: transform 0.2s ease;
-        }
-
-        .nav-link {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            transform: translateY(-1px);
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: #fff;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .dropdown-menu {
-            animation: fadeInDown 0.3s ease;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
+        @media (max-width: 600px) {
+            .lesson-list-container {
+                padding: 0 4px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .lesson-card {
+                flex-direction: column;
+                padding: 16px 10px;
             }
-        }
-
-        .dropdown-item {
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-            transform: translateX(5px);
-        }
-
-        .alert {
-            animation: slideInDown 0.5s ease;
-        }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar-brand span {
-                font-size: 1.1rem !important;
-            }
-            .dropdown-menu {
-                margin-top: 0.5rem;
+            .lesson-actions {
+                flex-direction: row;
+                margin-left: 0;
+                margin-top: 10px;
+                gap: 16px;
             }
         }
     </style>
@@ -182,11 +141,11 @@
 </head>
 <body>
     <jsp:include page="../views/components/header.jsp" />
-
-    <div class="header">
-        <h2>📚 Danh sách bài học</h2>
-        <a href="${pageContext.request.contextPath}/lesson?action=detail" class="add-btn">➕ Thêm bài học mới</a>
-    </div>
+    <div class="lesson-list-container">
+        <div class="header">
+            <h2>📚 Danh sách bài học</h2>
+            <a href="${pageContext.request.contextPath}/lesson?action=detail" class="add-btn"><span>➕</span> Thêm bài học mới</a>
+        </div>
 
     <%-- Helper --%>
     <%! public String getSubjectName(int id, List<Subject> subjects) {
@@ -227,6 +186,7 @@
     <%
         }
     %>
+    </div>
 </body>
 </html>
 

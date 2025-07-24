@@ -5,3 +5,4 @@
 # Documentation files - không push lên Git
 /docs/
 *.md
+.history/
