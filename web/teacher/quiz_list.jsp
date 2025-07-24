@@ -66,8 +66,8 @@
                     </div>
                     <div class="quiz-actions ms-auto">
                         <a href="${pageContext.request.contextPath}/quiz?action=edit&id=<%= quiz.getId() %>" class="edit"><i class="fas fa-pen"></i> Sửa</a>
-                        <a href="${pageContext.request.contextPath}/quiz?action=delete&id=<%= quiz.getId() %>" class="delete" onclick="return confirm('Xác nhận xoá quiz này?');"><i class="fas fa-trash"></i> Xóa</a>
-                        <a href="${pageContext.request.contextPath}/quiz-handle?quizId=<%= quiz.getId() %>" class="try"><i class="fas fa-play-circle"></i> Làm thử</a>
+                        <a href="${pageContext.request.contextPath}/quiz?action=delete&id=<%= quiz.getId() %>" class="delete" onclick="return confirm('Xác nhận xoá quiz này?');"><i class="fas fa-trash"></i> Xoá</a>
+                        <!-- <a href="${pageContext.request.contextPath}/quiz-handle?quizId=<%= quiz.getId() %>" class="try"><i class="fas fa-play-circle"></i> Làm thử</a> -->
                     </div>
                 </div>
                 <% } %>
