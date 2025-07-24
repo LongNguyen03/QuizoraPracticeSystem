@@ -65,24 +65,30 @@
 </div>
 
 <script>
+    // Khai báo biến tổng số câu hỏi ở đầu script
+    var totalQuestions = ${fn:length(questions)};
     // Lưu thời gian bắt đầu vào sessionStorage
-    var startTime = sessionStorage.getItem('quizStartTime_${quiz.id}');
     var totalDuration = ${quiz.durationMinutes} * 60; // seconds
-    
+    var startTime = sessionStorage.getItem('quizStartTime_${quiz.id}');
     if (!startTime) {
-        // Lần đầu vào trang, lưu thời gian bắt đầu
-        sessionStorage.setItem('quizStartTime_${quiz.id}', Date.now());
+        startTime = Date.now();
+        sessionStorage.setItem('quizStartTime_${quiz.id}', startTime);
         sessionStorage.setItem('quizDuration_${quiz.id}', totalDuration);
+    } else {
+        startTime = parseInt(startTime);
     }
-    
-    // Tính thời gian còn lại
-    var elapsed = Math.floor((Date.now() - (startTime || Date.now())) / 1000);
+    var elapsed = Math.floor((Date.now() - startTime) / 1000);
     var duration = totalDuration - elapsed;
-    
-    // Nếu đã hết giờ, tự động nộp bài
+
+    // Nếu đã hết giờ (do sessionStorage cũ), reset lại thời gian
     if (duration <= 0) {
-        alert('Hết giờ! Bài làm sẽ được nộp tự động.');
-        document.getElementById('quizForm').submit();
+        sessionStorage.removeItem('quizStartTime_${quiz.id}');
+        sessionStorage.removeItem('quizDuration_${quiz.id}');
+        for (var i = 1; i <= totalQuestions; i++) {
+            sessionStorage.removeItem('quizAnswer_${quiz.id}_' + i);
+        }
+        // Reload lại trang để bắt đầu lại
+        location.reload();
     }
     
     // Timer countdown
@@ -101,7 +107,6 @@
     
     // Validation: Kiểm tra đã trả lời đủ câu chưa
     var answeredQuestions = new Set();
-    var totalQuestions = ${fn:length(questions)};
     
     // Hàm cập nhật trạng thái câu hỏi
     function updateQuestionStatus(questionNumber, isAnswered) {
