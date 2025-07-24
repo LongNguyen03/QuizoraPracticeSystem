@@ -26,4 +26,16 @@ public class QuizQuestionDAO extends DBcontext {
         }
         return questions;
     }
+
+    public void addQuestionToQuiz(int quizId, int questionId, int order) {
+        String sql = "INSERT INTO QuizQuestions (QuizId, QuestionId, QuestionOrder) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quizId);
+            ps.setInt(2, questionId);
+            ps.setInt(3, order);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

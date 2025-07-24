@@ -4,6 +4,10 @@ import Model.Quiz;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import DAO.QuestionDAO;
+import DAO.QuizQuestionDAO;
+import Model.Question;
+import java.util.Collections;
 
 public class QuizDAO extends DBcontext {
 
@@ -144,6 +148,57 @@ public class QuizDAO extends DBcontext {
         String sql = "DELETE FROM Quizzes WHERE Id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, quizId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getLatestQuizId() {
+        String sql = "SELECT TOP 1 Id FROM Quizzes ORDER BY CreatedAt DESC";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("Id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    /**
+     * Lấy subjectId từ lessonId
+     */
+    public int getSubjectIdByLessonId(int lessonId) {
+        String sql = "SELECT SubjectId FROM Lessons WHERE Id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, lessonId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("SubjectId");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * Chèn quiz mới, nhận lessonId, tự động lấy subjectId từ lessonId
+     */
+    public void insertQuizWithLesson(int lessonId, String name, String level, int numberOfQuestions, int durationMinutes, double passRate, String type) {
+        int subjectId = getSubjectIdByLessonId(lessonId);
+        String sql = "INSERT INTO Quizzes (Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE())";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setInt(2, subjectId);
+            ps.setString(3, level);
+            ps.setInt(4, numberOfQuestions);
+            ps.setInt(5, durationMinutes);
+            ps.setDouble(6, passRate);
+            ps.setString(7, type);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
