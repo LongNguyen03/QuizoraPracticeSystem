@@ -394,11 +394,6 @@
                 <h5>Quiz History</h5>
                 <p>Review your past attempts</p>
             </a>
-            <a href="${pageContext.request.contextPath}/student/progress" class="quick-action-card">
-                <i class="fas fa-chart-line"></i>
-                <h5>Progress</h5>
-                <p>Track your learning progress</p>
-            </a>
         </div>
 
         <!-- Statistics Section -->
@@ -452,10 +447,6 @@
                                     <div class="subject-stat">
                                         <div class="number">${subject.lessonCount != null ? subject.lessonCount : '0'}</div>
                                         <div class="label">Lessons</div>
-                                    </div>
-                                    <div class="subject-stat">
-                                        <div class="number">${subject.progress != null ? subject.progress : '0'}%</div>
-                                        <div class="label">Progress</div>
                                     </div>
                                 </div>
                                 

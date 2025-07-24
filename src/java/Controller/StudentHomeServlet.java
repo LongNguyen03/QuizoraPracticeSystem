@@ -52,6 +52,7 @@ public class StudentHomeServlet extends HttpServlet {
             
             SubjectDAO subjectDao = new SubjectDAO();
             QuizDAO quizDao = new QuizDAO();
+            LessonDAO lessonDao = new LessonDAO();
             QuizResultDAO resultDao = new QuizResultDAO();
             FavoriteQuizDAO favoriteDao = new FavoriteQuizDAO();
             
@@ -59,11 +60,13 @@ public class StudentHomeServlet extends HttpServlet {
             List<Subject> subjects = new ArrayList<>();
             try {
                 subjects = subjectDao.getAllSubjects();
-                // Gán giá trị mặc định cho các trường giao diện để tránh lỗi 500
+                // Gán giá trị thực tế cho các trường giao diện
                 for (Subject s : subjects) {
-                    s.setQuizCount(0);
-                    s.setLessonCount(0);
-                    s.setProgress(0);
+                    int quizCount = quizDao.getQuizzesBySubjectId(s.getId()).size();
+                    s.setQuizCount(quizCount);
+                    int lessonCount = lessonDao.getAllLessons(s.getId(), null, null).size();
+                    s.setLessonCount(lessonCount);
+                    // Bỏ progress vì không có logic tính
                 }
                 System.out.println("Loaded " + subjects.size() + " subjects");
             } catch (Exception e) {
