@@ -4,10 +4,12 @@ import DAO.SubjectDAO;
 import DAO.QuizDAO;
 import DAO.QuizResultDAO;
 import DAO.FavoriteQuizDAO;
+import DAO.LessonDAO;
 import Model.Subject;
 import Model.Quiz;
 import Model.QuizResult;
 import Model.FavoriteQuiz;
+import Model.Lesson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +29,21 @@ public class StudentHomeServlet extends HttpServlet {
         
         if (accountId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        String uri = request.getRequestURI();
+        if (uri.matches(request.getContextPath() + "/student/subject/\\d+/lessons")) {
+            // Lấy subjectId từ URI
+            String[] parts = uri.split("/");
+            int subjectId = Integer.parseInt(parts[parts.length - 2]);
+            SubjectDAO subjectDao = new SubjectDAO();
+            LessonDAO lessonDao = new LessonDAO();
+            Subject subject = subjectDao.getSubjectById(subjectId);
+            List<Lesson> lessons = lessonDao.getAllLessons(subjectId, null, null);
+            request.setAttribute("subject", subject);
+            request.setAttribute("lessons", lessons);
+            request.getRequestDispatcher("/student/lessons.jsp").forward(request, response);
             return;
         }
         

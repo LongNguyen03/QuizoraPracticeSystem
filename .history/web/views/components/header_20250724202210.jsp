@@ -88,6 +88,11 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/results">
+                                    <i class="fas fa-chart-line me-1"></i>Results
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/teacher/feedback">
                                     <i class="fas fa-comment-dots me-1"></i>Feedback
                                 </a>
@@ -121,11 +126,16 @@
                     <!-- Common Menu Items for all users except Student -->
                     <c:if test="${sessionScope.role != 'Student'}">
                         <li class="nav-item">
-                            <a class="nav-link" href="${pageContext.request.contextPath}/lesson?action=list">
+                            <a class="nav-link" href="${pageContext.request.contextPath}/lessons">
                                 <i class="fas fa-book-open me-1"></i>Lessons
                             </a>
                         </li>
                     </c:if>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/student/practice">
+                            <i class="fas fa-dumbbell me-1"></i>Practice
+                        </a>
+                    </li>
                 </c:if>
             </ul>
             

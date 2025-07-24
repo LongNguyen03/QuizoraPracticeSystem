@@ -7,51 +7,61 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AccountDAOTest {
+public class AccountDAOTest {
 
     static AccountDAO dao;
+    static final String TEST_EMAIL = "testuser@example.com";
+    static int testUserId = -1;
 
     @BeforeAll
-    static void setup() {
+    public static void setup() {
         dao = new AccountDAO();
     }
 
-    @Test
-    void testRegisterAndLogin() {
-        // Tạo user test
-        String email = "testuser@example.com";
-        String plainPassword = "secret123";
+    @AfterAll
+    public static void cleanup() {
+        // Xóa user test nếu còn tồn tại (dù ở trạng thái nào)
+        Account acc = dao.getAccountByEmail(TEST_EMAIL);
+        if (acc != null) {
+            dao.deleteAccount(acc.getId());
+        }
+    }
 
+    /**
+     * Test đăng ký, đăng nhập, cập nhật, xóa mềm tài khoản
+     */
+    @Test
+    public void testRegisterAndLogin() {
         // Nếu email tồn tại thì xóa
-        if (dao.isEmailExists(email)) {
-            Account acc = dao.getAccountByEmail(email);
+        if (dao.isEmailExists(TEST_EMAIL)) {
+            Account acc = dao.getAccountByEmail(TEST_EMAIL);
             dao.deleteAccount(acc.getId());
         }
 
         // Đăng ký
         Account acc = new Account();
-        acc.setEmail(email);
-        acc.setPasswordHash(plainPassword);
+        acc.setEmail(TEST_EMAIL);
+        acc.setPasswordHash("secret123"); // Password plain, sẽ được hash trong DAO
         acc.setRoleId(2); // Ví dụ 2 = user
         acc.setStatus("active");
 
         boolean registered = dao.register(acc);
         assertTrue(registered, "Đăng ký thất bại!");
-
         assertTrue(acc.getId() > 0, "ID phải được set sau khi insert!");
+        testUserId = acc.getId();
 
         // Test login đúng
-        Account loginAcc = dao.login(email, plainPassword);
+        Account loginAcc = dao.login(TEST_EMAIL, "secret123");
         assertNotNull(loginAcc, "Login thất bại!");
-        assertEquals(email, loginAcc.getEmail());
+        assertEquals(TEST_EMAIL, loginAcc.getEmail());
 
         // Test login sai
-        Account loginFail = dao.login(email, "wrongpassword");
+        Account loginFail = dao.login(TEST_EMAIL, "wrongpassword");
         assertNull(loginFail, "Login sai password phải trả về null!");
 
         // Test login bằng hash
-        String hash = dao.getAccountByEmail(email).getPasswordHash();
-        Account loginHash = dao.loginWithHash(email, hash);
+        String hash = dao.getAccountByEmail(TEST_EMAIL).getPasswordHash();
+        Account loginHash = dao.loginWithHash(TEST_EMAIL, hash);
         assertNotNull(loginHash, "Login bằng hash thất bại!");
 
         // Test update
@@ -66,19 +76,24 @@ class AccountDAOTest {
         boolean deleted = dao.deleteAccount(loginAcc.getId());
         assertTrue(deleted, "Xóa mềm thất bại!");
 
-        assertTrue(dao.isEmailDeleted(email), "Email phải ở trạng thái deleted!");
+        assertTrue(dao.isEmailDeleted(TEST_EMAIL), "Email phải ở trạng thái deleted!");
     }
 
+    /**
+     * Test lấy danh sách tất cả user (trừ user đã xóa và admin)
+     */
     @Test
-    void testGetAllUsers() {
+    public void testGetAllUsers() {
         List<Account> users = AccountDAO.getAllUsers();
         assertNotNull(users, "Danh sách không null");
         System.out.println("Tổng user: " + users.size());
     }
 
+    /**
+     * Test cập nhật trạng thái user bất kỳ
+     */
     @Test
-    void testUpdateUserStatus() {
-        // Lấy 1 user thật
+    public void testUpdateUserStatus() {
         List<Account> users = AccountDAO.getAllUsers();
         if (!users.isEmpty()) {
             Account acc = users.get(0);
