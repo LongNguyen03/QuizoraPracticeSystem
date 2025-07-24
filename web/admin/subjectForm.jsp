@@ -76,6 +76,11 @@
     <jsp:include page="../views/components/header.jsp" />
     <div class="subject-form-container">
         <h2 class="subject-form-title"><%= isEdit ? "Chỉnh sửa" : "Tạo mới" %> môn học</h2>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= request.getAttribute("error") %>
+            </div>
+        <% } %>
         <form method="post" action="<%= isEdit ? ("/admin/subject/edit?id=" + subject.getId()) : "/admin/subject/create" %>">
             <% if (isEdit) { %>
                 <input type="hidden" name="id" value="<%= subject.getId() %>" />

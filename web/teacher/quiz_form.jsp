@@ -68,7 +68,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Môn học</label>
-                        <select name="subjectId" id="subjectSelect" class="form-select" required onchange="filterLessons()">
+                        <select name="subjectId" id="subjectSelect" class="form-select" required onchange="renderLessonDropdown()">
                             <option value="">-- Chọn môn học --</option>
                             <% if (subjects != null) for (Subject s : subjects) { %>
                                 <option value="<%= s.getId() %>"

@@ -65,7 +65,14 @@ public class SubjectController extends HttpServlet {
         String uri = request.getRequestURI();
         if (uri.endsWith("/admin/subject/create")) {
             Subject s = new Subject();
-            s.setTitle(request.getParameter("title"));
+            String title = request.getParameter("title");
+            if (subjectDAO.isSubjectTitleExists(title)) {
+                request.setAttribute("error", "Tên môn học đã tồn tại, vui lòng chọn tên khác!");
+                request.setAttribute("action", "create");
+                request.getRequestDispatcher("/admin/subjectForm.jsp").forward(request, response);
+                return;
+            }
+            s.setTitle(title);
             s.setTagline(request.getParameter("tagline"));
             Integer ownerId = (Integer) request.getSession().getAttribute("accountId");
             if (ownerId != null) {

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -113,7 +114,7 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="${pageContext.request.contextPath}/student/practice?action=history" 
+                    <a href="${pageContext.request.contextPath}/student/practice-history" 
                        class="btn btn-outline-light">
                         <i class="fas fa-history me-2"></i>Lịch sử Practice
                     </a>
@@ -123,6 +124,18 @@
     </div>
     
     <div class="container">
+        <c:if test="${noPracticeQuestions}">
+            <div class="alert alert-warning mt-4">
+                Bài học hoặc môn học này chưa có câu hỏi luyện tập (Practice). Vui lòng chọn bài học/môn học khác hoặc liên hệ giáo viên để bổ sung câu hỏi!
+            </div>
+        </c:if>
+        <div class="alert alert-info mb-4">
+            <strong>Hướng dẫn:</strong><br>
+            <ul class="mb-0">
+                <li><b>Practice theo lesson/subject:</b> Lưu lịch sử luyện tập, có thể xem lại kết quả, thống kê tiến bộ.</li>
+                <li><b>Practice quiz (nút Practice ở quiz):</b> Chỉ làm thử, không lưu lịch sử, chỉ xem điểm ngay sau khi làm xong.</li>
+            </ul>
+        </div>
         <!-- Error Message -->
         <c:if test="${not empty error}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -160,12 +173,11 @@
                                     <div class="lesson-selection mt-3" id="lessons-${subject.id}" style="display: none;">
                                         <h6 class="mb-3">Chọn bài học:</h6>
                                         <div class="lesson-list">
-                                            <div class="lesson-item" data-lesson-id="" onclick="startPractice('${subject.id}', '')">
-                                                <i class="fas fa-book-open me-2"></i>
-                                                Tất cả bài học
-                                            </div>
                                             <c:forEach var="lesson" items="${subjectLessonsMap[subject.id]}">
-                                                <div class="lesson-item" data-lesson-id="${lesson.id}" onclick="startPractice('${subject.id}', '${lesson.id}')">
+                                                <div class="lesson-item"
+                                                     data-lesson-id="${lesson.id}"
+                                                     onclick="<c:if test='${lesson.practiceQuestionCount != null && lesson.practiceQuestionCount > 0}'>startPractice('${subject.id}', '${lesson.id}')</c:if>"
+                                                     <c:if test='${lesson.practiceQuestionCount == null || lesson.practiceQuestionCount == 0}'>style="pointer-events:none;opacity:0.5;" title="Chưa có câu hỏi luyện tập"</c:if>>
                                                     <i class="fas fa-chapter me-2"></i>
                                                     ${lesson.title}
                                                 </div>
@@ -189,12 +201,8 @@
                     </h4>
                     <div class="row text-center">
                         <div class="col-6">
-                            <div class="stats-number">0</div>
+                            <div class="stats-number">${practiceSessionCount != null ? practiceSessionCount : 0}</div>
                             <div class="stats-label">Sessions</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="stats-number">0%</div>
-                            <div class="stats-label">Trung bình</div>
                         </div>
                     </div>
                 </div>

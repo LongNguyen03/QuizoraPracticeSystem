@@ -14,7 +14,7 @@ import java.util.List;
 import DAO.QuestionAnswerDAO;
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet(name = "StudentPracticeServlet", urlPatterns = {"/student/practice"})
+@WebServlet(name = "StudentPracticeServlet", urlPatterns = {"/student/practice", "/student/practice-history"})
 public class StudentPracticeServlet extends HttpServlet {
     
     @Override
@@ -30,6 +30,16 @@ public class StudentPracticeServlet extends HttpServlet {
         }
         
         String action = request.getParameter("action");
+        String uri = request.getRequestURI();
+        if (uri.endsWith("/practice-history")) {
+            // Hiển thị lịch sử luyện tập
+            PracticeSessionDAO sessionDao = new PracticeSessionDAO();
+            List<PracticeSession> sessions = sessionDao.getPracticeSessionsByAccountId(accountId);
+            request.setAttribute("practiceSessions", sessions);
+            request.getRequestDispatcher("/student/practice-history.jsp").forward(request, response);
+            return;
+        }
+        
         if (action == null) {
             action = "list";
         }
@@ -97,6 +107,24 @@ public class StudentPracticeServlet extends HttpServlet {
      */
     private void showPracticeList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        // Lấy danh sách session
+        PracticeSessionDAO sessionDao = new PracticeSessionDAO();
+        List<PracticeSession> sessions = sessionDao.getPracticeSessionsByAccountId(accountId);
+        request.setAttribute("practiceSessions", sessions);
+        int sessionCount = sessions.size();
+        double avgScore = 0;
+        if (sessionCount > 0) {
+            double total = 0;
+            for (PracticeSession ps : sessions) {
+                if (ps.getTotalScore() != null) total += ps.getTotalScore();
+            }
+            avgScore = total / sessionCount;
+        }
+        request.setAttribute("practiceSessionCount", sessionCount);
+        request.setAttribute("practiceAvgScore", avgScore);
         
         SubjectDAO subjectDao = new SubjectDAO();
         List<Subject> subjects = subjectDao.getAllSubjects();
@@ -174,15 +202,18 @@ public class StudentPracticeServlet extends HttpServlet {
         // Lấy câu hỏi cho practice
         QuestionDAO questionDao = new QuestionDAO();
         List<Question> questions;
-        
         if (session.getLessonId() != null) {
             // Practice theo lesson cụ thể
-            questions = questionDao.getQuestionsByLessonId(session.getLessonId());
+            questions = questionDao.getPracticeQuestionsByLessonId(session.getLessonId());
         } else {
             // Practice theo subject
-            questions = questionDao.getQuestionsBySubjectId(session.getSubjectId());
+            questions = questionDao.getPracticeQuestionsBySubjectId(session.getSubjectId());
         }
-        
+        if (questions == null || questions.isEmpty()) {
+            request.setAttribute("noPracticeQuestions", true);
+            request.getRequestDispatcher("/student/practice.jsp").forward(request, response);
+            return;
+        }
         // Random thứ tự câu hỏi
         java.util.Collections.shuffle(questions);
         // Không lưu thứ tự câu hỏi vào DB nữa vì bảng PracticeSessionQuestions không tồn tại
