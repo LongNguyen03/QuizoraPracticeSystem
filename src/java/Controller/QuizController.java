@@ -2,6 +2,13 @@ package Controller;
 
 import DAO.QuizDAO;
 import Model.Quiz;
+import DAO.LessonDAO;
+import Model.Lesson;
+import DAO.QuestionDAO;
+import DAO.QuizQuestionDAO;
+import Model.Question;
+import DAO.QuestionAnswerDAO;
+import Model.QuestionAnswer;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,8 +17,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
-@WebServlet(name = "QuizController", urlPatterns = {"/quiz"})
+@WebServlet(name = "QuizController", urlPatterns = { "/quiz" })
 public class QuizController extends HttpServlet {
 
     private QuizDAO quizDAO;
@@ -26,7 +37,9 @@ public class QuizController extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-
+        LessonDAO lessonDAO = new LessonDAO();
+        List<Lesson> lessons = lessonDAO.getAllLessons(); // hoặc getLessonsByTeacherId nếu cần
+        request.setAttribute("lessons", lessons);
         if (action == null) {
             // Không có action => load list
             listQuizzes(request, response);
@@ -65,6 +78,9 @@ public class QuizController extends HttpServlet {
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        LessonDAO lessonDAO = new LessonDAO();
+        List<Lesson> lessons = lessonDAO.getAllLessons();
+        request.setAttribute("lessons", lessons);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_form.jsp");
         dispatcher.forward(request, response);
     }
@@ -80,7 +96,33 @@ public class QuizController extends HttpServlet {
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         Quiz existingQuiz = quizDAO.getQuizById(id);
+
+        // Lấy lessonId từ 1 câu hỏi bất kỳ của quiz
+        QuestionDAO questionDAO = new QuestionDAO();
+        List<Question> quizQuestions = questionDAO.getQuestionsByQuizId(id);
+        int lessonId = -1;
+        if (!quizQuestions.isEmpty()) {
+            lessonId = quizQuestions.get(0).getLessonId();
+        }
         request.setAttribute("quiz", existingQuiz);
+        request.setAttribute("lessonId", lessonId);
+
+        // Truyền danh sách lessons như khi tạo mới
+        LessonDAO lessonDAO = new LessonDAO();
+        List<Lesson> lessons = lessonDAO.getAllLessons();
+        request.setAttribute("lessons", lessons);
+
+        // Lấy danh sách câu hỏi của quiz (đã có).
+        // Lấy danh sách đáp án cho từng câu hỏi.
+        Map<Integer, List<QuestionAnswer>> answersMap = new HashMap<>();
+        QuestionAnswerDAO qaDAO = new QuestionAnswerDAO();
+        for (Question q : quizQuestions) {
+            List<QuestionAnswer> answers = qaDAO.getAnswersByQuestionId(q.getId());
+            answersMap.put(q.getId(), answers);
+        }
+        request.setAttribute("quizQuestions", quizQuestions);
+        request.setAttribute("answersMap", answersMap);
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_form.jsp");
         dispatcher.forward(request, response);
     }
@@ -89,15 +131,31 @@ public class QuizController extends HttpServlet {
             throws IOException {
 
         String name = request.getParameter("name");
-        int subjectId = Integer.parseInt(request.getParameter("subjectId"));
+        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
 
-        Quiz newQuiz = new Quiz(0, name, subjectId, level, numberOfQuestions, durationMinutes, passRate, type, null, null);
-        quizDAO.insertQuiz(newQuiz);
+        // 1. Lấy danh sách câu hỏi của lesson
+        QuestionDAO questionDAO = new QuestionDAO();
+        List<Question> allQuestions = questionDAO.getQuestionsByLessonId(lessonId);
+
+        // 2. Random chọn số lượng câu hỏi
+        Collections.shuffle(allQuestions);
+        List<Question> selectedQuestions = allQuestions.subList(0, Math.min(numberOfQuestions, allQuestions.size()));
+
+        // 3. Tạo quiz mới, chỉ lưu subjectId (lấy từ lessonId)
+        quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type);
+
+        // 4. Lấy id quiz vừa tạo
+        int quizId = quizDAO.getLatestQuizId();
+        QuizQuestionDAO quizQuestionDAO = new QuizQuestionDAO();
+        int order = 1;
+        for (Question q : selectedQuestions) {
+            quizQuestionDAO.addQuestionToQuiz(quizId, q.getId(), order++);
+        }
 
         response.sendRedirect("quiz");
     }
@@ -107,12 +165,15 @@ public class QuizController extends HttpServlet {
 
         int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
-        int subjectId = Integer.parseInt(request.getParameter("subjectId"));
+        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
+
+        // Lấy subjectId từ lessonId
+        int subjectId = quizDAO.getSubjectIdByLessonId(lessonId);
 
         Quiz quiz = new Quiz(id, name, subjectId, level, numberOfQuestions, durationMinutes, passRate, type, null, new java.util.Date());
         quizDAO.updateQuiz(quiz);
