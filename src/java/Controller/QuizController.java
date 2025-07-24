@@ -93,7 +93,15 @@ public class QuizController extends HttpServlet {
 
     private void listQuizzes(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("quizList", quizDAO.getAllAvailableQuizzes());
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("accountId") == null ||
+            session.getAttribute("role") == null ||
+            !"Teacher".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        int teacherId = (int) session.getAttribute("accountId");
+        request.setAttribute("quizList", quizDAO.getQuizzesByOwnerId(teacherId));
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_list.jsp");
         dispatcher.forward(request, response);
     }

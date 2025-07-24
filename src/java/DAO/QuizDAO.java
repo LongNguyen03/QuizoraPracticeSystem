@@ -221,22 +221,22 @@ public class QuizDAO extends DBcontext {
 
     public List<Quiz> getQuizzesByOwnerId(int ownerId) {
         List<Quiz> quizzes = new ArrayList<>();
-        String sql = "SELECT * FROM Quizzes WHERE OwnerId = ?";
+        String sql = "SELECT * FROM Quizzes WHERE OwnerId = ? ORDER BY CreatedAt DESC";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ownerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 quizzes.add(new Quiz(
-                    rs.getInt("Id"),
-                    rs.getString("Name"),
-                    rs.getInt("SubjectId"),
-                    rs.getString("Level"),
-                    rs.getInt("NumberOfQuestions"),
-                    rs.getInt("DurationMinutes"),
-                    rs.getDouble("PassRate"),
-                    rs.getString("Type"),
-                    rs.getTimestamp("CreatedAt"),
-                    rs.getTimestamp("UpdatedAt")
+                        rs.getInt("Id"),
+                        rs.getString("Name"),
+                        rs.getInt("SubjectId"),
+                        rs.getString("Level"),
+                        rs.getInt("NumberOfQuestions"),
+                        rs.getInt("DurationMinutes"),
+                        rs.getDouble("PassRate"),
+                        rs.getString("Type"),
+                        rs.getTimestamp("CreatedAt"),
+                        rs.getTimestamp("UpdatedAt")
                 ));
             }
         } catch (SQLException e) {

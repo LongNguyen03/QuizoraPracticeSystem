@@ -74,7 +74,7 @@ public class LessonController extends HttpServlet {
             return;
         }
         int teacherId = (int) session.getAttribute("accountId");
-        List<Lesson> lessons = lessonDAO.getAllLessons(subjectId, keyword, dimension);
+        List<Lesson> lessons = lessonDAO.getLessonsByOwnerId(teacherId);
         List<Subject> subjects = subjectDAO.getAllSubjects();
         List<String> dimensionList = lessonDAO.getAllDimensions();
         request.setAttribute("dimensionList", dimensionList);
@@ -137,6 +137,11 @@ public class LessonController extends HttpServlet {
             Lesson lesson = new Lesson();
             lesson.setId(id);
             lesson.setSubjectId(subjectId);
+            // Set ownerId for new lesson
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("accountId") != null) {
+                lesson.setOwnerId((int) session.getAttribute("accountId"));
+            }
             lesson.setTitle(title);
             lesson.setContent(content);
             lesson.setDimension(dimension);

@@ -80,15 +80,16 @@ public class LessonDAO extends DBcontext {
     }
 
     public void addLesson(Lesson lesson) {
-        String sql = "INSERT INTO Lessons (SubjectId, Title, Content, Dimension, Status, CreatedAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Lessons (SubjectId, OwnerId, Title, Content, Dimension, Status, CreatedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, lesson.getSubjectId());
-            ps.setString(2, lesson.getTitle());
-            ps.setString(3, lesson.getContent());
-            ps.setString(4, lesson.getDimension());
-            ps.setString(5, lesson.getStatus());
-            ps.setTimestamp(6, new Timestamp(new Date().getTime()));
+            ps.setInt(2, lesson.getOwnerId());
+            ps.setString(3, lesson.getTitle());
+            ps.setString(4, lesson.getContent());
+            ps.setString(5, lesson.getDimension());
+            ps.setString(6, lesson.getStatus());
+            ps.setTimestamp(7, new Timestamp(new Date().getTime()));
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -197,6 +198,21 @@ public class LessonDAO extends DBcontext {
         String sql = "SELECT * FROM Lessons WHERE OwnerId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, teacherId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(extractLesson(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Lesson> getLessonsByOwnerId(int ownerId) {
+        List<Lesson> list = new ArrayList<>();
+        String sql = "SELECT * FROM Lessons WHERE OwnerId = ? ORDER BY CreatedAt DESC";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, ownerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(extractLesson(rs));
