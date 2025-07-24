@@ -22,6 +22,7 @@ public class Lesson {
     private Date createdAt;
     private Date updatedAt;
     private int questionCount;
+    private Integer practiceQuestionCount = 0;
 
     public Lesson() {
     }
@@ -116,4 +117,7 @@ public class Lesson {
     public void setQuestionCount(int questionCount) {
         this.questionCount = questionCount;
     }
+
+    public Integer getPracticeQuestionCount() { return practiceQuestionCount; }
+    public void setPracticeQuestionCount(Integer count) { this.practiceQuestionCount = count; }
 }

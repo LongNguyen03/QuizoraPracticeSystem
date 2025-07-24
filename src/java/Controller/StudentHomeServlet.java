@@ -39,10 +39,13 @@ public class StudentHomeServlet extends HttpServlet {
             int subjectId = Integer.parseInt(parts[parts.length - 2]);
             SubjectDAO subjectDao = new SubjectDAO();
             LessonDAO lessonDao = new LessonDAO();
+            QuizDAO quizDao = new QuizDAO();
             Subject subject = subjectDao.getSubjectById(subjectId);
             List<Lesson> lessons = lessonDao.getAllLessons(subjectId, null, null);
+            List<Quiz> quizzes = quizDao.getQuizzesBySubjectId(subjectId);
             request.setAttribute("subject", subject);
             request.setAttribute("lessons", lessons);
+            request.setAttribute("quizzes", quizzes);
             request.getRequestDispatcher("/student/lessons.jsp").forward(request, response);
             return;
         }
@@ -52,7 +55,6 @@ public class StudentHomeServlet extends HttpServlet {
             
             SubjectDAO subjectDao = new SubjectDAO();
             QuizDAO quizDao = new QuizDAO();
-            LessonDAO lessonDao = new LessonDAO();
             QuizResultDAO resultDao = new QuizResultDAO();
             FavoriteQuizDAO favoriteDao = new FavoriteQuizDAO();
             
@@ -64,9 +66,10 @@ public class StudentHomeServlet extends HttpServlet {
                 for (Subject s : subjects) {
                     int quizCount = quizDao.getQuizzesBySubjectId(s.getId()).size();
                     s.setQuizCount(quizCount);
-                    int lessonCount = lessonDao.getAllLessons(s.getId(), null, null).size();
-                    s.setLessonCount(lessonCount);
-                    // Bỏ progress vì không có logic tính
+                    // Nếu muốn, có thể set lessonCount tương tự:
+                    // int lessonCount = lessonDao.getAllLessons(s.getId(), null, null).size();
+                    // s.setLessonCount(lessonCount);
+                    s.setProgress(0); // Nếu có logic tính progress thì set ở đây
                 }
                 System.out.println("Loaded " + subjects.size() + " subjects");
             } catch (Exception e) {

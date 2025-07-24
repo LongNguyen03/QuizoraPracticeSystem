@@ -177,12 +177,16 @@ public class StudentPracticeServlet extends HttpServlet {
         
         if (session.getLessonId() != null) {
             // Practice theo lesson cụ thể
-            questions = questionDao.getQuestionsByLessonId(session.getLessonId());
+            questions = questionDao.getPracticeQuestionsByLessonId(session.getLessonId());
         } else {
             // Practice theo subject
-            questions = questionDao.getQuestionsBySubjectId(session.getSubjectId());
+            questions = questionDao.getPracticeQuestionsBySubjectId(session.getSubjectId());
         }
-        
+        if (questions == null || questions.isEmpty()) {
+            request.setAttribute("noPracticeQuestions", true);
+            request.getRequestDispatcher("/student/practice.jsp").forward(request, response);
+            return;
+        }
         // Random thứ tự câu hỏi
         java.util.Collections.shuffle(questions);
         // Không lưu thứ tự câu hỏi vào DB nữa vì bảng PracticeSessionQuestions không tồn tại

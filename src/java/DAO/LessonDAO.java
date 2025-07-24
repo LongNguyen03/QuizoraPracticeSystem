@@ -55,8 +55,12 @@ public class LessonDAO extends DBcontext {
             }
 
             ResultSet rs = ps.executeQuery();
+            DAO.QuestionDAO questionDAO = new DAO.QuestionDAO();
             while (rs.next()) {
-                list.add(extractLesson(rs));
+                Lesson lesson = extractLesson(rs);
+                int count = questionDAO.getPracticeQuestionsByLessonId(lesson.getId()).size();
+                lesson.setPracticeQuestionCount(count);
+                list.add(lesson);
             }
         } catch (SQLException e) {
             e.printStackTrace();

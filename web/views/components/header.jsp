@@ -55,13 +55,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
-                                    <i class="fas fa-plus me-1"></i>Create Quiz
+                                <a class="nav-link" href="${pageContext.request.contextPath}/lesson?action=list">
+                                    <i class="fas fa-book me-1"></i>Manage Lessons
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/classes">
-                                    <i class="fas fa-chalkboard-teacher me-1"></i>My Classes
+                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
+                                    <i class="fas fa-plus me-1"></i>Create Quiz
                                 </a>
                             </li>
                             <li class="nav-item">

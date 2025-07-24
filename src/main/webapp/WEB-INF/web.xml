@@ -97,4 +97,13 @@
         <url-pattern>/admin/subject/edit</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>StudentPracticeQuizServlet</servlet-name>
+        <servlet-class>Controller.StudentPracticeQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentPracticeQuizServlet</servlet-name>
+        <url-pattern>/student/practice-quiz</url-pattern>
+    </servlet-mapping>
+
 </web-app> 

@@ -123,6 +123,18 @@
     </div>
     
     <div class="container">
+        <c:if test="${noPracticeQuestions}">
+            <div class="alert alert-warning mt-4">
+                Bài học hoặc môn học này chưa có câu hỏi luyện tập (Practice). Vui lòng chọn bài học/môn học khác hoặc liên hệ giáo viên để bổ sung câu hỏi!
+            </div>
+        </c:if>
+        <div class="alert alert-info mb-4">
+            <strong>Hướng dẫn:</strong><br>
+            <ul class="mb-0">
+                <li><b>Practice theo lesson/subject:</b> Lưu lịch sử luyện tập, có thể xem lại kết quả, thống kê tiến bộ.</li>
+                <li><b>Practice quiz (nút Practice ở quiz):</b> Chỉ làm thử, không lưu lịch sử, chỉ xem điểm ngay sau khi làm xong.</li>
+            </ul>
+        </div>
         <!-- Error Message -->
         <c:if test="${not empty error}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
