@@ -242,11 +242,13 @@ public class QuizDAO extends DBcontext {
                     rs.getInt("Id"),
                     rs.getString("Name"),
                     rs.getInt("SubjectId"),
+                    rs.getInt("OwnerId"),
                     rs.getString("Level"),
                     rs.getInt("NumberOfQuestions"),
                     rs.getInt("DurationMinutes"),
                     rs.getDouble("PassRate"),
                     rs.getString("Type"),
+                    rs.getBoolean("IsPracticeable"),
                     rs.getTimestamp("CreatedAt"),
                     rs.getTimestamp("UpdatedAt")
                 ));

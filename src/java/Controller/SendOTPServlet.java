@@ -98,7 +98,7 @@ public class SendOTPServlet extends HttpServlet {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Xác thực đăng ký tài khoản Quizora");
-            message.setText(EmailTemplateUtil.getRegistrationOTPTemplate(otp));
+            message.setContent(EmailTemplateUtil.getRegistrationOTPTemplate(otp), "text/html; charset=UTF-8");
             
             Transport.send(message);
             return true;

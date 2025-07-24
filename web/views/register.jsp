@@ -438,13 +438,12 @@
                     document.getElementById('otpStatus').textContent = 'OTP đã được gửi đến email của bạn';
                     document.getElementById('otpStatus').style.display = 'block';
                     document.getElementById('otpStatus').className = 'text-success mt-1';
-                    
                     // Đếm ngược 5 phút
                     let timeLeft = 300;
-                    const timer = setInterval(() => {
+                    window.otpTimer = setInterval(() => {
                         timeLeft--;
                         if (timeLeft <= 0) {
-                            clearInterval(timer);
+                            clearInterval(window.otpTimer);
                             document.getElementById('sendOTP').disabled = false;
                             document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
                             document.getElementById('otpGroup').style.display = 'none';
@@ -511,6 +510,15 @@
                     document.getElementById('otpStatus').className = 'text-success mt-1';
                     document.getElementById('otpStatus').style.display = 'block';
                     otpError.style.display = 'none';
+                    // Ẩn nút gửi OTP
+                    document.getElementById('sendOTP').style.display = 'none';
+                    // Ẩn/clear đồng hồ đếm ngược
+                    if (window.otpTimer) {
+                        clearInterval(window.otpTimer);
+                    }
+                    document.getElementById('otpStatus').style.display = 'none';
+                    // Disable trường email
+                    document.getElementById('email').readOnly = true;
                 } else {
                     otpError.textContent = data;
                     otpError.style.display = 'block';
