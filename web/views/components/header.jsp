@@ -59,6 +59,11 @@
                                     <i class="fas fa-chart-bar me-1"></i>Reports
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/feedback">
+                                    <i class="fas fa-comment-dots me-1"></i>Feedback
+                                </a>
+                            </li>
                         </c:when>
                         <c:when test="${sessionScope.role == 'Teacher'}">
                             <!-- Teacher Menu -->

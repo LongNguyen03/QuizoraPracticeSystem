@@ -61,6 +61,20 @@
         <jsp:include page="../views/components/header.jsp" />
 
         <div class="dashboard-container">
+            <%
+                String feedbackSuccess = null;
+                if (session.getAttribute("feedbackSuccess") != null) {
+                    feedbackSuccess = (String) session.getAttribute("feedbackSuccess");
+                    session.removeAttribute("feedbackSuccess"); // Xóa sau khi hiển thị 1 lần
+                }
+            %>
+            <% if (feedbackSuccess != null) { %>
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <%= feedbackSuccess %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
             <!-- Welcome Section -->
             <div class="welcome-section">
                 <h1>Welcome back, Teacher!</h1>
@@ -147,6 +161,28 @@
                                 </div>
                             </div>
                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="row mt-5">
+            <div class="col-md-8 offset-md-2">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-comment-dots me-2"></i>Gửi phản hồi tới Admin</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="${pageContext.request.contextPath}/teacher/feedback">
+                            <div class="mb-3">
+                                <label for="feedbackContent" class="form-label">Nội dung phản hồi</label>
+                                <textarea class="form-control" id="feedbackContent" name="content" rows="4" required placeholder="Nhập phản hồi, góp ý hoặc khiếu nại..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-paper-plane"></i> Gửi phản hồi
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
