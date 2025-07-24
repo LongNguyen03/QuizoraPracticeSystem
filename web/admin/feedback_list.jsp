@@ -44,19 +44,8 @@
                         <td><%= fb.getContent() %></td>
                         <!-- Cột phản hồi -->
                         <td>
-                            <% if (replies != null && !replies.isEmpty()) { %>
-                                <ul class="list-group list-group-flush mb-2">
-                                    <% for (Model.FeedbackReply reply : replies) { %>
-                                        <li class="list-group-item px-2 py-1">
-                                            <i class="fas fa-user-shield text-primary"></i>
-                                            <span><%= reply.getContent() %></span>
-                                            <span class="text-muted small">(<%= reply.getCreatedAt() %>)</span>
-                                        </li>
-                                    <% } %>
-                                </ul>
-                            <% } %>
-                            <% if (!"Pending".equalsIgnoreCase(fb.getStatus())) { %>
-                                <!-- Nút mở modal phản hồi -->
+                            <% if ("Pending".equalsIgnoreCase(fb.getStatus())) { %>
+                                <!-- Only allow reply if status is Pending -->
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#replyModal<%= fb.getId() %>">
                                     <i class="fas fa-reply"></i> Phản hồi
                                 </button>
@@ -83,19 +72,39 @@
                                   </div>
                                 </div>
                             <% } %>
+                            <% if (replies != null && !replies.isEmpty()) { %>
+                                <ul class="list-group list-group-flush mb-2 mt-2">
+                                    <% for (Model.FeedbackReply reply : replies) { %>
+                                        <li class="list-group-item px-2 py-1">
+                                            <i class="fas fa-user-shield text-primary"></i>
+                                            <span><%= reply.getContent() %></span>
+                                            <span class="text-muted small">(<%= reply.getCreatedAt() %>)</span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
                         </td>
                         <!-- Cột trạng thái -->
                         <td>
                             <% if ("Pending".equalsIgnoreCase(fb.getStatus())) { %>
                                 <form method="post" action="${pageContext.request.contextPath}/admin/feedback" style="display:inline;">
                                     <input type="hidden" name="id" value="<%= fb.getId() %>"/>
-                                    <input type="hidden" name="action" value="resolve"/>
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-hourglass-half"></i> Chưa xử lý
+                                    <input type="hidden" name="action" value="approve"/>
+                                    <button type="submit" class="btn btn-success btn-sm me-1">
+                                        <i class="fas fa-check"></i> Approve
                                     </button>
                                 </form>
-                            <% } else { %>
-                                <span class="badge bg-success"><i class="fas fa-check"></i> Đã xử lý</span>
+                                <form method="post" action="${pageContext.request.contextPath}/admin/feedback" style="display:inline;">
+                                    <input type="hidden" name="id" value="<%= fb.getId() %>"/>
+                                    <input type="hidden" name="action" value="reject"/>
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </form>
+                            <% } else if ("Approve".equalsIgnoreCase(fb.getStatus())) { %>
+                                <span class="badge bg-success"><i class="fas fa-check"></i> Approved</span>
+                            <% } else if ("Reject".equalsIgnoreCase(fb.getStatus())) { %>
+                                <span class="badge bg-danger"><i class="fas fa-times"></i> Rejected</span>
                             <% } %>
                         </td>
                     </tr>

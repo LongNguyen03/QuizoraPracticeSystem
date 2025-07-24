@@ -46,25 +46,35 @@ public class AdminFeedbackServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String idStr = request.getParameter("id");
-        if ("resolve".equals(action) && idStr != null) {
+        HttpSession session = request.getSession();
+        if ("approve".equals(action) && idStr != null) {
             int id = Integer.parseInt(idStr);
-            feedbackDAO.updateFeedbackStatus(id, "Resolved");
-            request.getSession().setAttribute("adminFeedbackSuccess", "Đã đánh dấu phản hồi là đã xử lý!");
+            feedbackDAO.updateFeedbackStatus(id, "Approve");
+            session.setAttribute("adminFeedbackSuccess", "Đã duyệt phản hồi!");
+        } else if ("reject".equals(action) && idStr != null) {
+            int id = Integer.parseInt(idStr);
+            feedbackDAO.updateFeedbackStatus(id, "Reject");
+            session.setAttribute("adminFeedbackSuccess", "Đã từ chối phản hồi!");
         } else if ("reply".equals(action)) {
             String feedbackIdStr = request.getParameter("feedbackId");
             String content = request.getParameter("replyContent");
-            HttpSession session = request.getSession();
             // Giả sử admin đã đăng nhập và lưu trong session với key "adminId"
             Integer responderId = (Integer) session.getAttribute("adminId");
             if (feedbackIdStr != null && responderId != null && content != null && !content.trim().isEmpty()) {
                 int feedbackId = Integer.parseInt(feedbackIdStr);
-                FeedbackReply reply = new FeedbackReply();
-                reply.setFeedbackId(feedbackId);
-                reply.setResponderId(responderId);
-                reply.setContent(content);
-                FeedbackReplyDAO replyDAO = new FeedbackReplyDAO();
-                replyDAO.addReply(reply);
-                session.setAttribute("adminFeedbackSuccess", "Đã gửi phản hồi tới giáo viên!");
+                // Check feedback status before allowing reply
+                Feedback fb = feedbackDAO.getAllFeedbacks().stream().filter(f -> f.getId() == feedbackId).findFirst().orElse(null);
+                if (fb != null && "Pending".equalsIgnoreCase(fb.getStatus())) {
+                    FeedbackReply reply = new FeedbackReply();
+                    reply.setFeedbackId(feedbackId);
+                    reply.setResponderId(responderId);
+                    reply.setContent(content);
+                    FeedbackReplyDAO replyDAO = new FeedbackReplyDAO();
+                    replyDAO.addReply(reply);
+                    session.setAttribute("adminFeedbackSuccess", "Đã gửi phản hồi tới giáo viên!");
+                } else {
+                    session.setAttribute("adminFeedbackError", "Chỉ có thể phản hồi khi trạng thái là Pending!");
+                }
             } else {
                 session.setAttribute("adminFeedbackError", "Thiếu thông tin phản hồi hoặc chưa đăng nhập!");
             }
