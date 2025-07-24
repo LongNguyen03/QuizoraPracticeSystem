@@ -66,9 +66,9 @@ public class StudentHomeServlet extends HttpServlet {
                 for (Subject s : subjects) {
                     int quizCount = quizDao.getQuizzesBySubjectId(s.getId()).size();
                     s.setQuizCount(quizCount);
-                    // Nếu muốn, có thể set lessonCount tương tự:
-                    // int lessonCount = lessonDao.getAllLessons(s.getId(), null, null).size();
-                    // s.setLessonCount(lessonCount);
+                    // Set lessonCount cho subject
+                    int lessonCount = new LessonDAO().getAllLessons(s.getId(), null, null).size();
+                    s.setLessonCount(lessonCount);
                     s.setProgress(0); // Nếu có logic tính progress thì set ở đây
                 }
                 System.out.println("Loaded " + subjects.size() + " subjects");
