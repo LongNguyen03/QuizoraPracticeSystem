@@ -19,8 +19,7 @@ public class PracticeSession {
 
     public PracticeSession() {}
 
-    public PracticeSession(int id, int accountId, int subjectId, Integer lessonId, 
-                          Timestamp startTime, Timestamp endTime, Double totalScore, boolean completed) {
+    public PracticeSession(int id, int accountId, int subjectId, Integer lessonId, Timestamp startTime, Timestamp endTime, Double totalScore, boolean completed) {
         this.id = id;
         this.accountId = accountId;
         this.subjectId = subjectId;
