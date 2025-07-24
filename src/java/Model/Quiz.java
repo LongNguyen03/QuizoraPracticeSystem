@@ -26,20 +26,23 @@ public class Quiz {
     // Additional properties for UI
     private boolean isFavorite;
     private String subjectTitle;
+    private int ownerId;
+    private boolean isPracticeable;
 
     public Quiz() {
     }
 
-    public Quiz(int id, String name, int subjectId, String level, int numberOfQuestions,
-                int durationMinutes, double passRate, String type, Date createdAt, Date updatedAt) {
+    public Quiz(int id, String name, int subjectId, int ownerId, String level, int numberOfQuestions, int durationMinutes, double passRate, String type, boolean isPracticeable, Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
         this.subjectId = subjectId;
+        this.ownerId = ownerId;
         this.level = level;
         this.numberOfQuestions = numberOfQuestions;
         this.durationMinutes = durationMinutes;
         this.passRate = passRate;
         this.type = type;
+        this.isPracticeable = isPracticeable;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -140,6 +143,22 @@ public class Quiz {
 
     public void setSubjectTitle(String subjectTitle) {
         this.subjectTitle = subjectTitle;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public boolean isPracticeable() {
+        return isPracticeable;
+    }
+
+    public void setPracticeable(boolean isPracticeable) {
+        this.isPracticeable = isPracticeable;
     }
 }
 

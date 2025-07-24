@@ -14,6 +14,7 @@ import java.util.Date;
 public class Lesson {
     private int id;
     private int subjectId;
+    private int ownerId;
     private String title;
     private String content;
     private String dimension;
@@ -24,9 +25,10 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(int id, int subjectId, String title, String content, String dimension, String status, Date createdAt, Date updatedAt) {
+    public Lesson(int id, int subjectId, int ownerId, String title, String content, String dimension, String status, Date createdAt, Date updatedAt) {
         this.id = id;
         this.subjectId = subjectId;
+        this.ownerId = ownerId;
         this.title = title;
         this.content = content;
         this.dimension = dimension;
@@ -49,6 +51,14 @@ public class Lesson {
 
     public void setSubjectId(int subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getTitle() {
