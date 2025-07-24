@@ -93,7 +93,7 @@ public class QuestionDAO extends DBcontext {
 
     public List<Question> getQuestionsByLessonId(int lessonId) {
         List<Question> list = new ArrayList<>();
-        String sql = "SELECT * FROM Questions WHERE LessonId = ?";
+        String sql = "SELECT * FROM Questions WHERE LessonId = ? AND Status = 'Active' AND IsPracticeOnly = 1";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, lessonId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -109,7 +109,7 @@ public class QuestionDAO extends DBcontext {
 
     public List<Question> getQuestionsBySubjectId(int subjectId) {
         List<Question> list = new ArrayList<>();
-        String sql = "SELECT * FROM Questions WHERE SubjectId = ? AND Status = 'Active'";
+        String sql = "SELECT * FROM Questions WHERE SubjectId = ? AND Status = 'Active' AND IsPracticeOnly = 1";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, subjectId);
             try (ResultSet rs = ps.executeQuery()) {
