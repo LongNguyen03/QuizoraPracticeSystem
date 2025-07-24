@@ -25,9 +25,10 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(int id, int subjectId, String title, String content, String dimension, String status, Date createdAt, Date updatedAt) {
+    public Lesson(int id, int subjectId, int ownerId, String title, String content, String dimension, String status, Date createdAt, Date updatedAt) {
         this.id = id;
         this.subjectId = subjectId;
+        this.ownerId = ownerId;
         this.title = title;
         this.content = content;
         this.dimension = dimension;
@@ -55,6 +56,7 @@ public class Lesson {
     public int getOwnerId() {
         return ownerId;
     }
+    
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
     }

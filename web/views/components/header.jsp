@@ -115,6 +115,11 @@
                                     <i class="fas fa-heart me-1"></i>Favorite Quizzes
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/student/practice">
+                                    <i class="fas fa-dumbbell me-1"></i>Practice
+                                </a>
+                            </li>
                         </c:when>
                     </c:choose>
                     

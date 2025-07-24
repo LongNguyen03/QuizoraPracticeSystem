@@ -15,6 +15,7 @@ import java.util.List;
 public class Question {
     private int id;
     private int subjectId;
+    private int ownerId;
     private int lessonId;
     private String level;
     private String content;
@@ -27,9 +28,10 @@ public class Question {
     public Question() {
     }
 
-    public Question(int id, int subjectId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] image, boolean isPracticeOnly) {
+    public Question(int id, int subjectId, int ownerId, int lessonId, String level, String content, String status, Date createdAt, Date updatedAt, byte[] image, boolean isPracticeOnly) {
         this.id = id;
         this.subjectId = subjectId;
+        this.ownerId = ownerId;
         this.lessonId = lessonId;
         this.level = level;
         this.content = content;
@@ -54,6 +56,14 @@ public class Question {
 
     public void setSubjectId(int subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     public int getLessonId() {

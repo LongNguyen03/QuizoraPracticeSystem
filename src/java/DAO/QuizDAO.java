@@ -13,7 +13,7 @@ public class QuizDAO extends DBcontext {
 
     public List<Quiz> getQuizzesBySubjectId(int subjectId) {
         List<Quiz> quizzes = new ArrayList<>();
-        String sql = "SELECT Id, Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt, UpdatedAt FROM Quizzes WHERE SubjectId = ?";
+        String sql = "SELECT Id, Name, SubjectId, OwnerId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, IsPracticeable, CreatedAt, UpdatedAt FROM Quizzes WHERE SubjectId = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, subjectId);
             ResultSet rs = ps.executeQuery();
@@ -22,11 +22,13 @@ public class QuizDAO extends DBcontext {
                         rs.getInt("Id"),
                         rs.getString("Name"),
                         rs.getInt("SubjectId"),
+                        rs.getInt("OwnerId"),
                         rs.getString("Level"),
                         rs.getInt("NumberOfQuestions"),
                         rs.getInt("DurationMinutes"),
                         rs.getDouble("PassRate"),
                         rs.getString("Type"),
+                        rs.getBoolean("IsPracticeable"),
                         rs.getTimestamp("CreatedAt"),
                         rs.getTimestamp("UpdatedAt")
                 ));
@@ -42,7 +44,7 @@ public class QuizDAO extends DBcontext {
      */
     public List<Quiz> getAllAvailableQuizzes() {
         List<Quiz> quizzes = new ArrayList<>();
-        String sql = "SELECT Id, Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt, UpdatedAt FROM Quizzes ORDER BY CreatedAt DESC";
+        String sql = "SELECT Id, Name, SubjectId, OwnerId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, IsPracticeable, CreatedAt, UpdatedAt FROM Quizzes ORDER BY CreatedAt DESC";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -50,11 +52,13 @@ public class QuizDAO extends DBcontext {
                         rs.getInt("Id"),
                         rs.getString("Name"),
                         rs.getInt("SubjectId"),
+                        rs.getInt("OwnerId"),
                         rs.getString("Level"),
                         rs.getInt("NumberOfQuestions"),
                         rs.getInt("DurationMinutes"),
                         rs.getDouble("PassRate"),
                         rs.getString("Type"),
+                        rs.getBoolean("IsPracticeable"),
                         rs.getTimestamp("CreatedAt"),
                         rs.getTimestamp("UpdatedAt")
                 ));
@@ -86,7 +90,7 @@ public class QuizDAO extends DBcontext {
      * Lấy quiz theo ID
      */
     public Quiz getQuizById(int quizId) {
-        String sql = "SELECT Id, Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt, UpdatedAt FROM Quizzes WHERE Id = ?";
+        String sql = "SELECT Id, Name, SubjectId, OwnerId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, IsPracticeable, CreatedAt, UpdatedAt FROM Quizzes WHERE Id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, quizId);
             ResultSet rs = ps.executeQuery();
@@ -95,11 +99,13 @@ public class QuizDAO extends DBcontext {
                         rs.getInt("Id"),
                         rs.getString("Name"),
                         rs.getInt("SubjectId"),
+                        rs.getInt("OwnerId"),
                         rs.getString("Level"),
                         rs.getInt("NumberOfQuestions"),
                         rs.getInt("DurationMinutes"),
                         rs.getDouble("PassRate"),
                         rs.getString("Type"),
+                        rs.getBoolean("IsPracticeable"),
                         rs.getTimestamp("CreatedAt"),
                         rs.getTimestamp("UpdatedAt")
                 );
@@ -111,16 +117,18 @@ public class QuizDAO extends DBcontext {
     }
 
     public void insertQuiz(Quiz quiz) {
-        String sql = "INSERT INTO Quizzes (Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Quizzes (Name, SubjectId, OwnerId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, IsPracticeable, CreatedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, quiz.getName());
             ps.setInt(2, quiz.getSubjectId());
-            ps.setString(3, quiz.getLevel());
-            ps.setInt(4, quiz.getNumberOfQuestions());
-            ps.setInt(5, quiz.getDurationMinutes());
-            ps.setDouble(6, quiz.getPassRate());
-            ps.setString(7, quiz.getType());
+            ps.setInt(3, quiz.getOwnerId());
+            ps.setString(4, quiz.getLevel());
+            ps.setInt(5, quiz.getNumberOfQuestions());
+            ps.setInt(6, quiz.getDurationMinutes());
+            ps.setDouble(7, quiz.getPassRate());
+            ps.setString(8, quiz.getType());
+            ps.setBoolean(9, quiz.isPracticeable());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,16 +136,18 @@ public class QuizDAO extends DBcontext {
     }
 
     public void updateQuiz(Quiz quiz) {
-        String sql = "UPDATE Quizzes SET Name=?, SubjectId=?, Level=?, NumberOfQuestions=?, DurationMinutes=?, PassRate=?, Type=?, UpdatedAt=GETDATE() WHERE Id=?";
+        String sql = "UPDATE Quizzes SET Name=?, SubjectId=?, OwnerId=?, Level=?, NumberOfQuestions=?, DurationMinutes=?, PassRate=?, Type=?, IsPracticeable=?, UpdatedAt=GETDATE() WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, quiz.getName());
             ps.setInt(2, quiz.getSubjectId());
-            ps.setString(3, quiz.getLevel());
-            ps.setInt(4, quiz.getNumberOfQuestions());
-            ps.setInt(5, quiz.getDurationMinutes());
-            ps.setDouble(6, quiz.getPassRate());
-            ps.setString(7, quiz.getType());
-            ps.setInt(8, quiz.getId());
+            ps.setInt(3, quiz.getOwnerId());
+            ps.setString(4, quiz.getLevel());
+            ps.setInt(5, quiz.getNumberOfQuestions());
+            ps.setInt(6, quiz.getDurationMinutes());
+            ps.setDouble(7, quiz.getPassRate());
+            ps.setString(8, quiz.getType());
+            ps.setBoolean(9, quiz.isPracticeable());
+            ps.setInt(10, quiz.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -187,18 +197,20 @@ public class QuizDAO extends DBcontext {
     /**
      * Chèn quiz mới, nhận lessonId, tự động lấy subjectId từ lessonId
      */
-    public void insertQuizWithLesson(int lessonId, String name, String level, int numberOfQuestions, int durationMinutes, double passRate, String type) {
+    public void insertQuizWithLesson(int lessonId, String name, String level, int numberOfQuestions, int durationMinutes, double passRate, String type, int ownerId, boolean isPracticeable) {
         int subjectId = getSubjectIdByLessonId(lessonId);
-        String sql = "INSERT INTO Quizzes (Name, SubjectId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, CreatedAt) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Quizzes (Name, SubjectId, OwnerId, Level, NumberOfQuestions, DurationMinutes, PassRate, Type, IsPracticeable, CreatedAt) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE())";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
             ps.setInt(2, subjectId);
-            ps.setString(3, level);
-            ps.setInt(4, numberOfQuestions);
-            ps.setInt(5, durationMinutes);
-            ps.setDouble(6, passRate);
-            ps.setString(7, type);
+            ps.setInt(3, ownerId);
+            ps.setString(4, level);
+            ps.setInt(5, numberOfQuestions);
+            ps.setInt(6, durationMinutes);
+            ps.setDouble(7, passRate);
+            ps.setString(8, type);
+            ps.setBoolean(9, isPracticeable);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
