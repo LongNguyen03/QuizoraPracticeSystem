@@ -55,7 +55,7 @@
             <h3 class="mb-0"><%= isEdit ? "Cập nhật Quiz" : "Tạo mới Quiz" %></h3>
         </div>
         <div class="card-body">
-            <form method="post" action="${pageContext.request.contextPath}/quizzes">
+            <form method="post" action="${pageContext.request.contextPath}/quiz">
                 <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>"/>
                 <% if (isEdit) { %>
                     <input type="hidden" name="id" value="<%= quiz.getId() %>"/>

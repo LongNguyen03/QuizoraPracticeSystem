@@ -170,17 +170,31 @@ public class QuizController extends HttpServlet {
             showCreateForm(request, response);
             return;
         }
-        String[] lessonIds = request.getParameterValues("lessonIds");
-        if (lessonIds == null || lessonIds.length == 0) {
+        String[] lessonIdsArr = request.getParameterValues("lessonIds");
+        List<String> lessonIdList = new ArrayList<>();
+        if (lessonIdsArr != null && lessonIdsArr.length > 0) {
+            // Nếu chỉ có 1 phần tử và có dấu phẩy, tách ra
+            if (lessonIdsArr.length == 1 && lessonIdsArr[0].contains(",")) {
+                String[] split = lessonIdsArr[0].split(",");
+                for (String s : split) {
+                    if (!s.trim().isEmpty()) lessonIdList.add(s.trim());
+                }
+            } else {
+                for (String s : lessonIdsArr) {
+                    if (!s.trim().isEmpty()) lessonIdList.add(s.trim());
+                }
+            }
+        }
+        if (lessonIdList.isEmpty()) {
             request.setAttribute("error", "Bạn phải chọn ít nhất 1 bài học!");
             showCreateForm(request, response);
             return;
         }
         LessonDAO lessonDAO = new LessonDAO();
-        int firstLessonId = Integer.parseInt(lessonIds[0]);
+        int firstLessonId = Integer.parseInt(lessonIdList.get(0));
         int subjectId = lessonDAO.getLessonById(firstLessonId).getSubjectId();
         // Kiểm tra tất cả lesson phải cùng subject
-        for (String lessonIdStr : lessonIds) {
+        for (String lessonIdStr : lessonIdList) {
             int lessonId = Integer.parseInt(lessonIdStr);
             if (lessonDAO.getLessonById(lessonId).getSubjectId() != subjectId) {
                 request.setAttribute("error", "Tất cả bài học phải thuộc cùng một môn học!");
@@ -198,7 +212,7 @@ public class QuizController extends HttpServlet {
         // 1. Lấy danh sách câu hỏi của lesson
         QuestionDAO questionDAO = new QuestionDAO();
         List<Question> allQuestions = new ArrayList<>();
-        for (String lessonIdStr : lessonIds) {
+        for (String lessonIdStr : lessonIdList) {
             int lessonId = Integer.parseInt(lessonIdStr);
             allQuestions.addAll(questionDAO.getQuestionsByLessonId(lessonId));
         }

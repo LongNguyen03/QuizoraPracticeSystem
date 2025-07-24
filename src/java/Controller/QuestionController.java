@@ -175,6 +175,9 @@ public class QuestionController extends HttpServlet {
         if (filePart != null && filePart.getSize() > 0) {
             q.setImage(filePart.getInputStream().readAllBytes());
         }
+        // Handle isPracticeOnly checkbox
+        String isPracticeOnlyParam = request.getParameter("isPracticeOnly");
+        q.setPracticeOnly(isPracticeOnlyParam != null && isPracticeOnlyParam.equals("true"));
         return q;
     }
 
