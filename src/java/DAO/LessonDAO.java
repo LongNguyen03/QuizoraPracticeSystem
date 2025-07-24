@@ -125,6 +125,7 @@ public class LessonDAO extends DBcontext {
         Lesson lesson = new Lesson();
         lesson.setId(rs.getInt("Id"));
         lesson.setSubjectId(rs.getInt("SubjectId"));
+        lesson.setOwnerId(rs.getInt("OwnerId"));
         lesson.setTitle(rs.getString("Title"));
         lesson.setContent(rs.getString("Content"));
         lesson.setDimension(rs.getString("Dimension"));

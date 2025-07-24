@@ -137,6 +137,10 @@ public class QuestionController extends HttpServlet {
 
         // Nếu hợp lệ, tiếp tục lưu
         Question q = buildQuestionFromRequest(request, true);
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("accountId") != null) {
+            q.setOwnerId((int) session.getAttribute("accountId"));
+        }
         questionDAO.createQuestion(q);
         processAnswers(request, q.getId());
         response.sendRedirect("QuestionController?action=list&lessonId=" + q.getLessonId());
@@ -145,6 +149,10 @@ public class QuestionController extends HttpServlet {
     private void updateQuestion(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         Question q = buildQuestionFromRequest(request, false);
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("accountId") != null) {
+            q.setOwnerId((int) session.getAttribute("accountId"));
+        }
         questionDAO.updateQuestion(q);
         processAnswers(request, q.getId());
         response.sendRedirect("QuestionController?action=list&lessonId=" + q.getLessonId());

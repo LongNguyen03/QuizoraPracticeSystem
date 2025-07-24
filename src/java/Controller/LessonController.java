@@ -75,6 +75,12 @@ public class LessonController extends HttpServlet {
         }
         int teacherId = (int) session.getAttribute("accountId");
         List<Lesson> lessons = lessonDAO.getLessonsByOwnerId(teacherId);
+        // Set questionCount for each lesson
+        DAO.QuestionDAO questionDAO = new DAO.QuestionDAO();
+        for (Model.Lesson lesson : lessons) {
+            int count = questionDAO.getQuestionsByLessonId(lesson.getId()).size();
+            lesson.setQuestionCount(count);
+        }
         List<Subject> subjects = subjectDAO.getAllSubjects();
         List<String> dimensionList = lessonDAO.getAllDimensions();
         request.setAttribute("dimensionList", dimensionList);
@@ -96,6 +102,12 @@ public class LessonController extends HttpServlet {
         if (idStr != null && !idStr.isEmpty()) {
             int id = Integer.parseInt(idStr);
             lesson = lessonDAO.getLessonById(id);
+            // Set questionCount for this lesson
+            if (lesson != null) {
+                DAO.QuestionDAO questionDAO = new DAO.QuestionDAO();
+                int count = questionDAO.getQuestionsByLessonId(lesson.getId()).size();
+                lesson.setQuestionCount(count);
+            }
             request.setAttribute("formAction", "edit");
         } else {
             request.setAttribute("formAction", "create");
@@ -137,11 +149,6 @@ public class LessonController extends HttpServlet {
             Lesson lesson = new Lesson();
             lesson.setId(id);
             lesson.setSubjectId(subjectId);
-            // Set ownerId for new lesson
-            HttpSession session = request.getSession(false);
-            if (session != null && session.getAttribute("accountId") != null) {
-                lesson.setOwnerId((int) session.getAttribute("accountId"));
-            }
             lesson.setTitle(title);
             lesson.setContent(content);
             lesson.setDimension(dimension);

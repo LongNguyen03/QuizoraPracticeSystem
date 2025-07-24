@@ -40,8 +40,13 @@ public class QuizController extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons(); // hoặc getLessonsByTeacherId nếu cần
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
         if (action == null) {
             // Không có action => load list
@@ -81,8 +86,13 @@ public class QuizController extends HttpServlet {
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons();
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
         SubjectDAO subjectDAO = new SubjectDAO();
         List<Subject> subjects = subjectDAO.getAllSubjects();
@@ -122,8 +132,13 @@ public class QuizController extends HttpServlet {
         request.setAttribute("lessonId", lessonId);
 
         // Truyền danh sách lessons như khi tạo mới
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons();
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
 
         // Lấy danh sách câu hỏi của quiz (đã có).
@@ -160,6 +175,7 @@ public class QuizController extends HttpServlet {
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
+        boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // 1. Lấy danh sách câu hỏi của lesson
         QuestionDAO questionDAO = new QuestionDAO();
@@ -170,9 +186,9 @@ public class QuizController extends HttpServlet {
         List<Question> selectedQuestions = allQuestions.subList(0, Math.min(numberOfQuestions, allQuestions.size()));
 
         // 3. Tạo quiz mới, chỉ lưu subjectId (lấy từ lessonId)
-        // TODO: Lấy ownerId thực tế từ session, tạm thời để 0
-        int ownerId = 0;
-        boolean isPracticeable = true; // hoặc lấy từ request nếu có
+        HttpSession session = request.getSession(false);
+        int ownerId = (session != null && session.getAttribute("accountId") != null)
+            ? (int) session.getAttribute("accountId") : 0;
         quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type, ownerId, isPracticeable);
 
         // 4. Lấy id quiz vừa tạo
@@ -202,12 +218,14 @@ public class QuizController extends HttpServlet {
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
+        boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // Lấy subjectId từ lessonId
         int subjectId = quizDAO.getSubjectIdByLessonId(lessonId);
 
-        int ownerId = 0; // TODO: Lấy ownerId thực tế từ session
-        boolean isPracticeable = true; // hoặc lấy từ request nếu có
+        HttpSession session = request.getSession(false);
+        int ownerId = (session != null && session.getAttribute("accountId") != null)
+            ? (int) session.getAttribute("accountId") : 0;
         Quiz quiz = new Quiz(id, name, subjectId, ownerId, level, numberOfQuestions, durationMinutes, passRate, type, isPracticeable, null, new java.util.Date());
         quizDAO.updateQuiz(quiz);
 

@@ -44,120 +44,125 @@
     <title><%= isEdit ? "Cập nhật Quiz" : "Tạo mới Quiz" %> - Quizora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body { background: #f7f7f7; padding: 40px; }
-        .card-form { max-width: 800px; margin: auto; background: #fff; padding: 32px 28px; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.09); }
-        .form-label { font-weight: 600; }
-        .form-control, .form-select { border-radius: 8px; }
-        .actions { text-align: center; margin-top: 28px; }
-        .actions button, .actions a { padding: 10px 28px; border-radius: 8px; font-weight: 500; }
-        .actions .btn-success { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border: none; }
-        .actions .btn-success:hover { background: linear-gradient(90deg, #764ba2 0%, #667eea 100%); }
-        .actions .btn-secondary { background: #e9ecef; color: #333; border: none; }
-        .question-list-card { margin-top: 32px; }
-        .question-list-card .card-title { font-size: 1.1rem; font-weight: 600; }
-        .question-list-card .list-group-item { border: none; border-bottom: 1px solid #f0f0f0; }
-        .question-list-card .badge { font-size: 0.97rem; }
-    </style>
 </head>
 <body>
 
 <jsp:include page="../views/components/header.jsp"/>
 
-<div class="container py-4">
-    <div class="card-form">
-        <h2 class="text-center mb-4 fw-bold text-primary"><i class="fas fa-clipboard-list me-2"></i><%= isEdit ? "Cập nhật Quiz" : "Tạo mới Quiz" %></h2>
-        <form method="post" action="${pageContext.request.contextPath}/quiz">
-            <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>"/>
-            <% if (isEdit) { %>
-                <input type="hidden" name="id" value="<%= quiz.getId() %>"/>
-            <% } %>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">Tên Quiz</label>
-                    <input type="text" name="name" class="form-control" required placeholder="Nhập tên quiz"
-                           value="<%= isEdit ? quiz.getName() : "" %>"/>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Môn học</label>
-                    <select name="subjectId" id="subjectSelect" class="form-select" required onchange="filterLessons()">
-                        <option value="">-- Chọn môn học --</option>
-                        <% if (subjects != null) for (Model.Subject s : subjects) { %>
-                            <option value="<%= s.getId() %>"
-                                <%= (isEdit && selectedLessonId != null && lessons.stream().anyMatch(l -> l.getId() == selectedLessonId && l.getSubjectId() == s.getId())) ? "selected" : "" %>>
-                                <%= s.getTitle() %>
-                            </option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Bài học</label>
-                    <select name="lessonId" id="lessonSelect" class="form-select" required onchange="updateMaxQuestions()">
-                        <option value="">-- Chọn bài học --</option>
-                        <% for (Lesson lesson : lessons) { %>
-                            <option value="<%= lesson.getId() %>" data-subject="<%= lesson.getSubjectId() %>"
-                                <%= (selectedLessonId != null && lesson.getId() == selectedLessonId) ? "selected" : "" %>>
-                                <%= lesson.getTitle() %>
-                            </option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Level</label>
-                    <select name="level" class="form-select" required>
-                        <option value="Easy" <%= isEdit && "Easy".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Dễ</option>
-                        <option value="Medium" <%= isEdit && "Medium".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Trung bình</option>
-                        <option value="Hard" <%= isEdit && "Hard".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Khó</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Loại</label>
-                    <select name="type" class="form-select" required>
-                        <option value="Trắc nghiệm" <%= isEdit && "Trắc nghiệm".equalsIgnoreCase(quiz.getType()) ? "selected" : "" %>>Trắc nghiệm</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Số câu hỏi</label>
-                    <input type="number" name="numberOfQuestions" id="numberOfQuestions" class="form-control" required min="1"
-                           placeholder="VD: 10" value="<%= isEdit ? quiz.getNumberOfQuestions() : "" %>"/>
-                    <div class="form-text" id="maxQuestionsInfo"></div>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Thời gian (phút)</label>
-                    <input type="number" name="durationMinutes" class="form-control" required min="1" max="120" placeholder="VD: 30"
-                           value="<%= isEdit ? quiz.getDurationMinutes() : "" %>"/>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Pass Rate (%)</label>
-                    <input type="number" step="0.1" name="passRate" class="form-control" required min="0" max="100" placeholder="VD: 70"
-                           value="<%= isEdit ? quiz.getPassRate() : "" %>"/>
-                </div>
-                <div class="col-12 actions d-flex justify-content-end gap-2 mt-3">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="fas fa-save"></i> <%= isEdit ? "Cập nhật" : "Tạo mới" %>
-                    </button>
-                    <a href="${pageContext.request.contextPath}/quiz" class="btn btn-secondary px-4">Hủy</a>
-                </div>
-            </div>
-        </form>
-    </div>
-    <% if (isEdit) { %>
-    <div class="card question-list-card mt-5">
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><%= isEdit ? "Cập nhật Quiz" : "Tạo mới Quiz" %></h3>
+        </div>
         <div class="card-body">
-            <h4 class="mb-3"><i class="fas fa-question-circle me-2"></i>Danh sách câu hỏi trong Quiz</h4>
+            <form method="post" action="${pageContext.request.contextPath}/quizzes">
+                <input type="hidden" name="action" value="<%= isEdit ? "update" : "create" %>"/>
+                <% if (isEdit) { %>
+                    <input type="hidden" name="id" value="<%= quiz.getId() %>"/>
+                <% } %>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên Quiz</label>
+                        <input type="text" name="name" class="form-control" required placeholder="Nhập tên quiz"
+                               value="<%= isEdit ? quiz.getName() : "" %>"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Môn học</label>
+                        <select name="subjectId" id="subjectSelect" class="form-select" required onchange="filterLessons()">
+                            <option value="">-- Chọn môn học --</option>
+                            <% if (subjects != null) for (Subject s : subjects) { %>
+                                <option value="<%= s.getId() %>"
+                                    <%= (isEdit && selectedLessonId != null && lessons.stream().anyMatch(l -> l.getId() == selectedLessonId && l.getSubjectId() == s.getId())) ? "selected" : "" %>>
+                                    <%= s.getTitle() %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Bài học</label>
+                        <select name="lessonId" id="lessonSelect" class="form-select" required onchange="updateMaxQuestions()">
+                            <option value="">-- Chọn bài học --</option>
+                            <% for (Lesson lesson : lessons) { %>
+                                <option value="<%= lesson.getId() %>" data-subject="<%= lesson.getSubjectId() %>"
+                                    <%= (selectedLessonId != null && lesson.getId() == selectedLessonId) ? "selected" : "" %>>
+                                    <%= lesson.getTitle() %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Level</label>
+                        <select name="level" class="form-select" required>
+                            <option value="Easy" <%= isEdit && "Easy".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Dễ</option>
+                            <option value="Medium" <%= isEdit && "Medium".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Trung bình</option>
+                            <option value="Hard" <%= isEdit && "Hard".equalsIgnoreCase(quiz.getLevel()) ? "selected" : "" %>>Khó</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Loại</label>
+                        <select name="type" class="form-select" required>
+                            <option value="Trắc nghiệm" <%= isEdit && "Trắc nghiệm".equalsIgnoreCase(quiz.getType()) ? "selected" : "" %>>Trắc nghiệm</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Số câu hỏi</label>
+                        <input type="number" name="numberOfQuestions" id="numberOfQuestions" class="form-control" required min="1"
+                               placeholder="VD: 10" value="<%= isEdit ? quiz.getNumberOfQuestions() : "" %>"/>
+                        <div class="form-text" id="maxQuestionsInfo"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Thời gian (phút)</label>
+                        <input type="number" name="durationMinutes" class="form-control" required min="1" max="120" placeholder="VD: 30"
+                               value="<%= isEdit ? quiz.getDurationMinutes() : "" %>"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Pass Rate (%)</label>
+                        <input type="number" step="0.1" name="passRate" class="form-control" required min="0" max="100" placeholder="VD: 70"
+                               value="<%= isEdit ? quiz.getPassRate() : "" %>"/>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" name="isPracticeable" id="isPracticeable"
+                                <%= (!isEdit || quiz.isPracticeable()) ? "checked" : "" %> />
+                            <label class="form-check-label" for="isPracticeable">
+                                Cho phép luyện tập (Practiceable)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="fas fa-save"></i> <%= isEdit ? "Cập nhật" : "Tạo mới" %>
+                        </button>
+                        <a href="${pageContext.request.contextPath}/quizzes" class="btn btn-secondary px-4">Hủy</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<% if (isEdit) { %>
+<div class="container mt-5">
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="mb-3">Danh sách câu hỏi trong Quiz</h4>
             <div class="row g-4">
-                <% List<Question> quizQuestions = (List<Question>) request.getAttribute("quizQuestions");
-                   Map<Integer, List<QuestionAnswer>> answersMap = (Map<Integer, List<QuestionAnswer>>) request.getAttribute("answersMap");
-                   if (quizQuestions != null) {
-                       for (Question q : quizQuestions) { %>
+                <%
+                    List<Question> quizQuestions = (List<Question>) request.getAttribute("quizQuestions");
+                    Map<Integer, List<QuestionAnswer>> answersMap = (Map<Integer, List<QuestionAnswer>>) request.getAttribute("answersMap");
+                    if (quizQuestions != null) {
+                        for (Question q : quizQuestions) {
+                %>
                 <div class="col-md-6">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
                             <h6 class="card-title mb-2"><i class="bi bi-question-circle"></i> <%= q.getContent() %></h6>
                             <ul class="list-group list-group-flush">
-                            <% List<QuestionAnswer> answers = answersMap.get(q.getId());
-                               if (answers != null) {
-                                   for (QuestionAnswer ans : answers) { %>
+                            <%
+                                List<QuestionAnswer> answers = answersMap.get(q.getId());
+                                if (answers != null) {
+                                    for (QuestionAnswer ans : answers) {
+                            %>
                                 <li class="list-group-item d-flex align-items-center">
                                     <input type="checkbox" class="form-check-input me-2" disabled <%= ans.isCorrect() ? "checked" : "" %> />
                                     <span class="<%= ans.isCorrect() ? "badge bg-success me-2" : "badge bg-light text-dark me-2" %>">
@@ -165,23 +170,34 @@
                                     </span>
                                     <span><%= ans.getContent() %></span>
                                 </li>
-                            <% } } %>
+                            <%
+                                    }
+                                }
+                            %>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <% } } %>
+                <%
+                        }
+                    }
+                %>
             </div>
         </div>
     </div>
-    <% } %>
 </div>
+<% } %>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    var lessonData = [];
-    <% for (Lesson lesson : lessons) { %>
-        lessonData.push({ id: <%= lesson.getId() %>, subjectId: <%= lesson.getSubjectId() %>, questionCount: 100 });
+    // Lấy danh sách lesson và số lượng question cho từng lesson
+    var lessonData = [
+    <% for (int i = 0; i < lessons.size(); i++) { 
+        Lesson lesson = lessons.get(i);
+    %>
+        { id: <%= lesson.getId() %>, subjectId: <%= lesson.getSubjectId() %>, questionCount: 100 }<%= (i < lessons.size() - 1) ? "," : "" %>
     <% } %>
+    ];
     function filterLessons() {
         var subjectId = document.getElementById('subjectSelect').value;
         var lessonSelect = document.getElementById('lessonSelect');
@@ -207,6 +223,7 @@
         numInput.max = max;
         document.getElementById('maxQuestionsInfo').innerText = max > 0 ? 'Tối đa: ' + max + ' câu hỏi' : '';
     }
+    // Nếu đang edit, tự động filter lesson theo subject
     window.onload = function() {
         filterLessons();
         updateMaxQuestions();
