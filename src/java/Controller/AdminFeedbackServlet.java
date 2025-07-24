@@ -47,6 +47,13 @@ public class AdminFeedbackServlet extends HttpServlet {
         String action = request.getParameter("action");
         String idStr = request.getParameter("id");
         HttpSession session = request.getSession();
+        // Ensure adminId is set in session if role is Admin
+        if (session.getAttribute("adminId") == null && "Admin".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            Object accountId = session.getAttribute("accountId");
+            if (accountId != null) {
+                session.setAttribute("adminId", accountId);
+            }
+        }
         if ("approve".equals(action) && idStr != null) {
             int id = Integer.parseInt(idStr);
             feedbackDAO.updateFeedbackStatus(id, "Approve");
@@ -58,25 +65,20 @@ public class AdminFeedbackServlet extends HttpServlet {
         } else if ("reply".equals(action)) {
             String feedbackIdStr = request.getParameter("feedbackId");
             String content = request.getParameter("replyContent");
-            // Giả sử admin đã đăng nhập và lưu trong session với key "adminId"
             Integer responderId = (Integer) session.getAttribute("adminId");
+            // Fallback: if adminId is still null, try accountId
+            if (responderId == null && session.getAttribute("accountId") != null) {
+                responderId = (Integer) session.getAttribute("accountId");
+            }
             if (feedbackIdStr != null && responderId != null && content != null && !content.trim().isEmpty()) {
                 int feedbackId = Integer.parseInt(feedbackIdStr);
-                // Check feedback status before allowing reply
-                Feedback fb = feedbackDAO.getAllFeedbacks().stream().filter(f -> f.getId() == feedbackId).findFirst().orElse(null);
-                if (fb != null && "Pending".equalsIgnoreCase(fb.getStatus())) {
-                    FeedbackReply reply = new FeedbackReply();
-                    reply.setFeedbackId(feedbackId);
-                    reply.setResponderId(responderId);
-                    reply.setContent(content);
-                    FeedbackReplyDAO replyDAO = new FeedbackReplyDAO();
-                    replyDAO.addReply(reply);
-                    session.setAttribute("adminFeedbackSuccess", "Đã gửi phản hồi tới giáo viên!");
-                } else {
-                    session.setAttribute("adminFeedbackError", "Chỉ có thể phản hồi khi trạng thái là Pending!");
-                }
-            } else {
-                session.setAttribute("adminFeedbackError", "Thiếu thông tin phản hồi hoặc chưa đăng nhập!");
+                FeedbackReply reply = new FeedbackReply();
+                reply.setFeedbackId(feedbackId);
+                reply.setResponderId(responderId);
+                reply.setContent(content);
+                FeedbackReplyDAO replyDAO = new FeedbackReplyDAO();
+                replyDAO.addReply(reply);
+                session.setAttribute("adminFeedbackSuccess", "Đã gửi phản hồi tới giáo viên!");
             }
         }
         response.sendRedirect(request.getContextPath() + "/admin/feedback");
