@@ -80,15 +80,22 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Bài học</label>
-                        <select name="lessonId" id="lessonSelect" class="form-select" required onchange="updateMaxQuestions()">
-                            <option value="">-- Chọn bài học --</option>
-                            <% for (Lesson lesson : lessons) { %>
-                                <option value="<%= lesson.getId() %>" data-subject="<%= lesson.getSubjectId() %>"
-                                    <%= (selectedLessonId != null && lesson.getId() == selectedLessonId) ? "selected" : "" %>>
-                                    <%= lesson.getTitle() %>
-                                </option>
-                            <% } %>
-                        </select>
+                        <div class="input-group mb-2">
+                            <select id="lessonDropdown" class="form-select">
+                                <option value="">-- Chọn bài học --</option>
+                                <% for (Lesson lesson : lessons) { %>
+                                    <option value="<%= lesson.getId() %>" data-subject="<%= lesson.getSubjectId() %>">
+                                        <%= lesson.getTitle() %>
+                                    </option>
+                                <% } %>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" id="addLessonBtn" title="Thêm bài học">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div id="selectedLessons" class="mb-2"></div>
+                        <input type="hidden" name="lessonIds" id="lessonIdsInput" />
+                        <small class="text-muted">Chọn từng bài học, bấm dấu cộng để thêm. Không thể chọn trùng.</small>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Level</label>
@@ -190,44 +197,71 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Lấy danh sách lesson và số lượng question cho từng lesson
-    var lessonData = [
-    <% for (int i = 0; i < lessons.size(); i++) { 
-        Lesson lesson = lessons.get(i);
-    %>
-        { id: <%= lesson.getId() %>, subjectId: <%= lesson.getSubjectId() %>, questionCount: 100 }<%= (i < lessons.size() - 1) ? "," : "" %>
-    <% } %>
+    var lessons = [
+        <% for (int i = 0; i < lessons.size(); i++) { Lesson l = lessons.get(i); %>
+        { id: <%= l.getId() %>, subjectId: <%= l.getSubjectId() %>, title: "<%= l.getTitle().replace("\"", "\\\"") %>" }<%= (i < lessons.size() - 1) ? "," : "" %>
+        <% } %>
     ];
-    function filterLessons() {
-        var subjectId = document.getElementById('subjectSelect').value;
-        var lessonSelect = document.getElementById('lessonSelect');
-        for (var i = 0; i < lessonSelect.options.length; i++) {
-            var opt = lessonSelect.options[i];
+    <% if (request.getAttribute("lessonIds") != null && request.getAttribute("lessonIds") instanceof java.util.List) { %>
+    var selectedLessons = [<%java.util.List<?> lids = (java.util.List<?>) request.getAttribute("lessonIds");for (int i = 0; i < lids.size(); i++) { %><%= Integer.parseInt(lids.get(i).toString()) %><% if (i < lids.size() - 1) { %>,<% } %><% } %>];
+    <% } else { %>
+    var selectedLessons = [];
+    <% } %>
+    var subjectSelect = document.getElementById('subjectSelect');
+    var lessonDropdown = document.getElementById('lessonDropdown');
+    var addLessonBtn = document.getElementById('addLessonBtn');
+    var selectedLessonsDiv = document.getElementById('selectedLessons');
+    var lessonIdsInput = document.getElementById('lessonIdsInput');
+
+    function renderLessonDropdown() {
+        var subjectId = subjectSelect.value;
+        for (var i = 0; i < lessonDropdown.options.length; i++) {
+            var opt = lessonDropdown.options[i];
             if (!opt.value) continue;
             var subj = opt.getAttribute('data-subject');
-            opt.style.display = (subj === subjectId) ? '' : 'none';
+            var lessonId = parseInt(opt.value);
+            opt.style.display = (subj === subjectId && !selectedLessons.includes(lessonId)) ? '' : 'none';
         }
-        lessonSelect.value = '';
-        updateMaxQuestions();
+        lessonDropdown.value = '';
     }
-    function updateMaxQuestions() {
-        var lessonId = document.getElementById('lessonSelect').value;
-        var max = 1;
-        for (var i = 0; i < lessonData.length; i++) {
-            if (lessonData[i].id == lessonId) {
-                max = lessonData[i].questionCount;
-                break;
+
+    function renderSelectedLessons() {
+        selectedLessonsDiv.innerHTML = '';
+        selectedLessons.forEach(function(lessonId) {
+            var lesson = lessons.find(function(l) { return l.id === lessonId; });
+            if (lesson) {
+                var tag = document.createElement('span');
+                tag.className = 'badge bg-primary me-2 mb-1';
+                tag.innerHTML = lesson.title +
+                    ' <button type="button" class="btn btn-sm btn-light ms-1" onclick="removeLesson(' + lesson.id + ')"><i class="fas fa-times"></i></button>';
+                selectedLessonsDiv.appendChild(tag);
             }
-        }
-        var numInput = document.getElementById('numberOfQuestions');
-        numInput.max = max;
-        document.getElementById('maxQuestionsInfo').innerText = max > 0 ? 'Tối đa: ' + max + ' câu hỏi' : '';
+        });
+        lessonIdsInput.value = selectedLessons.join(',');
     }
-    // Nếu đang edit, tự động filter lesson theo subject
-    window.onload = function() {
-        filterLessons();
-        updateMaxQuestions();
+
+    addLessonBtn.onclick = function() {
+        var lessonId = parseInt(lessonDropdown.value);
+        if (!lessonId || selectedLessons.includes(lessonId)) return;
+        selectedLessons.push(lessonId);
+        renderLessonDropdown();
+        renderSelectedLessons();
     };
+
+    window.removeLesson = function(lessonId) {
+        selectedLessons = selectedLessons.filter(function(id) { return id !== lessonId; });
+        renderLessonDropdown();
+        renderSelectedLessons();
+    };
+
+    subjectSelect.onchange = function() {
+        renderLessonDropdown();
+    };
+
+    window.addEventListener('DOMContentLoaded', function() {
+        renderLessonDropdown();
+        renderSelectedLessons();
+    });
 </script>
 </body>
 </html>

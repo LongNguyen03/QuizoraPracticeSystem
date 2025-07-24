@@ -154,6 +154,14 @@ public class LessonController extends HttpServlet {
             lesson.setDimension(dimension);
             lesson.setStatus(status);
 
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("accountId") == null) {
+                response.sendRedirect(request.getContextPath() + "/login");
+                return;
+            }
+            int ownerId = (int) session.getAttribute("accountId");
+            lesson.setOwnerId(ownerId);
+
             if (id > 0) {
                 lesson.setUpdatedAt(new Date());
                 lessonDAO.updateLesson(lesson);

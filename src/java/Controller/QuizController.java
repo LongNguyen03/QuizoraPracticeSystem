@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.HashMap;
 import DAO.SubjectDAO;
 import Model.Subject;
+import java.util.ArrayList;
 
 @WebServlet(name = "QuizController", urlPatterns = { "/quiz" })
 public class QuizController extends HttpServlet {
@@ -169,7 +170,7 @@ public class QuizController extends HttpServlet {
             showCreateForm(request, response);
             return;
         }
-        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
+        String[] lessonIds = request.getParameterValues("lessonIds");
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
@@ -178,8 +179,11 @@ public class QuizController extends HttpServlet {
         boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // 1. Lấy danh sách câu hỏi của lesson
-        QuestionDAO questionDAO = new QuestionDAO();
-        List<Question> allQuestions = questionDAO.getQuestionsByLessonId(lessonId);
+        List<Question> allQuestions = new ArrayList<>();
+        for (String lessonIdStr : lessonIds) {
+            int lessonId = Integer.parseInt(lessonIdStr);
+            allQuestions.addAll(questionDAO.getQuestionsByLessonId(lessonId));
+        }
 
         // 2. Random chọn số lượng câu hỏi
         Collections.shuffle(allQuestions);

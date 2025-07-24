@@ -21,6 +21,7 @@ public class Lesson {
     private String status;
     private Date createdAt;
     private Date updatedAt;
+    private int questionCount;
 
     public Lesson() {
     }
@@ -107,5 +108,12 @@ public class Lesson {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public int getQuestionCount() {
+        return questionCount;
+    }
+    public void setQuestionCount(int questionCount) {
+        this.questionCount = questionCount;
     }
 }
