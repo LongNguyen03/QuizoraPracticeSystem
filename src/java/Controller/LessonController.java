@@ -74,7 +74,13 @@ public class LessonController extends HttpServlet {
             return;
         }
         int teacherId = (int) session.getAttribute("accountId");
-        List<Lesson> lessons = lessonDAO.getAllLessons(subjectId, keyword, dimension);
+        List<Lesson> lessons = lessonDAO.getLessonsByOwnerId(teacherId);
+        // Set questionCount for each lesson
+        DAO.QuestionDAO questionDAO = new DAO.QuestionDAO();
+        for (Model.Lesson lesson : lessons) {
+            int count = questionDAO.getQuestionsByLessonId(lesson.getId()).size();
+            lesson.setQuestionCount(count);
+        }
         List<Subject> subjects = subjectDAO.getAllSubjects();
         List<String> dimensionList = lessonDAO.getAllDimensions();
         request.setAttribute("dimensionList", dimensionList);
@@ -96,6 +102,12 @@ public class LessonController extends HttpServlet {
         if (idStr != null && !idStr.isEmpty()) {
             int id = Integer.parseInt(idStr);
             lesson = lessonDAO.getLessonById(id);
+            // Set questionCount for this lesson
+            if (lesson != null) {
+                DAO.QuestionDAO questionDAO = new DAO.QuestionDAO();
+                int count = questionDAO.getQuestionsByLessonId(lesson.getId()).size();
+                lesson.setQuestionCount(count);
+            }
             request.setAttribute("formAction", "edit");
         } else {
             request.setAttribute("formAction", "create");
@@ -141,6 +153,14 @@ public class LessonController extends HttpServlet {
             lesson.setContent(content);
             lesson.setDimension(dimension);
             lesson.setStatus(status);
+
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("accountId") == null) {
+                response.sendRedirect(request.getContextPath() + "/login");
+                return;
+            }
+            int ownerId = (int) session.getAttribute("accountId");
+            lesson.setOwnerId(ownerId);
 
             if (id > 0) {
                 lesson.setUpdatedAt(new Date());

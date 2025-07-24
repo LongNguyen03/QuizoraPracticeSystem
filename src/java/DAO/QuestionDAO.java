@@ -39,19 +39,20 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void createQuestion(Question q) {
-        String sql = "INSERT INTO Questions (SubjectId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl, IsPracticeOnly) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Questions (SubjectId, OwnerId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl, IsPracticeOnly) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             Timestamp now = new Timestamp(new Date().getTime());
             ps.setInt(1, q.getSubjectId());
-            ps.setInt(2, q.getLessonId());
-            ps.setString(3, q.getLevel());
-            ps.setString(4, q.getContent());
-            ps.setString(5, q.getStatus());
-            ps.setTimestamp(6, now);
+            ps.setInt(2, q.getOwnerId());
+            ps.setInt(3, q.getLessonId());
+            ps.setString(4, q.getLevel());
+            ps.setString(5, q.getContent());
+            ps.setString(6, q.getStatus());
             ps.setTimestamp(7, now);
-            ps.setBytes(8, q.getImage());
-            ps.setBoolean(9, q.isPracticeOnly());
+            ps.setTimestamp(8, now);
+            ps.setBytes(9, q.getImage());
+            ps.setBoolean(10, q.isPracticeOnly());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -64,17 +65,18 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void updateQuestion(Question q) {
-        String sql = "UPDATE Questions SET SubjectId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=?, IsPracticeOnly=? WHERE Id=?";
+        String sql = "UPDATE Questions SET SubjectId=?, OwnerId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=?, IsPracticeOnly=? WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, q.getSubjectId());
-            ps.setInt(2, q.getLessonId());
-            ps.setString(3, q.getLevel());
-            ps.setString(4, q.getContent());
-            ps.setString(5, q.getStatus());
-            ps.setTimestamp(6, new Timestamp(new Date().getTime()));
-            ps.setBytes(7, q.getImage());
-            ps.setBoolean(8, q.isPracticeOnly());
-            ps.setInt(9, q.getId());
+            ps.setInt(2, q.getOwnerId());
+            ps.setInt(3, q.getLessonId());
+            ps.setString(4, q.getLevel());
+            ps.setString(5, q.getContent());
+            ps.setString(6, q.getStatus());
+            ps.setTimestamp(7, new Timestamp(new Date().getTime()));
+            ps.setBytes(8, q.getImage());
+            ps.setBoolean(9, q.isPracticeOnly());
+            ps.setInt(10, q.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

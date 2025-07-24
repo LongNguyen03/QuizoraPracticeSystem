@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.HashMap;
 import DAO.SubjectDAO;
 import Model.Subject;
+import java.util.ArrayList;
 
 @WebServlet(name = "QuizController", urlPatterns = { "/quiz" })
 public class QuizController extends HttpServlet {
@@ -40,8 +41,13 @@ public class QuizController extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons(); // hoặc getLessonsByTeacherId nếu cần
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
         if (action == null) {
             // Không có action => load list
@@ -81,8 +87,13 @@ public class QuizController extends HttpServlet {
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons();
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
         SubjectDAO subjectDAO = new SubjectDAO();
         List<Subject> subjects = subjectDAO.getAllSubjects();
@@ -93,7 +104,15 @@ public class QuizController extends HttpServlet {
 
     private void listQuizzes(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("quizList", quizDAO.getAllAvailableQuizzes());
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("accountId") == null ||
+            session.getAttribute("role") == null ||
+            !"Teacher".equalsIgnoreCase((String) session.getAttribute("role"))) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        int teacherId = (int) session.getAttribute("accountId");
+        request.setAttribute("quizList", quizDAO.getQuizzesByOwnerId(teacherId));
         RequestDispatcher dispatcher = request.getRequestDispatcher("/teacher/quiz_list.jsp");
         dispatcher.forward(request, response);
     }
@@ -114,8 +133,13 @@ public class QuizController extends HttpServlet {
         request.setAttribute("lessonId", lessonId);
 
         // Truyền danh sách lessons như khi tạo mới
+        HttpSession session = request.getSession(false);
+        int teacherId = -1;
+        if (session != null && session.getAttribute("accountId") != null) {
+            teacherId = (int) session.getAttribute("accountId");
+        }
         LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getAllLessons();
+        List<Lesson> lessons = teacherId > 0 ? lessonDAO.getLessonsByOwnerId(teacherId) : lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
 
         // Lấy danh sách câu hỏi của quiz (đã có).
@@ -146,26 +170,53 @@ public class QuizController extends HttpServlet {
             showCreateForm(request, response);
             return;
         }
-        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
+        String[] lessonIds = request.getParameterValues("lessonIds");
+        if (lessonIds == null || lessonIds.length == 0) {
+            request.setAttribute("error", "Bạn phải chọn ít nhất 1 bài học!");
+            showCreateForm(request, response);
+            return;
+        }
+        LessonDAO lessonDAO = new LessonDAO();
+        int firstLessonId = Integer.parseInt(lessonIds[0]);
+        int subjectId = lessonDAO.getLessonById(firstLessonId).getSubjectId();
+        // Kiểm tra tất cả lesson phải cùng subject
+        for (String lessonIdStr : lessonIds) {
+            int lessonId = Integer.parseInt(lessonIdStr);
+            if (lessonDAO.getLessonById(lessonId).getSubjectId() != subjectId) {
+                request.setAttribute("error", "Tất cả bài học phải thuộc cùng một môn học!");
+                showCreateForm(request, response);
+                return;
+            }
+        }
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
+        boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // 1. Lấy danh sách câu hỏi của lesson
         QuestionDAO questionDAO = new QuestionDAO();
-        List<Question> allQuestions = questionDAO.getQuestionsByLessonId(lessonId);
-
+        List<Question> allQuestions = new ArrayList<>();
+        for (String lessonIdStr : lessonIds) {
+            int lessonId = Integer.parseInt(lessonIdStr);
+            allQuestions.addAll(questionDAO.getQuestionsByLessonId(lessonId));
+        }
+        if (allQuestions.size() < numberOfQuestions) {
+            request.setAttribute("error", "Tổng số câu hỏi của các bài học không đủ để tạo quiz này!");
+            showCreateForm(request, response);
+            return;
+        }
         // 2. Random chọn số lượng câu hỏi
         Collections.shuffle(allQuestions);
-        List<Question> selectedQuestions = allQuestions.subList(0, Math.min(numberOfQuestions, allQuestions.size()));
+        List<Question> selectedQuestions = allQuestions.subList(0, numberOfQuestions);
 
-        // 3. Tạo quiz mới, chỉ lưu subjectId (lấy từ lessonId)
-        // TODO: Lấy ownerId thực tế từ session, tạm thời để 0
-        int ownerId = 0;
-        boolean isPracticeable = true; // hoặc lấy từ request nếu có
-        quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type, ownerId, isPracticeable);
+        // 3. Tạo quiz mới
+        HttpSession session = request.getSession(false);
+        int ownerId = (session != null && session.getAttribute("accountId") != null)
+            ? (int) session.getAttribute("accountId") : 0;
+        Quiz quiz = new Quiz(0, name, subjectId, ownerId, level, numberOfQuestions, durationMinutes, passRate, type, isPracticeable, null, new java.util.Date());
+        quizDAO.insertQuiz(quiz);
 
         // 4. Lấy id quiz vừa tạo
         int quizId = quizDAO.getLatestQuizId();
@@ -194,12 +245,14 @@ public class QuizController extends HttpServlet {
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
+        boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // Lấy subjectId từ lessonId
         int subjectId = quizDAO.getSubjectIdByLessonId(lessonId);
 
-        int ownerId = 0; // TODO: Lấy ownerId thực tế từ session
-        boolean isPracticeable = true; // hoặc lấy từ request nếu có
+        HttpSession session = request.getSession(false);
+        int ownerId = (session != null && session.getAttribute("accountId") != null)
+            ? (int) session.getAttribute("accountId") : 0;
         Quiz quiz = new Quiz(id, name, subjectId, ownerId, level, numberOfQuestions, durationMinutes, passRate, type, isPracticeable, null, new java.util.Date());
         quizDAO.updateQuiz(quiz);
 

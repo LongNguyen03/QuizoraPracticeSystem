@@ -231,9 +231,26 @@ public class QuizDAO extends DBcontext {
         return false;
     }
 
+    private Quiz mapRowToQuiz(ResultSet rs) throws SQLException {
+        return new Quiz(
+            rs.getInt("Id"),
+            rs.getString("Name"),
+            rs.getInt("SubjectId"),
+            rs.getInt("OwnerId"),
+            rs.getString("Level"),
+            rs.getInt("NumberOfQuestions"),
+            rs.getInt("DurationMinutes"),
+            rs.getDouble("PassRate"),
+            rs.getString("Type"),
+            rs.getBoolean("IsPracticeable"),
+            rs.getTimestamp("CreatedAt"),
+            rs.getTimestamp("UpdatedAt")
+        );
+    }
+
     public List<Quiz> getQuizzesByOwnerId(int ownerId) {
         List<Quiz> quizzes = new ArrayList<>();
-        String sql = "SELECT * FROM Quizzes WHERE OwnerId = ?";
+        String sql = "SELECT * FROM Quizzes WHERE OwnerId = ? ORDER BY CreatedAt DESC";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ownerId);
             ResultSet rs = ps.executeQuery();
