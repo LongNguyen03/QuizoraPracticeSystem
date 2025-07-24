@@ -207,21 +207,6 @@
             </div>
         </div>
 
-        <div class="social-login">
-            <p>Or login with</p>
-            <div class="social-buttons">
-                <a href="#" class="social-btn google-btn">
-                    <i class="fab fa-google"></i>
-                </a>
-                <a href="#" class="social-btn facebook-btn">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="social-btn github-btn">
-                    <i class="fab fa-github"></i>
-                </a>
-            </div>
-        </div>
-
         <div class="register-link">
             <p>Don't have an account? <a href="${pageContext.request.contextPath}/register">Register here</a></p>
         </div>

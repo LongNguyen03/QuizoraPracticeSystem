@@ -255,7 +255,20 @@ public class QuizDAO extends DBcontext {
             ps.setInt(1, ownerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                quizzes.add(mapRowToQuiz(rs));
+                quizzes.add(new Quiz(
+                    rs.getInt("Id"),
+                    rs.getString("Name"),
+                    rs.getInt("SubjectId"),
+                    rs.getInt("OwnerId"),
+                    rs.getString("Level"),
+                    rs.getInt("NumberOfQuestions"),
+                    rs.getInt("DurationMinutes"),
+                    rs.getDouble("PassRate"),
+                    rs.getString("Type"),
+                    rs.getBoolean("IsPracticeable"),
+                    rs.getTimestamp("CreatedAt"),
+                    rs.getTimestamp("UpdatedAt")
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();

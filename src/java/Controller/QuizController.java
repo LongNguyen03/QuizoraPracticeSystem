@@ -171,6 +171,23 @@ public class QuizController extends HttpServlet {
             return;
         }
         String[] lessonIds = request.getParameterValues("lessonIds");
+        if (lessonIds == null || lessonIds.length == 0) {
+            request.setAttribute("error", "Bạn phải chọn ít nhất 1 bài học!");
+            showCreateForm(request, response);
+            return;
+        }
+        LessonDAO lessonDAO = new LessonDAO();
+        int firstLessonId = Integer.parseInt(lessonIds[0]);
+        int subjectId = lessonDAO.getLessonById(firstLessonId).getSubjectId();
+        // Kiểm tra tất cả lesson phải cùng subject
+        for (String lessonIdStr : lessonIds) {
+            int lessonId = Integer.parseInt(lessonIdStr);
+            if (lessonDAO.getLessonById(lessonId).getSubjectId() != subjectId) {
+                request.setAttribute("error", "Tất cả bài học phải thuộc cùng một môn học!");
+                showCreateForm(request, response);
+                return;
+            }
+        }
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
@@ -179,21 +196,27 @@ public class QuizController extends HttpServlet {
         boolean isPracticeable = request.getParameter("isPracticeable") != null;
 
         // 1. Lấy danh sách câu hỏi của lesson
+        QuestionDAO questionDAO = new QuestionDAO();
         List<Question> allQuestions = new ArrayList<>();
         for (String lessonIdStr : lessonIds) {
             int lessonId = Integer.parseInt(lessonIdStr);
             allQuestions.addAll(questionDAO.getQuestionsByLessonId(lessonId));
         }
-
+        if (allQuestions.size() < numberOfQuestions) {
+            request.setAttribute("error", "Tổng số câu hỏi của các bài học không đủ để tạo quiz này!");
+            showCreateForm(request, response);
+            return;
+        }
         // 2. Random chọn số lượng câu hỏi
         Collections.shuffle(allQuestions);
-        List<Question> selectedQuestions = allQuestions.subList(0, Math.min(numberOfQuestions, allQuestions.size()));
+        List<Question> selectedQuestions = allQuestions.subList(0, numberOfQuestions);
 
-        // 3. Tạo quiz mới, chỉ lưu subjectId (lấy từ lessonId)
+        // 3. Tạo quiz mới
         HttpSession session = request.getSession(false);
         int ownerId = (session != null && session.getAttribute("accountId") != null)
             ? (int) session.getAttribute("accountId") : 0;
-        quizDAO.insertQuizWithLesson(lessonId, name, level, selectedQuestions.size(), durationMinutes, passRate, type, ownerId, isPracticeable);
+        Quiz quiz = new Quiz(0, name, subjectId, ownerId, level, numberOfQuestions, durationMinutes, passRate, type, isPracticeable, null, new java.util.Date());
+        quizDAO.insertQuiz(quiz);
 
         // 4. Lấy id quiz vừa tạo
         int quizId = quizDAO.getLatestQuizId();
