@@ -73,18 +73,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/quizzes">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz">
                                     <i class="fas fa-question-circle me-1"></i>My Quizzes
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
                                     <i class="fas fa-plus me-1"></i>Create Quiz
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/classes">
-                                    <i class="fas fa-chalkboard-teacher me-1"></i>My Classes
                                 </a>
                             </li>
                             <li class="nav-item">
