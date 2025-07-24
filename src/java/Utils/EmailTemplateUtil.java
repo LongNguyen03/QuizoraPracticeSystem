@@ -3,12 +3,13 @@ package Utils;
 public class EmailTemplateUtil {
     
     public static String getRegistrationOTPTemplate(String otp) {
-        return "Xin chào,\n\n"
-                + "Mã OTP của bạn là: " + otp + "\n\n"
-                + "Mã này có hiệu lực trong 5 phút.\n"
-                + "Vui lòng không chia sẻ mã này với bất kỳ ai.\n\n"
-                + "Trân trọng,\n"
-                + "Team Quizora";
+        return "<div style='font-family: Arial, Helvetica, sans-serif; font-size: 16px; color: #222;'>"
+            + "<p>Xin chào,</p>"
+            + "<p><b>Mã OTP của bạn là: <span style='color:#4F46E5;font-size:20px;'>" + otp + "</span></b></p>"
+            + "<p>Mã này có hiệu lực trong 5 phút.<br>Vui lòng không chia sẻ mã này với bất kỳ ai.</p>"
+            + "<br>"
+            + "<p>Trân trọng,<br>Team Quizora</p>"
+            + "</div>";
     }
     
     public static String getResetPasswordOTPTemplate(String otp) {

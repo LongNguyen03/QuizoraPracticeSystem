@@ -5,8 +5,8 @@ import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
 public class EmailUtil {
-    private static final String EMAIL = "dangdang0xx@gmail.com";
-    private static final String PASSWORD = "iefy mrzr lfoa hyhq";
+    private static final String EMAIL = "danglqhe173350@fpt.edu.vn";
+    private static final String PASSWORD = "ymfu tjza aydz jdxu";
     private static Session session;
     
     private EmailUtil() {
