@@ -38,4 +38,20 @@ public class QuizQuestionDAO extends DBcontext {
             e.printStackTrace();
         }
     }
+
+    public List<Integer> getLessonIdsByQuizId(int quizId) {
+        List<Integer> lessonIds = new ArrayList<>();
+        String sql = "SELECT DISTINCT q.LessonId FROM QuizQuestions qq JOIN Questions q ON qq.QuestionId = q.Id WHERE qq.QuizId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lessonIds.add(rs.getInt("LessonId"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lessonIds;
+    }
 }
