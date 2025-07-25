@@ -153,6 +153,11 @@ public class QuizController extends HttpServlet {
         request.setAttribute("quizQuestions", quizQuestions);
         request.setAttribute("answersMap", answersMap);
 
+        // Lấy lessonIds cho quiz để truyền sang form (phục vụ update)
+        QuizQuestionDAO quizQuestionDAO = new QuizQuestionDAO();
+        List<Integer> lessonIds = quizQuestionDAO.getLessonIdsByQuizId(id);
+        request.setAttribute("lessonIds", lessonIds);
+
         SubjectDAO subjectDAO = new SubjectDAO();
         List<Subject> subjects = subjectDAO.getAllSubjects();
         request.setAttribute("subjects", subjects);
@@ -253,16 +258,35 @@ public class QuizController extends HttpServlet {
             showEditForm(request, response);
             return;
         }
-        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
+        // Parse lessonIds like in insertQuiz
+        String[] lessonIdsArr = request.getParameterValues("lessonIds");
+        List<String> lessonIdList = new ArrayList<>();
+        if (lessonIdsArr != null && lessonIdsArr.length > 0) {
+            if (lessonIdsArr.length == 1 && lessonIdsArr[0].contains(",")) {
+                String[] split = lessonIdsArr[0].split(",");
+                for (String s : split) {
+                    if (!s.trim().isEmpty()) lessonIdList.add(s.trim());
+                }
+            } else {
+                for (String s : lessonIdsArr) {
+                    if (!s.trim().isEmpty()) lessonIdList.add(s.trim());
+                }
+            }
+        }
+        if (lessonIdList.isEmpty()) {
+            request.setAttribute("error", "Bạn phải chọn ít nhất 1 bài học!");
+            showEditForm(request, response);
+            return;
+        }
+        LessonDAO lessonDAO = new LessonDAO();
+        int firstLessonId = Integer.parseInt(lessonIdList.get(0));
+        int subjectId = lessonDAO.getLessonById(firstLessonId).getSubjectId();
         String level = request.getParameter("level");
         int numberOfQuestions = Integer.parseInt(request.getParameter("numberOfQuestions"));
         int durationMinutes = Integer.parseInt(request.getParameter("durationMinutes"));
         double passRate = Double.parseDouble(request.getParameter("passRate"));
         String type = request.getParameter("type");
         boolean isPracticeable = request.getParameter("isPracticeable") != null;
-
-        // Lấy subjectId từ lessonId
-        int subjectId = quizDAO.getSubjectIdByLessonId(lessonId);
 
         HttpSession session = request.getSession(false);
         int ownerId = (session != null && session.getAttribute("accountId") != null)

@@ -261,6 +261,10 @@
     window.addEventListener('DOMContentLoaded', function() {
         renderLessonDropdown();
         renderSelectedLessons();
+        // Ensure lessonIdsInput is set on page load for edit mode
+        if (selectedLessons.length > 0) {
+            lessonIdsInput.value = selectedLessons.join(',');
+        }
     });
 </script>
 </body>
