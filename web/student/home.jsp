@@ -384,11 +384,6 @@
                 <h5>Take Quiz</h5>
                 <p>Start a new quiz session</p>
             </a>
-            <a href="${pageContext.request.contextPath}/student/practice" class="quick-action-card">
-                <i class="fas fa-dumbbell"></i>
-                <h5>Practice Mode</h5>
-                <p>Practice without time pressure</p>
-            </a>
             <a href="${pageContext.request.contextPath}/student/history" class="quick-action-card">
                 <i class="fas fa-history"></i>
                 <h5>Quiz History</h5>

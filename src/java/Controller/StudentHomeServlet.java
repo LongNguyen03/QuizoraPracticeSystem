@@ -5,13 +5,11 @@ import DAO.QuizDAO;
 import DAO.QuizResultDAO;
 import DAO.FavoriteQuizDAO;
 import DAO.LessonDAO;
-import DAO.PracticeSessionDAO;
 import Model.Subject;
 import Model.Quiz;
 import Model.QuizResult;
 import Model.FavoriteQuiz;
 import Model.Lesson;
-import Model.PracticeSession;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -140,11 +138,8 @@ public class StudentHomeServlet extends HttpServlet {
                 e.printStackTrace();
             }
             request.setAttribute("favoriteQuizzes", favoriteQuizzes);
-
-            // Get practice history
-            List<PracticeSession> practiceSessions = new PracticeSessionDAO().getPracticeSessionsByAccountId(accountId);
-            request.setAttribute("practiceSessions", practiceSessions);
             
+            // Đã xóa lấy practice history
             request.getRequestDispatcher("/student/home.jsp").forward(request, response);
             
         } catch (Exception e) {
