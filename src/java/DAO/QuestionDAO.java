@@ -84,7 +84,25 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void deleteQuestion(int id) {
-        String sql = "UPDATE Questions SET Status='Inactive' WHERE Id=?";
+        // Xóa đáp án liên quan
+        new QuestionAnswerDAO().deleteAnswersByQuestionId(id);
+        // Xóa khỏi QuizQuestions
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizQuestions WHERE QuestionId = ?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa khỏi PracticeAnswers
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM PracticeAnswers WHERE QuestionId = ?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa khỏi QuizUserAnswers
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizUserAnswers WHERE QuestionId = ?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa chính Question
+        String sql = "DELETE FROM Questions WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
