@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import Model.Question;
 
 public class LessonDAO extends DBcontext {
 
@@ -112,6 +113,17 @@ public class LessonDAO extends DBcontext {
     }
 
     public void deleteLesson(int id) {
+        // Xóa tất cả câu hỏi thuộc lesson này (và dữ liệu liên quan)
+        List<Question> questions = new QuestionDAO().getQuestionsByLessonId(id);
+        for (Question q : questions) {
+            new QuestionDAO().deleteQuestion(q.getId());
+        }
+        // Xóa PracticeSessions liên quan
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM PracticeSessions WHERE LessonId = ?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa chính Lesson
         String sql = "DELETE FROM Lessons WHERE Id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
