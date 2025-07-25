@@ -384,20 +384,10 @@
                 <h5>Take Quiz</h5>
                 <p>Start a new quiz session</p>
             </a>
-            <a href="${pageContext.request.contextPath}/student/practice" class="quick-action-card">
-                <i class="fas fa-dumbbell"></i>
-                <h5>Practice Mode</h5>
-                <p>Practice without time pressure</p>
-            </a>
             <a href="${pageContext.request.contextPath}/student/history" class="quick-action-card">
                 <i class="fas fa-history"></i>
                 <h5>Quiz History</h5>
                 <p>Review your past attempts</p>
-            </a>
-            <a href="${pageContext.request.contextPath}/student/progress" class="quick-action-card">
-                <i class="fas fa-chart-line"></i>
-                <h5>Progress</h5>
-                <p>Track your learning progress</p>
             </a>
         </div>
 
@@ -453,15 +443,11 @@
                                         <div class="number">${subject.lessonCount != null ? subject.lessonCount : '0'}</div>
                                         <div class="label">Lessons</div>
                                     </div>
-                                    <div class="subject-stat">
-                                        <div class="number">${subject.progress != null ? subject.progress : '0'}%</div>
-                                        <div class="label">Progress</div>
-                                    </div>
                                 </div>
                                 
                                 <a href="${pageContext.request.contextPath}/student/subject/${subject.id}/lessons" 
                                    class="btn btn-quiz w-100">
-                                    <i class="fas fa-play me-2"></i>Start Learning
+                                    <i class="fas fa-play me-2"></i>Chi tiết môn học
                                 </a>
                             </div>
                         </div>
@@ -546,6 +532,62 @@
             </div>
         </div>
 
+        <!-- Practice History Section -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="section-title">
+                    <i class="fas fa-dumbbell"></i>
+                    Practice History
+                </h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <c:choose>
+                    <c:when test="${not empty practiceSessions}">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Lesson</th>
+                                    <th>Start Time</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="ps" items="${practiceSessions}">
+                                    <tr>
+                                        <td>${ps.subjectTitle}</td>
+                                        <td>${ps.lessonTitle != null ? ps.lessonTitle : '-'}</td>
+                                        <td><fmt:formatDate value="${ps.startTime}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                        <td>${ps.totalScore != null ? ps.totalScore : '-'}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${ps.completed}">
+                                                    <span class="badge bg-success">Completed</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-warning text-dark">In Progress</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="empty-state">
+                            <i class="fas fa-dumbbell"></i>
+                            <h4>No Practice History</h4>
+                            <p>You haven't practiced any lesson yet. Try Practice Mode now!</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
         <!-- Favorite Quizzes -->
         <!-- Đã xóa section này theo yêu cầu -->
     </div>
@@ -589,15 +631,5 @@
             });
         });
     </script>
-    
-    <!-- Debug Section -->
-    <div class="container mt-4">
-        <div class="alert alert-warning">
-            <strong>Debug:</strong> 
-            <a href="${pageContext.request.contextPath}/student/test-quiz" class="btn btn-warning btn-sm">
-                Test Quiz Submission
-            </a>
-        </div>
-    </div>
 </body>
 </html>

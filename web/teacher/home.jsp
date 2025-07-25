@@ -86,29 +86,22 @@
                 <div class="col-md-3">
                     <div class="stat-card">
                         <i class="fas fa-book"></i>
-                        <h3>5</h3>
+                        <h3><%= request.getAttribute("totalSubjects") != null ? request.getAttribute("totalSubjects") : 0 %></h3>
                         <p class="text-muted mb-0">Active Courses</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card">
                         <i class="fas fa-question-circle"></i>
-                        <h3>25</h3>
+                        <h3><%= request.getAttribute("totalQuizzes") != null ? request.getAttribute("totalQuizzes") : 0 %></h3>
                         <p class="text-muted mb-0">Total Quizzes</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card">
                         <i class="fas fa-user-graduate"></i>
-                        <h3>120</h3>
+                        <h3><%= request.getAttribute("totalStudents") != null ? request.getAttribute("totalStudents") : 0 %></h3>
                         <p class="text-muted mb-0">Total Students</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <i class="fas fa-tasks"></i>
-                        <h3>8</h3>
-                        <p class="text-muted mb-0">Pending Reviews</p>
                     </div>
                 </div>
             </div>

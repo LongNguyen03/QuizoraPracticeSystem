@@ -39,10 +39,13 @@ public class StudentHomeServlet extends HttpServlet {
             int subjectId = Integer.parseInt(parts[parts.length - 2]);
             SubjectDAO subjectDao = new SubjectDAO();
             LessonDAO lessonDao = new LessonDAO();
+            QuizDAO quizDao = new QuizDAO();
             Subject subject = subjectDao.getSubjectById(subjectId);
             List<Lesson> lessons = lessonDao.getAllLessons(subjectId, null, null);
+            List<Quiz> quizzes = quizDao.getQuizzesBySubjectId(subjectId);
             request.setAttribute("subject", subject);
             request.setAttribute("lessons", lessons);
+            request.setAttribute("quizzes", quizzes);
             request.getRequestDispatcher("/student/lessons.jsp").forward(request, response);
             return;
         }
@@ -59,11 +62,14 @@ public class StudentHomeServlet extends HttpServlet {
             List<Subject> subjects = new ArrayList<>();
             try {
                 subjects = subjectDao.getAllSubjects();
-                // Gán giá trị mặc định cho các trường giao diện để tránh lỗi 500
+                // Gán giá trị thực tế cho các trường giao diện
                 for (Subject s : subjects) {
-                    s.setQuizCount(0);
-                    s.setLessonCount(0);
-                    s.setProgress(0);
+                    int quizCount = quizDao.getQuizzesBySubjectId(s.getId()).size();
+                    s.setQuizCount(quizCount);
+                    // Set lessonCount cho subject
+                    int lessonCount = new LessonDAO().getAllLessons(s.getId(), null, null).size();
+                    s.setLessonCount(lessonCount);
+                    s.setProgress(0); // Nếu có logic tính progress thì set ở đây
                 }
                 System.out.println("Loaded " + subjects.size() + " subjects");
             } catch (Exception e) {
@@ -133,7 +139,7 @@ public class StudentHomeServlet extends HttpServlet {
             }
             request.setAttribute("favoriteQuizzes", favoriteQuizzes);
             
-            System.out.println("Successfully loaded all data for student home");
+            // Đã xóa lấy practice history
             request.getRequestDispatcher("/student/home.jsp").forward(request, response);
             
         } catch (Exception e) {

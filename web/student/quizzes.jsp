@@ -444,13 +444,15 @@
                             
                             <div class="quiz-actions">
                                 <a href="${pageContext.request.contextPath}/student/quiz/${quiz.id}" 
-                                   class="btn btn-take-quiz">
+                                   class="btn btn-take-quiz" title="Làm quiz thật, kết quả sẽ được lưu vào lịch sử.">
                                     <i class="fas fa-play me-2"></i>Take Quiz
                                 </a>
-                                <a href="${pageContext.request.contextPath}/student/practice?action=start&subjectId=${quiz.subjectId}" 
-                                   class="btn btn-practice">
-                                    <i class="fas fa-dumbbell"></i>
-                                </a>
+                                <c:if test="${quiz.practiceable}">
+                                    <a href="${pageContext.request.contextPath}/student/practice-quiz?quizId=${quiz.id}" 
+                                       class="btn btn-practice" title="Làm thử quiz này (Practice). Không lưu lịch sử, chỉ xem điểm ngay sau khi làm xong.">
+                                        <i class="fas fa-dumbbell"></i> Practice
+                                    </a>
+                                </c:if>
                             </div>
                         </div>
                     </c:forEach>

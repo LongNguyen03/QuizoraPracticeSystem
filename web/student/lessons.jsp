@@ -16,6 +16,13 @@
 <body>
 <jsp:include page="../views/components/header.jsp" />
     <div class="lessons-container py-4">
+        <%-- Breadcrumb --%>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/student/home">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Subject: <%= subject != null ? subject.getTitle() : "" %></li>
+            </ol>
+        </nav>
         <div class="lessons-header">
             <h2>Lessons in <%= subject != null ? subject.getTitle() : "Subject" %></h2>
         </div>
@@ -23,7 +30,6 @@
         <div class="filter-bar">
             <select id="dimensionFilter" onchange="filterLessons()">
                 <option value="">Tất cả phân loại</option>
-                <%-- Lấy các dimension duy nhất --%>
                 <% java.util.Set<String> dims = new java.util.HashSet<>();
                    if (lessons != null) for (Model.Lesson l : lessons) dims.add(l.getDimension());
                    for (String dim : dims) { %>
@@ -39,11 +45,48 @@
                 <% } %>
             </select>
         </div>
+        <% List<Model.Quiz> quizzes = (List<Model.Quiz>) request.getAttribute("quizzes"); %>
+        <% if (quizzes != null && !quizzes.isEmpty()) { %>
+        <div class="quizzes-header mt-4 mb-2">
+            <h3>Quizzes in <%= subject != null ? subject.getTitle() : "Subject" %></h3>
+        </div>
+        <div class="quizzes-list mb-4">
+            <% for (Model.Quiz quiz : quizzes) { %>
+                <div class="quiz-card mb-3 p-3" style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(60,60,120,0.08);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <span class="fw-bold" style="font-size:1.1rem;"><%= quiz.getName() %></span>
+                            <% if (quiz.isPracticeable()) { %>
+                                <span class="badge bg-info ms-2">Practiceable</span>
+                            <% } %>
+                        </div>
+                        <span class="text-muted small">Level: <%= quiz.getLevel() %></span>
+                    </div>
+                    <div class="mb-2 text-muted">
+                        <span><i class="fas fa-question me-1"></i><%= quiz.getNumberOfQuestions() %> câu hỏi</span>
+                        <span class="ms-3"><i class="fas fa-clock me-1"></i><%= quiz.getDurationMinutes() %> phút</span>
+                        <span class="ms-3"><i class="fas fa-percent me-1"></i>Pass: <%= quiz.getPassRate() %>%</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="${pageContext.request.contextPath}/student/quiz/<%= quiz.getId() %>" class="btn btn-primary btn-sm"><i class="fas fa-play me-1"></i>Take Quiz</a>
+                        <% if (quiz.isPracticeable()) { %>
+                        <a href="${pageContext.request.contextPath}/student/practice-quiz?quizId=<%= quiz.getId() %>" class="btn btn-outline-info btn-sm"><i class="fas fa-dumbbell me-1"></i>Practice</a>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+        <% } %>
         <% if (lessons != null && !lessons.isEmpty()) { %>
         <div class="lessons-list" id="lessonsList">
             <% for (Lesson lesson : lessons) { %>
                 <div class="lesson-card" data-dimension="<%= lesson.getDimension() %>" data-status="<%= lesson.getStatus() %>">
-                    <div class="lesson-title"><%= lesson.getTitle() %></div>
+                    <div class="lesson-title">
+                        <%= lesson.getTitle() %>
+                        <% if (lesson.getPracticeQuestionCount() != null && lesson.getPracticeQuestionCount() > 0) { %>
+                            <span class="badge bg-success ms-2">Có luyện tập: <%= lesson.getPracticeQuestionCount() %> câu</span>
+                        <% } %>
+                    </div>
                     <div class="lesson-meta">Dimension: <%= lesson.getDimension() %> | Status: <%= lesson.getStatus() %></div>
                     <div class="lesson-content"><%= lesson.getContent() != null ? lesson.getContent().substring(0, Math.min(100, lesson.getContent().length())) + (lesson.getContent().length() > 100 ? "..." : "") : "" %></div>
                     <div class="lesson-actions">
@@ -51,7 +94,8 @@
                             <input type="hidden" name="action" value="start" />
                             <input type="hidden" name="subjectId" value="<%= subject.getId() %>" />
                             <input type="hidden" name="lessonId" value="<%= lesson.getId() %>" />
-                            <button type="submit" class="btn btn-practice">
+                            <button type="submit" class="btn btn-practice"
+                                <%= (lesson.getPracticeQuestionCount() == null || lesson.getPracticeQuestionCount() == 0) ? "disabled title='Chưa có câu hỏi luyện tập'" : "" %>>
                                 <i class="fas fa-dumbbell me-1"></i>Luyện tập bài này
                             </button>
                         </form>
@@ -59,12 +103,12 @@
                 </div>
             <% } %>
         </div>
-        <% } else { %>
-            <div class="alert alert-info">No lessons found for this subject.</div>
-        <% } %>
         <a href="${pageContext.request.contextPath}/student/practice?action=start&subjectId=<%= subject != null ? subject.getId() : 0 %>" class="btn btn-all">
             <i class="fas fa-dumbbell me-1"></i>Luyện tập toàn bộ môn học
         </a>
+        <% } else { %>
+            <div class="alert alert-info">No lessons found for this subject.</div>
+        <% } %>
         <script>
             function filterLessons() {
                 var dim = document.getElementById('dimensionFilter').value;

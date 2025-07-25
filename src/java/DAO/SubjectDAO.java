@@ -127,6 +127,23 @@ public class SubjectDAO extends DBcontext {
         return false;
     }
 
+    /**
+     * Kiểm tra tên môn học đã tồn tại (không phân biệt hoa thường)
+     */
+    public boolean isSubjectTitleExists(String title) {
+        String sql = "SELECT COUNT(*) FROM Subjects WHERE LOWER(Title) = LOWER(?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, title);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 //    public List<Subject> findAll() throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement("SELECT id, title FROM Subjects WHERE status='Active'");

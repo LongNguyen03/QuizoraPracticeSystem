@@ -37,24 +37,29 @@ public class TeacherDashboardServlet extends HttpServlet {
             QuizResultDAO resultDAO = new QuizResultDAO();
             
             // Thống kê quiz của teacher này
-            List<Quiz> teacherQuizzes = quizDAO.getAllAvailableQuizzes(); // Tạm thời lấy tất cả
+            List<Quiz> teacherQuizzes = quizDAO.getQuizzesByOwnerId(accountId);
             long totalQuizzes = teacherQuizzes.size();
             
             // Thống kê môn học
             List<Subject> subjects = subjectDAO.getAllSubjects();
-            long totalSubjects = subjects.size();
+            long totalSubjects = subjects.stream().filter(s -> s.getOwnerId() == accountId).count();
             
-            // Thống kê kết quả (tạm thời)
-            long totalResults = 0;
-            long passedResults = 0;
+            // Thống kê tổng số học sinh đã làm quiz của giáo viên này
+            java.util.Set<Integer> studentIds = new java.util.HashSet<>();
+            for (Quiz quiz : teacherQuizzes) {
+                List<QuizResult> results = resultDAO.getQuizResultsByQuizId(quiz.getId());
+                for (QuizResult result : results) {
+                    studentIds.add(result.getAccountId());
+                }
+            }
+            long totalStudents = studentIds.size();
             
             // Đưa dữ liệu vào request
             request.setAttribute("totalQuizzes", totalQuizzes);
             request.setAttribute("totalSubjects", totalSubjects);
-            request.setAttribute("totalResults", totalResults);
-            request.setAttribute("passedResults", passedResults);
+            request.setAttribute("totalStudents", totalStudents);
             request.setAttribute("recentQuizzes", teacherQuizzes.subList(0, Math.min(5, teacherQuizzes.size())));
-            request.setAttribute("recentSubjects", subjects.subList(0, Math.min(5, subjects.size())));
+            request.setAttribute("recentSubjects", subjects.stream().filter(s -> s.getOwnerId() == accountId).limit(5).toList());
             
             request.getRequestDispatcher("/teacher/home.jsp").forward(request, response);
             

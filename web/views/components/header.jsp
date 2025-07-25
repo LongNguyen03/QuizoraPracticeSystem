@@ -4,27 +4,10 @@
 <header class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="container">
         <!-- Logo/Brand -->
-        <c:choose>
-            <c:when test="${sessionScope.role == 'Admin'}">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/admin/dashboard">
-                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
-                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
-                </a>
-            </c:when>
-            <c:when test="${sessionScope.role == 'Student'}">
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/student/home">
-                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
-                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
-                </a>
-            </c:when>
-            <c:otherwise>
-                <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}./home.jsp">
-                    <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
-                    <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
-                </a>
-            </c:otherwise>
-        </c:choose>
-        
+        <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/<c:choose><c:when test='${sessionScope.role == "Admin"}'>admin/dashboard</c:when><c:when test='${sessionScope.role == "Student"}'>student/home</c:when><c:when test='${sessionScope.role == "Teacher"}'>teacher/dashboard</c:when><c:otherwise>./home.jsp</c:otherwise></c:choose>">
+            <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+            <span style="font-weight: 700; font-size: 1.3rem;">Quizora</span>
+        </a>
         <!-- Mobile Toggle Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,31 +20,25 @@
                 <c:if test="${sessionScope.accountId != null}">
                     <c:choose>
                         <c:when test="${sessionScope.role == 'Admin'}">
-                            <!-- Admin Menu -->
+                            <!-- Admin Menu: chỉ hiển thị các link admin vào được -->
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/dashboard">
                                     <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/users">
-                                    <i class="fas fa-users me-1"></i>User Management
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/subjects">
-                                    <i class="fas fa-book me-1"></i>Subject Management
+                                    <i class="fas fa-book me-1"></i>Môn học
                                 </a>
                             </li>
-
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/reports">
-                                    <i class="fas fa-chart-bar me-1"></i>Reports
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin/users">
+                                    <i class="fas fa-users me-1"></i>Người dùng
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin/feedback">
-                                    <i class="fas fa-comment-dots me-1"></i>Feedback
+                                    <i class="fas fa-comments me-1"></i>Phản hồi
                                 </a>
                             </li>
                         </c:when>
@@ -78,13 +55,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
-                                    <i class="fas fa-plus me-1"></i>Create Quiz
+                                <a class="nav-link" href="${pageContext.request.contextPath}/lesson?action=list">
+                                    <i class="fas fa-book me-1"></i>Manage Lessons
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/teacher/classes">
-                                    <i class="fas fa-chalkboard-teacher me-1"></i>My Classes
+                                <a class="nav-link" href="${pageContext.request.contextPath}/quiz?action=new">
+                                    <i class="fas fa-plus me-1"></i>Create Quiz
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -115,22 +92,9 @@
                                     <i class="fas fa-heart me-1"></i>Favorite Quizzes
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/student/practice">
-                                    <i class="fas fa-dumbbell me-1"></i>Practice
-                                </a>
-                            </li>
+                            <!-- Đã xóa Practice -->
                         </c:when>
                     </c:choose>
-                    
-                    <!-- Common Menu Items for all users except Student -->
-                    <c:if test="${sessionScope.role != 'Student'}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="${pageContext.request.contextPath}/lesson?action=list">
-                                <i class="fas fa-book-open me-1"></i>Lessons
-                            </a>
-                        </li>
-                    </c:if>
                 </c:if>
             </ul>
             
