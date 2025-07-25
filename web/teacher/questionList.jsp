@@ -111,6 +111,31 @@
             <div class="alert alert-info text-center">No questions found for this lesson.</div>
         <% } %>
     </div>
+    <%-- Pagination controls --%>
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <% int currentPage = request.getAttribute("currentPage") != null ? (Integer)request.getAttribute("currentPage") : 1;
+                   int totalPages = request.getAttribute("totalPages") != null ? (Integer)request.getAttribute("totalPages") : 1;
+                   String lessonIdParam = lessonId != null ? lessonId : (request.getAttribute("lessonId") != null ? request.getAttribute("lessonId").toString() : "");
+                   if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="${pageContext.request.contextPath}/QuestionController?action=list&lessonId=<%=lessonIdParam%>&page=<%=currentPage-1%>">Previous</a>
+                    </li>
+                <% }
+                   for (int i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i == currentPage ? "active" : "" %>">
+                        <a class="page-link" href="${pageContext.request.contextPath}/QuestionController?action=list&lessonId=<%=lessonIdParam%>&page=<%=i%>"><%=i%></a>
+                    </li>
+                <% }
+                   if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="${pageContext.request.contextPath}/QuestionController?action=list&lessonId=<%=lessonIdParam%>&page=<%=currentPage+1%>">Next</a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

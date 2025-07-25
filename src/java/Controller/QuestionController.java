@@ -78,7 +78,18 @@ public class QuestionController extends HttpServlet {
     private void listQuestions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int lessonId = Integer.parseInt(request.getParameter("lessonId"));
-        List<Question> questions = questionDAO.getQuestionsByLessonId(lessonId);
+        List<Question> allQuestions = questionDAO.getQuestionsByLessonId(lessonId);
+        int page = 1;
+        int pageSize = 10;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null) {
+            try { page = Integer.parseInt(pageParam); } catch (NumberFormatException ignored) {}
+        }
+        int totalQuestions = allQuestions.size();
+        int totalPages = (int) Math.ceil((double) totalQuestions / pageSize);
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalQuestions);
+        List<Question> questions = allQuestions.subList(fromIndex < totalQuestions ? fromIndex : 0, toIndex);
         List<Subject> subjects = subjectDAO.getAllSubjects();
         List<Lesson> lessons   = lessonDAO.getAllLessons();
         Lesson lesson = lessonDAO.getLessonById(lessonId);
@@ -88,6 +99,9 @@ public class QuestionController extends HttpServlet {
         request.setAttribute("lessons", lessons);
         request.setAttribute("lessonId", lessonId);
         request.setAttribute("lessonTitle", lesson.getTitle());
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalQuestions", totalQuestions);
         request.getRequestDispatcher("teacher/questionList.jsp").forward(request, response);
     }
 
