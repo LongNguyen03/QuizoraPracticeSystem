@@ -155,6 +155,43 @@ public class QuizDAO extends DBcontext {
     }
 
     public void deleteQuiz(int quizId) {
+        // Xóa QuizQuestions
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizQuestions WHERE QuizId = ?")) {
+            ps.setInt(1, quizId);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa FavoriteQuizzes
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM FavoriteQuizzes WHERE QuizId = ?")) {
+            ps.setInt(1, quizId);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa QuizResults và các dữ liệu liên quan
+        List<Integer> resultIds = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT Id FROM QuizResults WHERE QuizId = ?")) {
+            ps.setInt(1, quizId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                resultIds.add(rs.getInt("Id"));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        for (int resultId : resultIds) {
+            // Xóa QuizUserAnswers
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizUserAnswers WHERE QuizResultId = ?")) {
+                ps.setInt(1, resultId);
+                ps.executeUpdate();
+            } catch (SQLException e) { e.printStackTrace(); }
+            // Xóa QuizAnswers nếu có
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizAnswers WHERE QuizResultId = ?")) {
+                ps.setInt(1, resultId);
+                ps.executeUpdate();
+            } catch (SQLException e) { /* Có thể không có bảng này */ }
+        }
+        // Xóa QuizResults
+        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizResults WHERE QuizId = ?")) {
+            ps.setInt(1, quizId);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        // Xóa chính Quiz
         String sql = "DELETE FROM Quizzes WHERE Id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, quizId);

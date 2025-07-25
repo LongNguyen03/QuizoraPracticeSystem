@@ -156,10 +156,6 @@
             <div class="mt-2"><img src="${pageContext.request.contextPath}/questionImage?id=<%=q.getId()%>" style="max-width:200px;" class="rounded shadow-sm"/></div>
           <%}%>
         </div>
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="isPracticeOnly" name="isPracticeOnly" value="true" <%= isEdit && q.isPracticeOnly() ? "checked" : "" %> />
-          <label class="form-check-label" for="isPracticeOnly">Chỉ dùng cho Practice (Không xuất hiện trong Quiz)</label>
-        </div>
         <div class="mb-3">
           <label class="form-label">Answer Options</label>
           <table class="table table-bordered answer-table align-middle">

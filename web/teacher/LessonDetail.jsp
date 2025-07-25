@@ -76,6 +76,13 @@
                     <input type="hidden" name="status" value="active"/>
                 <% } %>
                 <div class="mb-3">
+                    <label for="status" class="form-label">Trạng thái:</label>
+                    <select name="status" id="status" class="form-select" <%= "edit".equals(formAction) ? "required" : "hidden" %>>
+                        <option value="active" <%= lesson.getStatus() != null && lesson.getStatus().equalsIgnoreCase("active") ? "selected" : "" %>>Active</option>
+                        <option value="inactive" <%= lesson.getStatus() != null && lesson.getStatus().equalsIgnoreCase("inactive") ? "selected" : "" %>>Inactive</option>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="content" class="form-label">Nội dung:</label>
                     <textarea name="content" id="content" class="form-control" rows="6"><%= lesson.getContent() != null ? lesson.getContent() : "" %></textarea>
                 </div>
