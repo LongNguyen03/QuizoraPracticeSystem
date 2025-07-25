@@ -199,7 +199,8 @@ public class ProfileServlet extends HttpServlet {
             if (success) {
                 // Cập nhật session với avatar URL mới
                 session.setAttribute("avatarUrl", avatarUrl);
-                response.getWriter().write("{\"success\": true, \"avatarUrl\": \"" + avatarUrl + "\"}");
+                session.setAttribute("message", "Avatar updated successfully!");
+                response.getWriter().write("{\"success\": true, \"avatarUrl\": \"" + avatarUrl + "\", \"reload\": true}");
             } else {
                 response.getWriter().write("{\"success\": false, \"message\": \"Failed to update avatar\"}");
             }

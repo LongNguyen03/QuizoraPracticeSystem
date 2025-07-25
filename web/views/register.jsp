@@ -420,8 +420,9 @@
             }
             
             // Disable nút gửi OTP
-            this.disabled = true;
-            this.textContent = 'Đang gửi...';
+            var sendBtn = document.getElementById('sendOTP');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Đang gửi...';
             
             // Gửi request để lấy OTP
             fetch('${pageContext.request.contextPath}/send-otp', {
@@ -444,8 +445,10 @@
                         timeLeft--;
                         if (timeLeft <= 0) {
                             clearInterval(window.otpTimer);
-                            document.getElementById('sendOTP').disabled = false;
-                            document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                            var sendBtn = document.getElementById('sendOTP');
+                            sendBtn.disabled = false;
+                            sendBtn.textContent = 'Gửi lại mã';
+                            sendBtn.style.display = '';
                             document.getElementById('otpGroup').style.display = 'none';
                             document.getElementById('otpStatus').style.display = 'none';
                             document.getElementById('resendOTP').style.display = 'block';
@@ -460,8 +463,9 @@
                     document.getElementById('otpStatus').textContent = data;
                     document.getElementById('otpStatus').style.display = 'block';
                     document.getElementById('otpStatus').className = 'text-danger mt-1';
-                    document.getElementById('sendOTP').disabled = false;
-                    document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                    var sendBtn = document.getElementById('sendOTP');
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Gửi mã xác thực';
                 }
             })
             .catch(error => {
@@ -469,14 +473,18 @@
                 document.getElementById('otpStatus').textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
                 document.getElementById('otpStatus').style.display = 'block';
                 document.getElementById('otpStatus').className = 'text-danger mt-1';
-                document.getElementById('sendOTP').disabled = false;
-                document.getElementById('sendOTP').textContent = 'Gửi mã xác thực';
+                var sendBtn = document.getElementById('sendOTP');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Gửi mã xác thực';
             });
         });
 
         // Xử lý gửi lại OTP
         document.getElementById('resendOTP').addEventListener('click', function() {
-            document.getElementById('sendOTP').click();
+            var sendBtn = document.getElementById('sendOTP');
+            sendBtn.disabled = false;
+            sendBtn.style.display = '';
+            sendBtn.click();
             this.style.display = 'none';
         });
 
@@ -522,8 +530,14 @@
                 } else {
                     otpError.textContent = data;
                     otpError.style.display = 'block';
-                    // Xóa nội dung OTP để người dùng nhập lại
                     document.getElementById('otp').value = '';
+                    // Nếu thông báo hết hạn, show lại nút gửi lại mã
+                    if (data.includes('hết hạn')) {
+                        var sendBtn = document.getElementById('sendOTP');
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = 'Gửi lại mã';
+                        sendBtn.style.display = '';
+                    }
                 }
             })
             .catch(error => {
@@ -538,5 +552,13 @@
             document.getElementById('otpError').style.display = 'none';
         });
     </script>
+    <script>
+  setTimeout(function() {
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+      alert.style.display = 'none';
+    });
+  }, 10000);
+</script>
 </body>
 </html>

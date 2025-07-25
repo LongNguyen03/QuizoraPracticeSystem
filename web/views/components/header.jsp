@@ -110,10 +110,11 @@
                                 <div class="d-flex align-items-center">
                                     <c:choose>
                                         <c:when test="${sessionScope.avatarUrl != null and sessionScope.avatarUrl != ''}">
-                                            <img src="${sessionScope.avatarUrl}" 
+                                            <img src="${pageContext.request.contextPath}/${sessionScope.avatarUrl}" 
                                                  alt="Avatar" 
                                                  class="rounded-circle me-2" 
-                                                 style="width: 32px; height: 32px; object-fit: cover;">
+                                                 style="width: 32px; height: 32px; object-fit: cover;"
+                                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=User+Name&background=random&size=32';">
                                         </c:when>
                                         <c:otherwise>
                                             <c:set var="avatarName" value="${sessionScope.firstName != null ? sessionScope.firstName : 'User'}" />
