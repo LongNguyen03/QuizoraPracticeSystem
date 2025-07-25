@@ -39,8 +39,8 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void createQuestion(Question q) {
-        String sql = "INSERT INTO Questions (SubjectId, OwnerId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl, IsPracticeOnly) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Questions (SubjectId, OwnerId, LessonId, Level, Content, Status, CreatedAt, UpdatedAt, ImageUrl) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             Timestamp now = new Timestamp(new Date().getTime());
             ps.setInt(1, q.getSubjectId());
@@ -52,7 +52,6 @@ public class QuestionDAO extends DBcontext {
             ps.setTimestamp(7, now);
             ps.setTimestamp(8, now);
             ps.setBytes(9, q.getImage());
-            ps.setBoolean(10, q.isPracticeOnly());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -65,7 +64,7 @@ public class QuestionDAO extends DBcontext {
     }
 
     public void updateQuestion(Question q) {
-        String sql = "UPDATE Questions SET SubjectId=?, OwnerId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=?, IsPracticeOnly=? WHERE Id=?";
+        String sql = "UPDATE Questions SET SubjectId=?, OwnerId=?, LessonId=?, Level=?, Content=?, Status=?, UpdatedAt=?, ImageUrl=? WHERE Id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, q.getSubjectId());
             ps.setInt(2, q.getOwnerId());
@@ -75,8 +74,7 @@ public class QuestionDAO extends DBcontext {
             ps.setString(6, q.getStatus());
             ps.setTimestamp(7, new Timestamp(new Date().getTime()));
             ps.setBytes(8, q.getImage());
-            ps.setBoolean(9, q.isPracticeOnly());
-            ps.setInt(10, q.getId());
+            ps.setInt(9, q.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,7 +129,7 @@ public class QuestionDAO extends DBcontext {
     // Lấy câu hỏi chỉ dùng cho practice
     public List<Question> getPracticeQuestionsByLessonId(int lessonId) {
         List<Question> list = new ArrayList<>();
-        String sql = "SELECT * FROM Questions WHERE LessonId = ? AND Status = 'Active' AND IsPracticeOnly = 1";
+        String sql = "SELECT * FROM Questions WHERE LessonId = ? AND Status = 'Active' ";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, lessonId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -163,7 +161,7 @@ public class QuestionDAO extends DBcontext {
 
     public List<Question> getPracticeQuestionsBySubjectId(int subjectId) {
         List<Question> list = new ArrayList<>();
-        String sql = "SELECT * FROM Questions WHERE SubjectId = ? AND Status = 'Active' AND IsPracticeOnly = 1";
+        String sql = "SELECT * FROM Questions WHERE SubjectId = ? AND Status = 'Active' ";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, subjectId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -255,7 +253,6 @@ public class QuestionDAO extends DBcontext {
         q.setCreatedAt(rs.getTimestamp("CreatedAt"));
         q.setUpdatedAt(rs.getTimestamp("UpdatedAt"));
         q.setImage(rs.getBytes("ImageUrl"));
-        q.setPracticeOnly(rs.getBoolean("IsPracticeOnly"));
         return q;
     }
 }

@@ -30,7 +30,6 @@ class QuestionDAOTest {
         q.setContent("Unit test content");
         q.setStatus("Active");
         q.setImage(null);
-        q.setPracticeOnly(true);
 
         dao.createQuestion(q);
         createdQuestionId = q.getId();
@@ -61,14 +60,12 @@ class QuestionDAOTest {
         Question q = dao.getQuestionById(createdQuestionId);
         q.setContent("Updated content");
         q.setLevel("Medium");
-        q.setPracticeOnly(false);
 
         dao.updateQuestion(q);
 
         Question updated = dao.getQuestionById(createdQuestionId);
         assertEquals("Updated content", updated.getContent());
         assertEquals("Medium", updated.getLevel());
-        assertFalse(updated.isPracticeOnly());
     }
 
     @Test
