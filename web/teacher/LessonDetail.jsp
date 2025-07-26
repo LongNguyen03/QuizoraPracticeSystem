@@ -39,7 +39,10 @@
             <h2 class="text-center mb-4 fw-bold text-primary"><i class="fas fa-chalkboard me-2"></i><%= "edit".equals(formAction) ? "Chỉnh sửa bài học" : "Thêm bài học mới" %></h2>
             <% String error = (String) request.getAttribute("error"); %>
             <% if (error != null) { %>
-                <div class="alert alert-danger text-center"><%= error %></div>
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <%= error %>
+                </div>
             <% } %>
             <form action="${pageContext.request.contextPath}/lesson" method="post">
                 <input type="hidden" name="action" value="<%= formAction %>"/>
@@ -57,7 +60,10 @@
                 </div>
                 <div class="mb-3">
                     <label for="title" class="form-label">Tiêu đề:</label>
-                    <input type="text" name="title" id="title" class="form-control" value="<%= lesson.getTitle() != null ? lesson.getTitle() : "" %>" required/>
+                    <input type="text" name="title" id="title" class="form-control" 
+                           value="<%= lesson.getTitle() != null ? lesson.getTitle() : "" %>" 
+                           placeholder="Nhập tiêu đề bài học (tối thiểu 3 ký tự)" required/>
+                    <div class="form-text">Tiêu đề bài học phải là duy nhất trong cùng một môn học.</div>
                 </div>
                 <div class="mb-3">
                     <label for="dimension" class="form-label">Phân loại (Dimension):</label>
@@ -94,5 +100,41 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Client-side validation for lesson title
+        document.addEventListener('DOMContentLoaded', function() {
+            const titleInput = document.getElementById('title');
+            const form = document.querySelector('form');
+            
+            // Add real-time validation
+            titleInput.addEventListener('input', function() {
+                const title = this.value.trim();
+                if (title.length === 0) {
+                    this.setCustomValidity('Tiêu đề bài học không được để trống!');
+                } else if (title.length < 3) {
+                    this.setCustomValidity('Tiêu đề bài học phải có ít nhất 3 ký tự!');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            // Form submission validation
+            form.addEventListener('submit', function(e) {
+                const title = titleInput.value.trim();
+                if (title.length === 0) {
+                    e.preventDefault();
+                    alert('Tiêu đề bài học không được để trống!');
+                    titleInput.focus();
+                    return false;
+                }
+                if (title.length < 3) {
+                    e.preventDefault();
+                    alert('Tiêu đề bài học phải có ít nhất 3 ký tự!');
+                    titleInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
