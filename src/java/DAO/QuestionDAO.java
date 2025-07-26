@@ -89,11 +89,6 @@ public class QuestionDAO extends DBcontext {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
-        // Xóa khỏi PracticeAnswers
-        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM PracticeAnswers WHERE QuestionId = ?")) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) { e.printStackTrace(); }
         // Xóa khỏi QuizUserAnswers
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM QuizUserAnswers WHERE QuestionId = ?")) {
             ps.setInt(1, id);

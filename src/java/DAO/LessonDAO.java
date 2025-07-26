@@ -240,6 +240,26 @@ public class LessonDAO extends DBcontext {
         return list;
     }
 
+    public boolean isLessonTitleExists(String title, int subjectId, int excludeId) {
+        String sql = "SELECT COUNT(*) FROM Lessons WHERE LOWER(TRIM(Title)) = LOWER(?) AND SubjectId = ? AND Id != ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, title.trim());
+            ps.setInt(2, subjectId);
+            ps.setInt(3, excludeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isLessonTitleExists(String title, int subjectId) {
+        return isLessonTitleExists(title, subjectId, 0);
+    }
+
 //    public List<Lesson> findBySubject(int subjectId) throws SQLException {
 //        Connection conn = DB.getConnection();
 //        PreparedStatement ps = conn.prepareStatement(

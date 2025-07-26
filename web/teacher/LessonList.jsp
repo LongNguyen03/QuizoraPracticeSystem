@@ -61,6 +61,20 @@
         <h2 class="fw-bold text-primary"><i class="fas fa-book me-2"></i>Danh sách bài học</h2>
         <a href="${pageContext.request.contextPath}/lesson?action=detail" class="add-btn"><i class="fas fa-plus me-1"></i> Thêm bài học mới</a>
     </div>
+    
+    <%-- Success message display --%>
+    <% String success = request.getParameter("success"); %>
+    <% if (success != null) { %>
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <% if ("created".equals(success)) { %>
+                Bài học đã được tạo thành công!
+            <% } else if ("updated".equals(success)) { %>
+                Bài học đã được cập nhật thành công!
+            <% } %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
     <div class="container-fluid px-0">
         <% if (lessons != null && !lessons.isEmpty()) { %>
             <% for (Lesson lesson : lessons) { %>

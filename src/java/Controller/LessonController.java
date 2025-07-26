@@ -146,10 +146,22 @@ public class LessonController extends HttpServlet {
             String dimension = request.getParameter("dimension");
             String status    = request.getParameter("status");
 
+            // Validate title is not empty
+            if (title == null || title.trim().isEmpty()) {
+                setErrorAndRedirect(request, response, "Tiêu đề bài học không được để trống!", id, subjectId);
+                return;
+            }
+
+            // Check for duplicate lesson title
+            if (lessonDAO.isLessonTitleExists(title.trim(), subjectId, id)) {
+                setErrorAndRedirect(request, response, "Tiêu đề bài học đã tồn tại trong môn học này!", id, subjectId);
+                return;
+            }
+
             Lesson lesson = new Lesson();
             lesson.setId(id);
             lesson.setSubjectId(subjectId);
-            lesson.setTitle(title);
+            lesson.setTitle(title.trim());
             lesson.setContent(content);
             lesson.setDimension(dimension);
             lesson.setStatus(status);
@@ -165,16 +177,45 @@ public class LessonController extends HttpServlet {
             if (id > 0) {
                 lesson.setUpdatedAt(new Date());
                 lessonDAO.updateLesson(lesson);
+                response.sendRedirect("lesson?action=list&subjectId=" + subjectId + "&success=updated");
             } else {
                 lesson.setCreatedAt(new Date());
                 lessonDAO.addLesson(lesson);
+                response.sendRedirect("lesson?action=list&subjectId=" + subjectId + "&success=created");
             }
-
-            response.sendRedirect("lesson?action=list&subjectId=" + subjectId);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi lưu bài học");
         }
+    }
+
+    private void setErrorAndRedirect(HttpServletRequest request, HttpServletResponse response, 
+                                   String errorMessage, int lessonId, int subjectId) 
+            throws ServletException, IOException {
+        // Set error message
+        request.setAttribute("error", errorMessage);
+        
+        // Re-populate form data
+        Lesson lesson = new Lesson();
+        lesson.setId(lessonId);
+        lesson.setSubjectId(subjectId);
+        lesson.setTitle(request.getParameter("title"));
+        lesson.setContent(request.getParameter("content"));
+        lesson.setDimension(request.getParameter("dimension"));
+        lesson.setStatus(request.getParameter("status"));
+        
+        // Set form action
+        request.setAttribute("formAction", lessonId > 0 ? "edit" : "create");
+        request.setAttribute("lesson", lesson);
+        
+        // Get subjects and dimensions for dropdown
+        List<Subject> subjects = subjectDAO.getAllSubjects();
+        List<String> dimensionList = lessonDAO.getAllDimensions();
+        request.setAttribute("subjects", subjects);
+        request.setAttribute("dimensionList", dimensionList);
+        
+        // Forward back to form
+        request.getRequestDispatcher("teacher/LessonDetail.jsp").forward(request, response);
     }
 }
 
