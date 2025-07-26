@@ -322,8 +322,11 @@
                         // Update avatar immediately
                         avatar.src = data.avatarUrl;
                         avatar.style.opacity = '1';
-                        // Show success message
-                        showAlert('Avatar updated successfully!', 'success');
+                        if (data.reload) {
+                            location.reload();
+                        } else {
+                            showAlert('Avatar updated successfully!', 'success');
+                        }
                     } else {
                         avatar.src = originalSrc;
                         avatar.style.opacity = '1';
